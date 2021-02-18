@@ -16,109 +16,43 @@
  */
 
 define([
-    "dojo","dojo/_base/declare",
+    "dojo/_base/declare",
+    "bgagame/modules/enterstate",
+    "bgagame/modules/dice",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (dojo, declare) {
+function (declare, enterstate, dice) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
         constructor: function(){
             console.log('pulsarzet constructor');
-              
-            // Here, you can init the global variables of your user interface
-            // Example:
-            // this.myGlobalValue = 0;
-
         },
         
-        /*
-            setup:
-            
-            This method must set up the game user interface according to current game situation specified
-            in parameters.
-            
-            The method is called each time the game interface is displayed to a player, ie:
-            _ when the game starts
-            _ when a player refreshes the game page (F5)
-            
-            "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
-        */
-        
-        setup: function( gamedatas )
+        setup: function( gamedata )
         {
             console.log( "Starting game setup" );
             
             // Setting up player boards
-            for( var player_id in gamedatas.players )
+            for( var player_id in gamedata.players )
             {
-                var player = gamedatas.players[player_id];
+                var player = gamedata.players[player_id];
                          
-                // TODO: Setting up players boards if needed
             }
             
-            // TODO: Set up your game interface here, according to "gamedatas"
-            
- 
-            // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
             console.log( "Ending game setup" );
         },
        
-
-        ///////////////////////////////////////////////////
-        //// Game & client states
-        
-        // onEnteringState: this method is called each time we are entering into a new game state.
-        //                  You can use this method to perform some user interface changes at this moment.
-        //
-        onEnteringState: function( stateName, args )
+        onEnteringState: function (stateName, args)
         {
             console.log( 'Entering state: '+stateName );
-            
-            switch( stateName )
-            {
-            
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Show some HTML block at this game state
-                dojo.style( 'my_html_block_id', 'display', 'block' );
-                
-                break;
-           */
-           
-           
-            case 'dummmy':
-                break;
-            }
+            dojo.hitch(this, enterstate[stateName])(args);
         },
 
-        // onLeavingState: this method is called each time we are leaving a game state.
-        //                 You can use this method to perform some user interface changes at this moment.
-        //
         onLeavingState: function( stateName )
         {
             console.log( 'Leaving state: '+stateName );
-            
-            switch( stateName )
-            {
-            
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Hide the HTML block we are displaying only during this game state
-                dojo.style( 'my_html_block_id', 'display', 'none' );
-                
-                break;
-           */
-           
-           
-            case 'dummmy':
-                break;
-            }               
         }, 
 
         // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the

@@ -39,7 +39,10 @@ class PulsarZet extends Table
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-        ) );        
+        ) );     
+
+        $this->dices = self::getNew( "module.common.deck" );
+        $this->dices->init( "dice" );
 	}
 	
     protected function getGameName( )
@@ -78,18 +81,13 @@ class PulsarZet extends Table
         self::reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
-
-        // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
-        
-        // Init game statistics
-        // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
-
-        // TODO: setup the initial game situation here
-       
-
+		
+		$dices = array ();
+		for ($value = 1; $value <= 6; $value++) {
+			$dices [] = array ('type' => 'dice', 'type_arg' => $value, 'nbr' => 7 );
+        }
+        $this->dices->createCards($dices, 'deck');
+		
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 
@@ -115,8 +113,6 @@ class PulsarZet extends Table
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
-  
-        // TODO: Gather all information about current game situation (visible by player $current_player_id).
   
         return $result;
     }
@@ -216,23 +212,18 @@ class PulsarZet extends Table
 //////////// Game state actions
 ////////////
 
-    /*
-        Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
-        The action method of state X is called everytime the current game state is set to X.
-    */
-    
-    /*
-    
-    Example for game state "MyGameState":
+    function stRollDicesAndSetMarker() {
+        $this->dices->shuffle("deck");
+        $this->dices->pickCardsForLocation(7, "deck", "diceboard");
+        return $this->gamestate->nextState( "markerSet" );
+    }
 
-    function stMyGameState()
+    function argMarkerSet()
     {
-        // Do some stuff ...
-        
-        // (very often) go to another gamestate
-        $this->gamestate->nextState( 'some_gamestate_transition' );
-    }    
-    */
+        return array(
+            "diceboard" => $this->dices->getCardsInLocation("diceboard")
+        );  
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Zombie
