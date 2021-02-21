@@ -1,4 +1,4 @@
-.diceboard {
+.diceboard_ {
     height: 60px;
     width: 420px;
     border: solid black 2px;
@@ -10,7 +10,7 @@
     border: solid red 2px;
 }
 
-.diceboard_ {
+.diceboard {
     border-style: solid;
     border-width:2px;
     border-radius:8px;

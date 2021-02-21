@@ -7,17 +7,38 @@ define([
 
     var table = $("game_play_area");
 
-    var dices;
+    var dicestocks = {};
+
+    var changeselection = function (id) {
+        var params = { id: id };
+        backend
+            .call("chooseDice", params);        
+    }
 
     var create = function () {
-        put(table, "div.diceboard#diceboard");
-        dices = dicestock('diceboard');
+        var board = put(table, "div.diceboard#diceboard");
+        
+        put(board, "div.dice_one#dice_one");
+        put(board, "div.dice_two#dice_two");
+        put(board, "div.dice_three#dice_three");
+        put(board, "div.dice_four#dice_four");
+        put(board, "div.dice_five#dice_five");
+        put(board, "div.dice_six#dice_six");
+
+        dicestocks[1] = dicestock("dice_one");
+        dicestocks[2] = dicestock("dice_two");
+        dicestocks[3] = dicestock("dice_three");
+        dicestocks[4] = dicestock("dice_four");
+        dicestocks[5] = dicestock("dice_five");
+        dicestocks[6] = dicestock("dice_six");
     }
 
     var placedices = function (roll) {
-        dices.removeAll();
+        for (var nr in dicestocks) {
+            dicestocks[nr].removeAll();
+        }
         for (var id in roll) {
-            dices.addToStockWithId(roll[id].type_arg, id);
+            dicestocks[roll[id].type_arg].addToStockWithId(roll[id].type_arg, id);
         }
     }
 
@@ -29,14 +50,15 @@ define([
         placedices(args.args.diceboard);
     });
 
-    connect.subscribe("changeselection/diceboard", function (id) {
-        var params = { id: id };
-        backend
-            .call("chooseDice", params);
-    });
+    connect.subscribe("changeselection/dice_one", changeselection);
+    connect.subscribe("changeselection/dice_two", changeselection);
+    connect.subscribe("changeselection/dice_three", changeselection);
+    connect.subscribe("changeselection/dice_four", changeselection);
+    connect.subscribe("changeselection/dice_five", changeselection);
+    connect.subscribe("changeselection/dice_six", changeselection);
 
     connect.subscribe("server/dicechoosen", function (args) {
-        dices.removeFromStockById(args.args.dice.id);
+        dicestocks[args.args.dice.type_arg].removeFromStockById(args.args.dice.id);
     });
 
     return {
