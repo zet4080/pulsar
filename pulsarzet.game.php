@@ -113,7 +113,13 @@ class PulsarZet extends Table
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
-  
+
+        $result['diceboard'] = $this->dices->getCardsInLocation('diceboard');
+
+        $players = self::loadPlayersBasicInfos();
+        foreach ( $players as $player_id => $player ) {
+            $result['player' . $player_id] = array ('dices' => $this->dices->getCardsInLocation('hand', $player_id));
+        }  
         return $result;
     }
 
@@ -134,95 +140,41 @@ class PulsarZet extends Table
         return 0;
     }
 
+    function stNextPlayerDicePhase() {
+        $this->activeNextPlayer();
+        $this->gamestate->nextState("nextPlayerCalculated");
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Utility functions
 ////////////    
-
-    /*
-        In this space, you can put any utility methods useful for your game logic
-    */
-
 
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
 
-    /*
-        Each time a player is doing some game action, one of the methods below is called.
-        (note: each method below must match an input method in pulsarzet.action.php)
-    */
-
-    /*
-    
-    Example:
-
-    function playCard( $card_id )
-    {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
-        
-        $player_id = self::getActivePlayerId();
-        
-        // Add your game logic to play a card there 
-        ...
-        
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
-        ) );
-          
-    }
-    
-    */
-
-    
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state arguments
-////////////
-
-    /*
-        Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).
-        These methods function is to return some additional information that is specific to the current
-        game state.
-    */
-
-    /*
-    
-    Example for game state "MyGameState":
-    
-    function argMyGameState()
-    {
-        // Get some values from the current game situation in database...
-    
-        // return values:
-        return array(
-            'variable1' => $value1,
-            'variable2' => $value2,
-            ...
-        );
-    }    
-    */
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state actions
-////////////
-
-    function stRollDicesAndSetMarker() {
+    function rollDices() {
+        self::checkAction('rollDices');
+        $this->dices->moveAllCardsInLocation("diceboard", "deck");
+        $this->dices->moveAllCardsInLocation("hand", "deck");
         $this->dices->shuffle("deck");
         $this->dices->pickCardsForLocation(7, "deck", "diceboard");
-        return $this->gamestate->nextState( "markerSet" );
+        self::notifyAllPlayers("server/diceboard", "", array(
+            "diceboard" => $this->dices->getCardsInLocation("diceboard")
+        ));        
+        $this->gamestate->nextState("dicesRolled");
     }
 
-    function argMarkerSet()
-    {
-        return array(
-            "diceboard" => $this->dices->getCardsInLocation("diceboard")
-        );  
+    function chooseDice($id) {
+        self::checkAction('chooseDice');
+        $player_id = self::getActivePlayerId();
+        $this->dices->moveCard($id, 'hand', $player_id);
+        self::notifyAllPlayers("server/dicechoosen", "", array(
+            "player_id" => $player_id,
+            "dice" => $this->dices->getCard($id)
+        ));
+        $this->gamestate->nextState("diceChoosen");
     }
 
 //////////////////////////////////////////////////////////////////////////////

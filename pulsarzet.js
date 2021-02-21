@@ -17,81 +17,50 @@
 
 define([
     "dojo/_base/declare",
-    "bgagame/modules/enterstate",
-    "bgagame/modules/dice",
+    "dojo/_base/connect",
+    "bgagame/modules/util/gamegui",
+    "bgagame/modules/util/backend",
+    "bgagame/modules/table/gametable",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, enterstate, dice) {
+function (declare, connect, gui, backend, gametable) {
+    
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
+        
         constructor: function(){
             console.log('pulsarzet constructor');
+            gui.register(this);
         },
         
         setup: function( gamedata )
         {
             console.log( "Starting game setup" );
-            
-            // Setting up player boards
-            for( var player_id in gamedata.players )
-            {
-                var player = gamedata.players[player_id];
-                         
-            }
-            
-            this.setupNotifications();
-
+            gametable.create(gamedata);
             console.log( "Ending game setup" );
         },
        
         onEnteringState: function (stateName, args)
         {
-            console.log( 'Entering state: '+stateName );
-            dojo.hitch(this, enterstate[stateName])(args);
+            console.log('Publish enter state: '+ stateName);
+            console.log(args);
+            connect.publish('enterstate/' + stateName, args);
         },
 
         onLeavingState: function( stateName )
         {
-            console.log( 'Leaving state: '+stateName );
+            console.log( 'Publish leave state: ' + stateName );
+            connect.publish('leavestate/' + stateName);
         }, 
 
-        // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
-        //                        action status bar (ie: the HTML links in the status bar).
-        //        
         onUpdateActionButtons: function( stateName, args )
         {
             console.log( 'onUpdateActionButtons: '+stateName );
-                      
             if( this.isCurrentPlayerActive() )
             {            
-                switch( stateName )
-                {
-/*               
-                 Example:
- 
-                 case 'myGameState':
-                    
-                    // Add 3 action buttons in the action status bar:
-                    
-                    this.addActionButton( 'button_1_id', _('Button 1 label'), 'onMyMethodToCall1' ); 
-                    this.addActionButton( 'button_2_id', _('Button 2 label'), 'onMyMethodToCall2' ); 
-                    this.addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' ); 
-                    break;
-*/
-                }
+                connect.publish('updateactionbutton/' + stateName, args);
             }
         },        
-
-        ///////////////////////////////////////////////////
-        //// Utility methods
-        
-        /*
-        
-            Here, you can defines some utility methods that you can use everywhere in your javascript
-            script.
-        
-        */
-
 
         ///////////////////////////////////////////////////
         //// Player's action
@@ -138,53 +107,6 @@ function (declare, enterstate, dice) {
 
                          } );        
         },        
-        
-        */
-
-        
-        ///////////////////////////////////////////////////
-        //// Reaction to cometD notifications
-
-        /*
-            setupNotifications:
-            
-            In this method, you associate each of your game notifications with your local method to handle it.
-            
-            Note: game notification names correspond to "notifyAllPlayers" and "notifyPlayer" calls in
-                  your pulsarzet.game.php file.
-        
-        */
-        setupNotifications: function()
-        {
-            console.log( 'notifications subscriptions setup' );
-            
-            // TODO: here, associate your game notifications with local methods
-            
-            // Example 1: standard notification handling
-            // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-            
-            // Example 2: standard notification handling + tell the user interface to wait
-            //            during 3 seconds after calling the method in order to let the players
-            //            see what is happening in the game.
-            // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-            // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
-            // 
-        },  
-        
-        // TODO: from this point and below, you can write your game notifications handling methods
-        
-        /*
-        Example:
-        
-        notif_cardPlayed: function( notif )
-        {
-            console.log( 'notif_cardPlayed' );
-            console.log( notif );
-            
-            // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-            
-            // TODO: play the card in the user interface.
-        },    
         
         */
    });             

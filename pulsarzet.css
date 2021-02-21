@@ -1,7 +1,13 @@
 .diceboard {
-    height: 100px;
-    width: 100px;
+    height: 60px;
+    width: 420px;
     border: solid black 2px;
+}
+
+.playerboard {
+    height: 60px;
+    width: 120px;
+    border: solid red 2px;
 }
 
 .diceboard_ {

@@ -1,9 +1,5 @@
 {OVERALL_GAME_HEADER}
 
-<div id="diceboard" class="diceboard">
-
-</div>
-
 <script type="text/javascript">
 
 </script>  

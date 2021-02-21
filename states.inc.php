@@ -1,8 +1,9 @@
 <?php
 
 if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
-    define("STATE_ROLL_DICES_AND_SET_MARKER", 2);
+    define("STATE_START_ROUND", 2);
     define("STATE_PLAYER_CHOOSE_DICE", 3);
+    define("STATE_NEXT_PLAYER_DICE_PHASE", 4);
     define("STATE_END_GAME", 99);
  }
  
@@ -14,31 +15,37 @@ $machinestates = array(
         "description" => "",
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => STATE_ROLL_DICES_AND_SET_MARKER )
-    ),
-    
-    2 => array(
-        "name" => "rollDicesAndSetMarker",
-        "description" => clienttranslate('${actplayer} rolls the dices'),
-        "descriptionmyturn" => clienttranslate('${you} roll the dices'),
-        "type" => "game",
-        "action" => "stRollDicesAndSetMarker",
-        "transitions" => array( "markerSet" => STATE_PLAYER_CHOOSE_DICE )
+        "transitions" => array( "test" => STATE_START_ROUND )
     ),
 
-    3 => array(
+    STATE_START_ROUND => array(
+        "name" => "startround",
+        "description" => "",
+        "type" => "activeplayer",
+        "possibleactions" => array("rollDices"),
+        "transitions" => array( "dicesRolled" => STATE_PLAYER_CHOOSE_DICE )
+    ),    
+    
+    STATE_PLAYER_CHOOSE_DICE => array(
         "name" => "playerChooseDice",
         "description" => clienttranslate('${actplayer} must choose a dice'),
         "descriptionmyturn" => clienttranslate('${you} must choose a dice'),
         "type" => "activeplayer",
-        "args" => "argMarkerSet",
-        "possibleactions" => array( "playCard", "pass" ),
-        "transitions" => array( "playCard" => 2, "pass" => 2 )
+        "possibleactions" => array( "chooseDice" ),
+        "transitions" => array( "diceChoosen" => STATE_NEXT_PLAYER_DICE_PHASE )
     ),
+    
+    STATE_NEXT_PLAYER_DICE_PHASE => array(
+        "name" => "playerChooseDice",
+        "description" => "",
+        "type" => "game",
+        "action" => "stNextPlayerDicePhase",
+        "transitions" => array( "nextPlayerCalculated" => STATE_PLAYER_CHOOSE_DICE )
+    ),    
     
     // Final state.
     // Please do not modify (and do not overload action/args methods).
-    99 => array(
+    STATE_END_GAME => array(
         "name" => "gameEnd",
         "description" => clienttranslate("End of game"),
         "type" => "manager",
