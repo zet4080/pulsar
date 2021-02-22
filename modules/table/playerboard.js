@@ -9,25 +9,25 @@ define([
 
     var create = function (player_id) {
 
-        var placedices = function (playerdices) {
-            for (var id in playerdices) {
-                dices.addToStockWithId(playerdices[id].type_arg, id);
+        var placeDiceOnBoard = function (playerdice) {
+            for (var id in playerdice) {
+                dice.addToStockWithId(playerdice[id].type_arg, id);
             }
         }
 
         connect.subscribe("server/dicechoosen", function (args) {
-            var dice = args.args.dice;
+            var choosenDice = args.args.dice;
             var id = args.args.player_id;
             if (player_id == id) {
-                dices.addToStockWithId(dice.type_arg, dice.id);
+                dice.addToStockWithId(choosenDice.type_arg, choosenDice.id);
             }
         });
 
         put(table, "div.playerboard#playerboard" + player_id);
-        var dices = dicestock('playerboard' + player_id);
+        var dice = dicestock('playerboard' + player_id);
 
         return {
-            placedices: placedices
+            placeDiceOnBoard: placeDiceOnBoard
         }
     }
 

@@ -18,6 +18,7 @@
 
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
+require_once( 'modules/table/diceboard.php' );
 
 
 class PulsarZet extends Table
@@ -39,11 +40,9 @@ class PulsarZet extends Table
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-        ) );     
-
-        $this->dices = self::getNew( "module.common.deck" );
-        $this->dices->init( "dice" );
-	}
+        ) );  
+        $this->diceboard = new DiceBoard(self::getNew( "module.common.deck" ));
+ 	}
 	
     protected function getGameName( )
     {
@@ -81,14 +80,8 @@ class PulsarZet extends Table
         self::reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
-		
-		$dices = array ();
-		for ($value = 1; $value <= 6; $value++) {
-			$dices [] = array ('type' => 'dice', 'type_arg' => $value, 'nbr' => 7 );
-        }
-        $this->dices->createCards($dices, 'deck');
-		
-        // Activate first player (which is in general a good idea :) )
+
+        $this->diceboard->setup();
         $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
@@ -114,11 +107,11 @@ class PulsarZet extends Table
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
 
-        $result['diceboard'] = $this->dices->getCardsInLocation('diceboard');
+        $result['diceboard'] = $this->diceboard->getDiceboard();
 
         $players = self::loadPlayersBasicInfos();
         foreach ( $players as $player_id => $player ) {
-            $result['player' . $player_id] = array ('dices' => $this->dices->getCardsInLocation('hand', $player_id));
+            $result['player' . $player_id] = array ('dices' => $this->diceboard->getPlayerDice($player_id));
         }  
         return $result;
     }
@@ -156,12 +149,9 @@ class PulsarZet extends Table
 
     function rollDices() {
         self::checkAction('rollDices');
-        $this->dices->moveAllCardsInLocation("diceboard", "deck");
-        $this->dices->moveAllCardsInLocation("hand", "deck");
-        $this->dices->shuffle("deck");
-        $this->dices->pickCardsForLocation(7, "deck", "diceboard");
+        $this->diceboard->rollDice();
         self::notifyAllPlayers("server/diceboard", "", array(
-            "diceboard" => $this->dices->getCardsInLocation("diceboard")
+            "diceboard" => $this->diceboard->getDiceboard()
         ));        
         $this->gamestate->nextState("dicesRolled");
     }
@@ -169,10 +159,10 @@ class PulsarZet extends Table
     function chooseDice($id) {
         self::checkAction('chooseDice');
         $player_id = self::getActivePlayerId();
-        $this->dices->moveCard($id, 'hand', $player_id);
+        $this->diceboard->playerChooseDice($player_id, $id);
         self::notifyAllPlayers("server/dicechoosen", "", array(
             "player_id" => $player_id,
-            "dice" => $this->dices->getCard($id)
+            "dice" => $this->diceboard->getDice($id)
         ));
         $this->gamestate->nextState("diceChoosen");
     }

@@ -7,11 +7,11 @@ define([
 
     var create = function (gamedata) {
         diceboard.create();
-        diceboard.placedices(gamedata.diceboard);
+        diceboard.placeDiceOnBoard(gamedata.diceboard);
 
         for (var id in gamedata.players) {
             playerboards[id] = playerboard.create(id);
-            playerboards[id].placedices(gamedata['player' + id].dices);
+            playerboards[id].placeDiceOnBoard(gamedata['player' + id].dices);
         }        
     };
 

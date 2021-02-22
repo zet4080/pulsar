@@ -31,9 +31,16 @@ define([
         dicestocks[4] = dicestock("dice_four");
         dicestocks[5] = dicestock("dice_five");
         dicestocks[6] = dicestock("dice_six");
+
+        connect.subscribe("changeselection/dice_one", changeselection);
+        connect.subscribe("changeselection/dice_two", changeselection);
+        connect.subscribe("changeselection/dice_three", changeselection);
+        connect.subscribe("changeselection/dice_four", changeselection);
+        connect.subscribe("changeselection/dice_five", changeselection);
+        connect.subscribe("changeselection/dice_six", changeselection);        
     }
 
-    var placedices = function (roll) {
+    var placeDiceOnBoard = function (roll) {
         for (var nr in dicestocks) {
             dicestocks[nr].removeAll();
         }
@@ -47,15 +54,8 @@ define([
     });
     
     connect.subscribe("server/diceboard", function (args) {
-        placedices(args.args.diceboard);
+        placeDiceOnBoard(args.args.diceboard);
     });
-
-    connect.subscribe("changeselection/dice_one", changeselection);
-    connect.subscribe("changeselection/dice_two", changeselection);
-    connect.subscribe("changeselection/dice_three", changeselection);
-    connect.subscribe("changeselection/dice_four", changeselection);
-    connect.subscribe("changeselection/dice_five", changeselection);
-    connect.subscribe("changeselection/dice_six", changeselection);
 
     connect.subscribe("server/dicechoosen", function (args) {
         dicestocks[args.args.dice.type_arg].removeFromStockById(args.args.dice.id);
@@ -63,6 +63,6 @@ define([
 
     return {
         create: create,
-        placedices: placedices
+        placeDiceOnBoard: placeDiceOnBoard
     }
 });
