@@ -22,7 +22,7 @@ $machinestates = array(
         "name" => "startround",
         "description" => "",
         "type" => "activeplayer",
-        "possibleactions" => array("rollDices"),
+        "possibleactions" => array("rollDice"),
         "transitions" => array( "dicesRolled" => STATE_PLAYER_CHOOSE_DICE )
     ),    
     

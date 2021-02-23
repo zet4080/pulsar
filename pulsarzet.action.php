@@ -18,9 +18,9 @@
       }
   	} 
     
-    public function rolldices() {
+    public function rolldice() {
       self::setAjaxMode();
-      $this->game->rollDices();
+      $this->game->doRollDice();
       self::ajaxResponse();
     }
 

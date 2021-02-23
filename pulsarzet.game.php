@@ -147,9 +147,9 @@ class PulsarZet extends Table
 //////////// Player actions
 //////////// 
 
-    function rollDices() {
-        self::checkAction('rollDices');
-        $this->diceboard->rollDice();
+    function doRollDice() {
+        self::checkAction('rollDice');
+        $this->diceboard->doRollDice();
         self::notifyAllPlayers("server/diceboard", "", array(
             "diceboard" => $this->diceboard->getDiceboard()
         ));        

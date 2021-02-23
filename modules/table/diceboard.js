@@ -13,7 +13,7 @@ define([
         var params = { id: id };
         backend
             .call("chooseDice", params);        
-    }
+    };
 
     var create = function () {
         var board = put(table, "div.diceboard#diceboard");
@@ -38,19 +38,20 @@ define([
         connect.subscribe("changeselection/dice_four", changeselection);
         connect.subscribe("changeselection/dice_five", changeselection);
         connect.subscribe("changeselection/dice_six", changeselection);        
-    }
+    };
 
     var placeDiceOnBoard = function (roll) {
+        debugger;
         for (var nr in dicestocks) {
             dicestocks[nr].removeAll();
         }
-        for (var id in roll) {
-            dicestocks[roll[id].type_arg].addToStockWithId(roll[id].type_arg, id);
+        for (var die in roll) {
+            dicestocks[roll[die].value].addToStockWithId(roll[die].value, roll[die].id);
         }
     }
 
     connect.subscribe("enterstate/startround", function () {
-        backend.call("rollDices");
+        backend.call("rollDice");
     });
     
     connect.subscribe("server/diceboard", function (args) {
@@ -58,7 +59,7 @@ define([
     });
 
     connect.subscribe("server/dicechoosen", function (args) {
-        dicestocks[args.args.dice.type_arg].removeFromStockById(args.args.dice.id);
+        dicestocks[args.args.dice.value].removeFromStockById(args.args.dice.id);
     });
 
     return {

@@ -1,5 +1,15 @@
 <?php
 
+class Dice {
+    public $id;
+    public $value;
+
+    function __construct($id, $value) {
+        $this->id = $id;
+        $this->value = $value;
+    }
+}
+
 class DiceBoard {
 
     private $dice;
@@ -17,7 +27,7 @@ class DiceBoard {
         $this->dice->createCards($dice, 'deck'); 
     }
 
-    public function rollDice () {
+    public function doRollDice () {
         $this->dice->moveAllCardsInLocation("diceboard", "deck");
         $this->dice->moveAllCardsInLocation("hand", "deck");
         $this->dice->shuffle("deck");
@@ -25,11 +35,22 @@ class DiceBoard {
     }
 
     public function getDiceboard () {
-        return $this->dice->getCardsInLocation("diceboard");
+        $dice = $this->dice->getCardsInLocation("diceboard");
+        
+        $diceboard = array();
+        foreach ($dice as $id => $die) {
+            $diceboard[] = new Dice($id, $die["type_arg"]);
+        }
+        return $diceboard;
     }
 
     public function getPlayerDice(int $playerId) {
-        return $this->dice->getCardsInLocation('hand', $playerId);
+        $dice = $this->dice->getCardsInLocation('hand', $playerId);
+        $playerdice = array();
+        foreach ($dice as $id => $die) {
+            $playerdice[] = new Dice($id, $die["type_arg"]);
+        }        
+        return $playerdice;
     }
 
     public function playerChooseDice(int $playerId, int $diceId) {
@@ -37,8 +58,15 @@ class DiceBoard {
     }
 
     public function getDice(int $id) {
-        return $this->dice->getCard($id);
+        $die = $this->dice->getCard($id);
+        return new Dice($id, $die["type_arg"]);
     }
 }
+/*
+        echo "<pre>";
+        var_dump( $diceboard );
+        echo "</pre>";
+        die('ok');          
+*/
 
 ?> 

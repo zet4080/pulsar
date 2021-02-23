@@ -2,16 +2,15 @@ define([
     "dojo/_base/connect",
     "bgagame/modules/put-selector/put",    
     "bgagame/modules/table/dicestock",
-    "bgagame/modules/util/gamegui"
-], function(connect, put, dicestock, gui) {
+], function(connect, put, dicestock) {
     
     var table = $("game_play_area");
 
     var create = function (player_id) {
 
         var placeDiceOnBoard = function (playerdice) {
-            for (var id in playerdice) {
-                dice.addToStockWithId(playerdice[id].type_arg, id);
+            for (var die in playerdice) {
+                dice.addToStockWithId(playerdice[die].value, playerdice[die].id);
             }
         }
 
@@ -19,7 +18,7 @@ define([
             var choosenDice = args.args.dice;
             var id = args.args.player_id;
             if (player_id == id) {
-                dice.addToStockWithId(choosenDice.type_arg, choosenDice.id);
+                dice.addToStockWithId(choosenDice.value, choosenDice.id);
             }
         });
 
