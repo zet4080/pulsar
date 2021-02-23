@@ -41,7 +41,6 @@ define([
     };
 
     var placeDiceOnBoard = function (roll) {
-        debugger;
         for (var nr in dicestocks) {
             dicestocks[nr].removeAll();
         }

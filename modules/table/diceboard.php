@@ -10,12 +10,12 @@ class Dice {
     }
 }
 
-class DiceBoard {
+class DiceBoard extends APP_GameClass {
 
     private $dice;
 
-    function __construct($deck) {
-        $this->dice = $deck;
+    function __construct() {
+        $this->dice = self::getNew( "module.common.deck" );
         $this->dice->init( "dice" );
     }
 
@@ -35,11 +35,11 @@ class DiceBoard {
     }
 
     public function getDiceboard () {
-        $dice = $this->dice->getCardsInLocation("diceboard");
-        
+        $dice = $this->dice->getCardsInLocation("diceboard", null, "type_arg");
+
         $diceboard = array();
         foreach ($dice as $id => $die) {
-            $diceboard[] = new Dice($id, $die["type_arg"]);
+            $diceboard[] = new Dice($die["id"], $die["type_arg"]);
         }
         return $diceboard;
     }
@@ -48,7 +48,7 @@ class DiceBoard {
         $dice = $this->dice->getCardsInLocation('hand', $playerId);
         $playerdice = array();
         foreach ($dice as $id => $die) {
-            $playerdice[] = new Dice($id, $die["type_arg"]);
+            $playerdice[] = new Dice($die["id"], $die["type_arg"]);
         }        
         return $playerdice;
     }
@@ -59,12 +59,41 @@ class DiceBoard {
 
     public function getDice(int $id) {
         $die = $this->dice->getCard($id);
-        return new Dice($id, $die["type_arg"]);
+        return new Dice($die["id"], $die["type_arg"]);
+    }
+
+    public function doCalculateMarker() {
+        $dice = $this->getDiceboard();
+        $middleDie = $dice[3]->value;
+        $lower = 0;
+        $higher = 0;
+        foreach ($dice as $id => $die) {
+            if ($die->value < $middleDie) {
+                $lower = $lower + 1;
+            }
+            if ($die->value > $middleDie) {
+                $higher = $higher + 1;
+            }
+        }   
+        if ($lower == $higher) {
+            $marker = ($middleDie * 2) - 1;
+        }
+        if ($lower > $higher) {
+            $marker = ($middleDie * 2) - 2;
+        }
+        if ($lower < $higher) {
+            $marker = ($middleDie * 2);
+        }
+    }
+
+    public function getMarker() {
+        return 0;
     }
 }
+
 /*
         echo "<pre>";
-        var_dump( $diceboard );
+        var_dump( $middleDie );
         echo "</pre>";
         die('ok');          
 */

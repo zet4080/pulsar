@@ -19,6 +19,7 @@
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 require_once( 'modules/table/diceboard.php' );
+require_once( 'modules/util/DBAccess.php' );
 
 
 class PulsarZet extends Table
@@ -41,7 +42,7 @@ class PulsarZet extends Table
             //    "my_second_game_variant" => 101,
             //      ...
         ) );  
-        $this->diceboard = new DiceBoard(self::getNew( "module.common.deck" ));
+        $this->diceboard = new DiceBoard();
  	}
 	
     protected function getGameName( )
@@ -150,8 +151,10 @@ class PulsarZet extends Table
     function doRollDice() {
         self::checkAction('rollDice');
         $this->diceboard->doRollDice();
+        $this->diceboard->doCalculateMarker();
         self::notifyAllPlayers("server/diceboard", "", array(
-            "diceboard" => $this->diceboard->getDiceboard()
+            "diceboard" => $this->diceboard->getDiceboard(),
+            "marker" => $this->diceboard->getMarker()
         ));        
         $this->gamestate->nextState("dicesRolled");
     }
