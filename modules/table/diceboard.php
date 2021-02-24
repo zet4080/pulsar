@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../util/DBAccess.php';
+
 class Dice {
     public $id;
     public $value;
@@ -10,56 +12,65 @@ class Dice {
     }
 }
 
-class DiceBoard extends APP_GameClass {
+class DiceBoard extends DBAccess {
 
     private $dice;
 
-    function __construct() {
-        $this->dice = self::getNew( "module.common.deck" );
-        $this->dice->init( "dice" );
+	function __construct( )
+	{
+
     }
 
     public function setup() {
 		$dice = array ();
-		for ($value = 1; $value <= 6; $value++) {
-			$dice [] = array ('type' => 'dice', 'type_arg' => $value, 'nbr' => 7 );
+		for ($i = 0; $i < 7; $i++) {
+			$dice [] = array (
+                'diceId' => $i,
+                'value' => 0,
+                'location' => 'blackhole',
+                'player' => 0
+            );
         }
-        $this->dice->createCards($dice, 'deck'); 
+        self::insertRows('dice', $dice);
     }
 
     public function doRollDice () {
-        $this->dice->moveAllCardsInLocation("diceboard", "deck");
-        $this->dice->moveAllCardsInLocation("hand", "deck");
-        $this->dice->shuffle("deck");
-        $this->dice->pickCardsForLocation(7, "deck", "diceboard");
+		for ($i = 0; $i < 7; $i++) {
+			$dice = array (
+                'diceId' => $i,
+                'value' => bga_rand(1, 6),
+                'location' => 'diceboard',
+                'player' => 0
+            );
+            self::updateRow('dice', $i, $dice);
+        }
     }
 
     public function getDiceboard () {
-        $dice = $this->dice->getCardsInLocation("diceboard", null, "type_arg");
-
+        $dice = self::get('dice', array('location' => 'diceboard'), 'value');
         $diceboard = array();
         foreach ($dice as $id => $die) {
-            $diceboard[] = new Dice($die["id"], $die["type_arg"]);
+            $diceboard[] = new Dice($die["diceId"], $die["value"]);
         }
         return $diceboard;
     }
 
     public function getPlayerDice(int $playerId) {
-        $dice = $this->dice->getCardsInLocation('hand', $playerId);
-        $playerdice = array();
+        $dice = self::get('dice', array('player' => $playerId), 'value');
+        $diceboard = array();
         foreach ($dice as $id => $die) {
-            $playerdice[] = new Dice($die["id"], $die["type_arg"]);
-        }        
-        return $playerdice;
+            $diceboard[] = new Dice($die["diceId"], $die["value"]);
+        }
+        return $diceboard;
     }
 
     public function playerChooseDice(int $playerId, int $diceId) {
-        $this->dice->moveCard($diceId, 'hand', $playerId);
+        self::updateRow('dice', $diceId, array('location' => 'hand', 'player' => $playerId));
     }
 
     public function getDice(int $id) {
-        $die = $this->dice->getCard($id);
-        return new Dice($die["id"], $die["type_arg"]);
+        $dice = self::get('dice', $id);
+        return new Dice($dice[0]["diceId"], $dice[0]["value"]);
     }
 
     public function doCalculateMarker() {
@@ -84,10 +95,14 @@ class DiceBoard extends APP_GameClass {
         if ($lower < $higher) {
             $marker = ($middleDie * 2);
         }
+
+        $this->setMarker($marker);
     }
 
     public function getMarker() {
-        return 0;
+    }
+
+    private function setMarker($pos) {
     }
 }
 

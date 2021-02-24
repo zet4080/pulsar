@@ -5,7 +5,12 @@
  * Works only for tables with a primary key with one field.
  */
 
-class DBAccess  extends APP_GameClass {
+class DBAccess extends APP_GameClass {
+
+	function __construct( )
+	{
+      parent::__construct();
+    }
 
     function getColumns($table) {
         $sql = sprintf('SHOW COLUMNS FROM %s', $table);
@@ -49,7 +54,7 @@ class DBAccess  extends APP_GameClass {
      * @param str table
      * @return resource A resultset resource
      */
-    public function get($table, $filter, $sort = null, $limit = null) {
+    public function get($table, $filter = null, $sort = null, $limit = null) {
         
         // Check, if filter is a single value or an array.
         // If it is a single value, it is the uid of the row and we have to 
@@ -103,6 +108,36 @@ class DBAccess  extends APP_GameClass {
         self::DbQuery(sprintf('INSERT INTO %s (`%s`) VALUES ("%s")', $table, $names, $values));
     }   
 
+    public function insertRows($table, $rows) {
+        if (!is_array(reset($rows))) {
+            self::error("DBAccess (insertRows): Parameter $rows is not an array of arrays");
+        }
+
+        $columns = self::getColumns($table);
+        $fields = array();
+        if ($columns) {
+            while ($column = self::row($columns)) {
+                $fields[$column["Field"]] = $column["Default"];
+            }
+        }
+
+        $valuerows = array();
+        foreach($rows as $row) {
+            $values = array();
+            foreach ($fields as $field => $default) {
+                if (array_key_exists($field, $row)) {
+                    $values[] = $row[$field];
+                } else {
+                    $values[] = $default;
+                }
+            }
+            $valuerows[] = sprintf('(%s)', self::implodeWithNull($values));
+        }
+        $valuetext = implode(",", $valuerows);
+        $names = implode(",", array_keys($fields));
+        self::DBQuery(sprintf('INSERT INTO %s (%s) VALUES %s', $table, $names, $valuetext));
+    }
+
     /**
      * Update a row.
      * @param str table
@@ -150,5 +185,19 @@ class DBAccess  extends APP_GameClass {
         }    
        
         return $row_result;
-    }    
+    } 
+
+    function implodeWithNull($array) {
+        $values = join(', ', array_map(function ($value) {
+            return $value === null ? 'NULL' : "'$value'";
+        }, $array));
+        return $values;
+    }
+    
+    function error($text) {
+        echo "<pre>";
+        var_dump( $text );
+        echo "</pre>";
+        die('ok');   
+    }
 }

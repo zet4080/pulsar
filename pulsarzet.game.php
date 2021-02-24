@@ -17,10 +17,9 @@
   */
 
 
-require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
-require_once( 'modules/table/diceboard.php' );
-require_once( 'modules/util/DBAccess.php' );
-
+require_once APP_GAMEMODULE_PATH.'module/table/table.game.php';
+require_once 'modules/table/diceboard.php';
+require_once 'modules/util/DBAccess.php';
 
 class PulsarZet extends Table
 {
@@ -68,15 +67,19 @@ class PulsarZet extends Table
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
         $values = array();
         foreach( $players as $player_id => $player )
         {
             $color = array_shift( $default_colors );
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+            $values[] = array(
+                "player_id" => $player_id,
+                "player_color" => $color,
+                "player_canal" => $player['player_canal'],
+                "player_name" => addslashes($player['player_name']),
+                "player_avatar" => addslashes($player['player_avatar']),
+            );
         }
-        $sql .= implode( $values, ',' );
-        self::DbQuery( $sql );
+        DBAccess::insertRows('player', $values);
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
         
@@ -103,8 +106,6 @@ class PulsarZet extends Table
     
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
     
-        // Get information about players
-        // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
 
