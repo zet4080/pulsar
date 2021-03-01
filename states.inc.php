@@ -1,4 +1,18 @@
 <?php
+/**
+ *------
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * PulsarZet implementation : © <Your name here> <Your email address here>
+ *
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ * 
+ * states.inc.php
+ *
+ * PulsarZet game states description
+ *
+ */
 
 if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
     define("STATE_START_ROUND", 2);
@@ -21,7 +35,7 @@ $machinestates = array(
     STATE_START_ROUND => array(
         "name" => "startround",
         "description" => "",
-        "type" => "activeplayer",
+        "type" => "game",
         "possibleactions" => array("rollDice"),
         "transitions" => array( "dicesRolled" => STATE_PLAYER_CHOOSE_DICE )
     ),    

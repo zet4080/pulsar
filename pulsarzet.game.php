@@ -17,9 +17,8 @@
   */
 
 
-require_once APP_GAMEMODULE_PATH.'module/table/table.game.php';
-require_once 'modules/table/diceboard.php';
-require_once 'modules/util/DBAccess.php';
+require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
+
 
 class PulsarZet extends Table
 {
@@ -33,16 +32,10 @@ class PulsarZet extends Table
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
         
-        self::initGameStateLabels( array( 
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
-            //      ...
-            //    "my_first_game_variant" => 100,
-            //    "my_second_game_variant" => 101,
-            //      ...
-        ) );  
-        $this->diceboard = new DiceBoard();
- 	}
+        self::initGameStateLabels(array( 
+
+        ));        
+	}
 	
     protected function getGameName( )
     {
@@ -67,25 +60,20 @@ class PulsarZet extends Table
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
+        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
         $values = array();
         foreach( $players as $player_id => $player )
         {
             $color = array_shift( $default_colors );
-            $values[] = array(
-                "player_id" => $player_id,
-                "player_color" => $color,
-                "player_canal" => $player['player_canal'],
-                "player_name" => addslashes($player['player_name']),
-                "player_avatar" => addslashes($player['player_avatar']),
-            );
+            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
         }
-        DBAccess::insertRows('player', $values);
+        $sql .= implode( $values, ',' );
+        self::DbQuery( $sql );
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
 
-        $this->diceboard->setup();
         $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
@@ -106,15 +94,11 @@ class PulsarZet extends Table
     
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
     
+        // Get information about players
+        // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
-
-        $result['diceboard'] = $this->diceboard->getDiceboard();
-
-        $players = self::loadPlayersBasicInfos();
-        foreach ( $players as $player_id => $player ) {
-            $result['player' . $player_id] = array ('dices' => $this->diceboard->getPlayerDice($player_id));
-        }  
+  
         return $result;
     }
 
@@ -135,41 +119,30 @@ class PulsarZet extends Table
         return 0;
     }
 
-    function stNextPlayerDicePhase() {
-        $this->activeNextPlayer();
-        $this->gamestate->nextState("nextPlayerCalculated");
-    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Utility functions
 ////////////    
+
+    /*
+        In this space, you can put any utility methods useful for your game logic
+    */
+
 
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
 
-    function doRollDice() {
-        self::checkAction('rollDice');
-        $this->diceboard->doRollDice();
-        $this->diceboard->doCalculateMarker();
-        self::notifyAllPlayers("server/diceboard", "", array(
-            "diceboard" => $this->diceboard->getDiceboard(),
-            "marker" => $this->diceboard->getMarker()
-        ));        
-        $this->gamestate->nextState("dicesRolled");
-    }
+    
+//////////////////////////////////////////////////////////////////////////////
+//////////// Game state arguments
+////////////
 
-    function chooseDice($id) {
-        self::checkAction('chooseDice');
-        $player_id = self::getActivePlayerId();
-        $this->diceboard->playerChooseDice($player_id, $id);
-        self::notifyAllPlayers("server/dicechoosen", "", array(
-            "player_id" => $player_id,
-            "dice" => $this->diceboard->getDice($id)
-        ));
-        $this->gamestate->nextState("diceChoosen");
-    }
+
+//////////////////////////////////////////////////////////////////////////////
+//////////// Game state actions
+////////////
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Zombie

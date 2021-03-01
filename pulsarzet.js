@@ -17,97 +17,100 @@
 
 define([
     "dojo/_base/declare",
-    "dojo/_base/connect",
-    "bgagame/modules/util/gamegui",
-    "bgagame/modules/util/backend",
-    "bgagame/modules/table/gametable",
+    "dojo/topic",
+    "dojo/on",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, connect, gui, backend, gametable) {
-    
+function (declare, ) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
-        
         constructor: function(){
             console.log('pulsarzet constructor');
-            gui.register(this);
         },
         
-        setup: function( gamedata )
+        /*
+            setup:
+            
+            This method must set up the game user interface according to current game situation specified
+            in parameters.
+            
+            The method is called each time the game interface is displayed to a player, ie:
+            _ when the game starts
+            _ when a player refreshes the game page (F5)
+            
+            "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
+        */
+        
+        setup: function( gamedatas )
         {
             console.log( "Starting game setup" );
-            gametable.create(gamedata);
+            
+            for( var player_id in gamedatas.players )
+            {
+                var player = gamedatas.players[player_id];
+            }
+ 
+            this.setupNotifications();
+
             console.log( "Ending game setup" );
         },
        
-        onEnteringState: function (stateName, args)
+
+        ///////////////////////////////////////////////////
+        //// Game & client states
+        
+        // onEnteringState: this method is called each time we are entering into a new game state.
+        //                  You can use this method to perform some user interface changes at this moment.
+        //
+        onEnteringState: function( stateName, args )
         {
-            console.log('Publish enter state: '+ stateName);
-            console.log(args);
-            connect.publish('enterstate/' + stateName, args);
+            console.log( 'Entering state: ' + stateName );
+            topic.publish("enteringstate/" + stateName, args);
         },
 
+        // onLeavingState: this method is called each time we are leaving a game state.
+        //                 You can use this method to perform some user interface changes at this moment.
+        //
         onLeavingState: function( stateName )
         {
-            console.log( 'Publish leave state: ' + stateName );
-            connect.publish('leavestate/' + stateName);
+            console.log( 'Leaving state: ' + stateName );
+            topic.publish("leavingstate/" + stateName);
         }, 
 
+        // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
+        //                        action status bar (ie: the HTML links in the status bar).
+        //        
         onUpdateActionButtons: function( stateName, args )
         {
             console.log( 'onUpdateActionButtons: '+stateName );
             if( this.isCurrentPlayerActive() )
             {            
-                connect.publish('updateactionbutton/' + stateName, args);
+                topic.publish("updateactionbuttons/" + stateName, args);
             }
         },        
 
         ///////////////////////////////////////////////////
+        //// Utility methods
+        
+        ///////////////////////////////////////////////////
         //// Player's action
         
+        
+        ///////////////////////////////////////////////////
+        //// Reaction to cometD notifications
+
         /*
-        
-            Here, you are defining methods to handle player's action (ex: results of mouse click on 
-            game objects).
+            setupNotifications:
             
-            Most of the time, these methods:
-            _ check the action is possible at this game state.
-            _ make a call to the game server
+            In this method, you associate each of your game notifications with your local method to handle it.
+            
+            Note: game notification names correspond to "notifyAllPlayers" and "notifyPlayer" calls in
+                  your pulsarzet.game.php file.
         
         */
-        
-        /* Example:
-        
-        onMyMethodToCall1: function( evt )
+        setupNotifications: function()
         {
-            console.log( 'onMyMethodToCall1' );
-            
-            // Preventing default browser reaction
-            dojo.stopEvent( evt );
-
-            // Check that this action is possible (see "possibleactions" in states.inc.php)
-            if( ! this.checkAction( 'myAction' ) )
-            {   return; }
-
-            this.ajaxcall( "/pulsarzet/pulsarzet/myAction.html", { 
-                                                                    lock: true, 
-                                                                    myArgument1: arg1, 
-                                                                    myArgument2: arg2,
-                                                                    ...
-                                                                 }, 
-                         this, function( result ) {
-                            
-                            // What to do after the server call if it succeeded
-                            // (most of the time: nothing)
-                            
-                         }, function( is_error) {
-
-                            // What to do after the server call in anyway (success or failure)
-                            // (most of the time: nothing)
-
-                         } );        
-        },        
-        
-        */
+            console.log( 'notifications subscriptions setup' );
+        },  
    });             
 });
