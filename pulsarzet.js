@@ -17,14 +17,17 @@
 
 define([
     "dojo/_base/declare",
-    "dojo/topic",
-    "dojo/on",
+    "dojo/_base/connect",
+    "bgagame/modules/stocks/dicestock",
+    "bgagame/modules/stocks/marker",
+    "bgagame/modules/stocks/shipsdiceboard",
+    "bgagame/modules/board/table",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, ) {
+function (declare, connect, dicestock, marker, shipsdiceboard, table) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
-        constructor: function(){
+        constructor: function() {
             console.log('pulsarzet constructor');
         },
         
@@ -44,14 +47,17 @@ function (declare, ) {
         setup: function( gamedatas )
         {
             console.log( "Starting game setup" );
-            
-            for( var player_id in gamedatas.players )
-            {
-                var player = gamedatas.players[player_id];
-            }
- 
             this.setupNotifications();
-
+            var camera = table('static', 'img/komplett.webp');
+            // camera.zoomTo(3100);
+/*
+            this.diceStock = dicestock("dicearea");
+            connect.publish("server/dicerolled", { dice: gamedatas.diceboard });
+            connect.publish("server/markerset", { markerposition: gamedatas.markerposition });
+            
+            this.playershipsdiceboard = shipsdiceboard();
+            connect.publish("server/playerordercalculated", gamedatas.players);
+ */
             console.log( "Ending game setup" );
         },
        
@@ -65,7 +71,7 @@ function (declare, ) {
         onEnteringState: function( stateName, args )
         {
             console.log( 'Entering state: ' + stateName );
-            topic.publish("enteringstate/" + stateName, args);
+            connect.publish("enteringstate/" + stateName, args);
         },
 
         // onLeavingState: this method is called each time we are leaving a game state.
@@ -74,7 +80,7 @@ function (declare, ) {
         onLeavingState: function( stateName )
         {
             console.log( 'Leaving state: ' + stateName );
-            topic.publish("leavingstate/" + stateName);
+            connect.publish("leavingstate/" + stateName);
         }, 
 
         // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -85,7 +91,7 @@ function (declare, ) {
             console.log( 'onUpdateActionButtons: '+stateName );
             if( this.isCurrentPlayerActive() )
             {            
-                topic.publish("updateactionbuttons/" + stateName, args);
+                connect.publish("updateactionbuttons/" + stateName, args);
             }
         },        
 
@@ -111,6 +117,26 @@ function (declare, ) {
         setupNotifications: function()
         {
             console.log( 'notifications subscriptions setup' );
+            connect.subscribe("server/dicerolled", this, function (args) {
+                for(var i = 0; i < args.dice.length; i++) {
+                    this.diceStock.addToStockWithId(args.dice[i].value, args.dice[i].id);
+                }
+            });
+
+            connect.subscribe("server/markerset", this, function (args) {
+                marker(args.markerposition);
+            });
+
+            connect.subscribe("server/playerordercalculated", this, function (players) {
+                for (var player in players) {
+                    this.playershipsdiceboard.addToStockWithId(players[player].nr, players[player].id);
+                }
+            });
+
+            connect.subscribe("changeselection/diceboard", this, function () {
+                debugger;
+            });
+
         },  
    });             
 });

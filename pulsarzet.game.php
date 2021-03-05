@@ -18,7 +18,7 @@
 
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
-
+require_once 'modules/DBUtil.php';
 
 class PulsarZet extends Table
 {
@@ -33,7 +33,7 @@ class PulsarZet extends Table
         parent::__construct();
         
         self::initGameStateLabels(array( 
-
+            "markerPosition" => 10
         ));        
 	}
 	
@@ -74,6 +74,8 @@ class PulsarZet extends Table
         
         /************ Start the game initialization *****/
 
+        self::createDice ();
+        self::setGameStateInitialValue("markerPosition", 0);
         $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
@@ -96,8 +98,11 @@ class PulsarZet extends Table
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
+        $sql = "SELECT player_id id, player_no nr, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
+
+        $result['diceboard'] = self::getDiceboard();
+        $result['markerposition'] = self::getGameStateValue('markerPosition');
   
         return $result;
     }
@@ -124,9 +129,66 @@ class PulsarZet extends Table
 //////////// Utility functions
 ////////////    
 
-    /*
-        In this space, you can put any utility methods useful for your game logic
-    */
+    function error($text) {
+        echo "<pre>";
+        var_dump( $text );
+        echo "</pre>";
+        die('ok');
+    }
+
+    function createDice () {
+		$dice = array ();
+		for ($i = 0; $i < 7; $i++) {
+			$dice [] = array (
+                'id' => $i,
+                'value' => bga_rand(1, 6),
+                'location' => 'blackhole',
+                'player' => 0
+            );
+        }
+        DBUtil::insertRows('dice', $dice);        
+    }
+
+    function rollDice () {
+		for ($i = 0; $i < 7; $i++) {
+			$dice = array (
+                'id' => $i,
+                'value' => bga_rand(1, 6),
+                'location' => 'diceboard',
+                'player' => 0
+            );
+            DBUtil::updateRow('dice', $i, $dice);
+        }          
+    }
+
+    function getDiceboard() {
+        return DBUtil::get('dice', array('location' => 'diceboard'), 'value', 'id, value');
+    }
+
+    function calculateMarker () {
+        $dice = $this->getDiceboard();
+        $middleDie = $dice[3]['value'];
+        $lower = 0;
+        $higher = 0;
+        foreach ($dice as $id => $die) {
+            if ($die['value'] < $middleDie) {
+                $lower = $lower + 1;
+            }
+            if ($die['value'] > $middleDie) {
+                $higher = $higher + 1;
+            }
+        }   
+        if ($lower == $higher) {
+            $marker = ($middleDie * 2) - 1;
+        }
+        if ($lower > $higher) {
+            $marker = ($middleDie * 2) - 2;
+        }
+        if ($lower < $higher) {
+            $marker = ($middleDie * 2);
+        }
+        self::setGameStateValue("markerPosition", $marker);
+    }
 
 
 
@@ -143,6 +205,12 @@ class PulsarZet extends Table
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state actions
 ////////////
+
+    function stStartRound () {
+        self::rollDice();
+        self::calculateMarker();
+        $this->gamestate->nextState("roundStarted");
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Zombie

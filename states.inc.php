@@ -17,7 +17,8 @@
 if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
     define("STATE_START_ROUND", 2);
     define("STATE_PLAYER_CHOOSE_DICE", 3);
-    define("STATE_NEXT_PLAYER_DICE_PHASE", 4);
+    define("STATE_NEXT_PLAYER_DURING_DICE_PHASE", 4);
+    define("STATE_NEXT_PLAYER_DURING_ACTION_PHASE", 5);
     define("STATE_END_GAME", 99);
  }
  
@@ -36,8 +37,8 @@ $machinestates = array(
         "name" => "startround",
         "description" => "",
         "type" => "game",
-        "possibleactions" => array("rollDice"),
-        "transitions" => array( "dicesRolled" => STATE_PLAYER_CHOOSE_DICE )
+        "action" => "stStartRound",
+        "transitions" => array( "roundStarted" => STATE_PLAYER_CHOOSE_DICE )
     ),    
     
     STATE_PLAYER_CHOOSE_DICE => array(
@@ -45,17 +46,25 @@ $machinestates = array(
         "description" => clienttranslate('${actplayer} must choose a dice'),
         "descriptionmyturn" => clienttranslate('${you} must choose a dice'),
         "type" => "activeplayer",
-        "possibleactions" => array( "chooseDice" ),
-        "transitions" => array( "diceChoosen" => STATE_NEXT_PLAYER_DICE_PHASE )
+        "possibleactions" => array( "chooseDie" ),
+        "transitions" => array( "diceChoosen" => STATE_NEXT_PLAYER_DURING_DICE_PHASE )
     ),
     
-    STATE_NEXT_PLAYER_DICE_PHASE => array(
-        "name" => "playerChooseDice",
+    STATE_NEXT_PLAYER_DURING_DICE_PHASE => array(
+        "name" => "nextPlayerDuringDicePhase",
         "description" => "",
         "type" => "game",
-        "action" => "stNextPlayerDicePhase",
-        "transitions" => array( "nextPlayerCalculated" => STATE_PLAYER_CHOOSE_DICE )
+        "action" => "stCalculateNextPlayerDuringDicePhase",
+        "transitions" => array( "nextPlayerCalculated" => STATE_PLAYER_CHOOSE_DICE, "startActionPhase" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE )
     ),    
+
+    STATE_NEXT_PLAYER_DURING_ACTION_PHASE => array(
+        "name" => "nextPlayerDuringDicePhase",
+        "description" => "",
+        "type" => "game",
+        "action" => "stCalculateNextPlayerDuringDicePhase",
+        "transitions" => array( "nextPlayerCalculated" => STATE_PLAYER_CHOOSE_DICE )
+    ),
     
     // Final state.
     // Please do not modify (and do not overload action/args methods).
