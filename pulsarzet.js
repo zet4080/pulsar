@@ -50,20 +50,29 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard) {
             this.setupNotifications();
 
             var board = gameboard('table');
+            
+            board.addElement('playerboard1', 'img/playerboardA2.webp', 72, 2070)
+            board.addElement('playerboard2', 'img/playerboardA2.webp', 2690, 1710)
+            board.addElement('playerboard3', 'img/playerboardA2.webp', 2010, 2070)
+            board.addElement('playerboard4', 'img/playerboardA2.webp', 2690, 2070)
 
-            board.addElement('gyrodyne', 'img/gyrodyneboard.webp', 679, 0);
-            board.addElement('modifierboard', 'img/modifierboard.webp', 132, 988);
-            board.addElement('diceboard', 'img/diceboard.webp', 1770, 496);
-            board.addElement('starcluster', 'img/starcluster.webp', 265, 350);
+            board.addElement('diceboard', 'img/diceboard.webp', 483, 0);
+            board.addElement('gyrodyne', 'img/gyrodyneboard.webp', 2, 1018);
+            board.addElement('modifierboard', 'img/modifierboard.webp', 238, 610);
+
+            board.addElement('tech3', 'img/A3.webp', 2597, 954);
+            board.addElement('tech2', 'img/A2.webp', 2228, 919);
+            board.addElement('tech1', 'img/A1.webp', 1962, 849);
+
+            board.addElement('starcluster', 'img/starcluster.webp', 352, 408);
+
             board.setScale(0.5);
-            board.moveTo(0, 300);
+            // board.moveTo(-300, 300);
             board.start().then(function() {
-                board.rotate(-90, 1108, 1192, ['gyrodyne', 'modifierboard', 'diceboard']);
+                board.rotate(90, 1194, 1251, ['gyrodyne', 'modifierboard', 'diceboard', 'tech1', 'tech2', 'tech3']);
                 board.drawScene();
             });
-            
-            // board.setCenter();
-            // board.rotate('rotation', 90);
+
 /*
             this.diceStock = dicestock("dicearea");
             connect.publish("server/dicerolled", { dice: gamedatas.diceboard });
