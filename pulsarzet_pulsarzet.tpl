@@ -11,7 +11,9 @@
 -->
 
 <div id="table" class="table">
-    <canvas id="static"  style="border: solid  blue 3px; width: 100%; height: 100%;">
+    <canvas id="rotate"  style="border: solid  yellow 3px; position: absolute;">
+    </canvas>
+    <canvas id="static"  style="border: solid  blue 3px; position: absolute">
     </canvas>
 </div>    
 

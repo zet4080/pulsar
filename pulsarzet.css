@@ -12,20 +12,24 @@
  * PulsarZet stylesheet
  *
  */
+ /*
+    width: 1652px;
+    height: 1200px;
+
+ */
 
 /* Note: you must not use any @import directive */
 
 /********* You can start writing your CSS below this line: **********/
 
 .table {
-    width: 1652px;
-    height: 1200px;
-    border: solid red 3px;    
+    width: 1650px;
+    height: 945px;
     margin-left: auto;
     margin-right: auto;
     background-size: contain;
-    overflow: hidden;
-    position:relative;
+    overflow: visible;
+    position: relative;
 }
 
 .diceboard {

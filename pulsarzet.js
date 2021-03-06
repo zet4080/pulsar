@@ -48,8 +48,21 @@ function (declare, connect, dicestock, marker, shipsdiceboard, table) {
         {
             console.log( "Starting game setup" );
             this.setupNotifications();
-            var camera = table('static', 'img/komplett.webp');
-            // camera.zoomTo(3100);
+            var starcluster = table('static');
+            starcluster.loadBackground('img/starcluster.webp', 265, 350);
+            starcluster.zoomTo(600);
+            starcluster.moveTo(0, 200);
+
+
+            var elements = table('rotate');
+            elements.setCenter(1108,1192);
+            elements.loadBackground('img/GyrodyneBoard.webp', 679, 0);
+            elements.loadSprite('modifier', 'img/ModifierBoard.webp', 132, 988);
+            elements.loadSprite('diceboard', 'img/diceboard.webp', 1770, 496);
+            elements.zoomTo(600);
+            
+            elements.moveTo(0, 200);
+            elements.rotate(-90);
 /*
             this.diceStock = dicestock("dicearea");
             connect.publish("server/dicerolled", { dice: gamedatas.diceboard });
