@@ -21,11 +21,11 @@ define([
     "bgagame/modules/stocks/dicestock",
     "bgagame/modules/stocks/marker",
     "bgagame/modules/stocks/shipsdiceboard",
-    "bgagame/modules/board/table",
+    "bgagame/modules/board/gameboard",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, connect, dicestock, marker, shipsdiceboard, table) {
+function (declare, connect, dicestock, marker, shipsdiceboard, gameboard) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
         constructor: function() {
             console.log('pulsarzet constructor');
@@ -48,21 +48,20 @@ function (declare, connect, dicestock, marker, shipsdiceboard, table) {
         {
             console.log( "Starting game setup" );
             this.setupNotifications();
-            var starcluster = table('static');
-            starcluster.loadBackground('img/starcluster.webp', 265, 350);
-            starcluster.zoomTo(600);
-            starcluster.moveTo(0, 200);
 
+            var board = gameboard('table');
 
-            var elements = table('rotate');
-            elements.setCenter(1108,1192);
-            elements.loadBackground('img/GyrodyneBoard.webp', 679, 0);
-            elements.loadSprite('modifier', 'img/ModifierBoard.webp', 132, 988);
-            elements.loadSprite('diceboard', 'img/diceboard.webp', 1770, 496);
-            elements.zoomTo(600);
+            board.addElement('gyrodyne', 'img/gyrodyneboard.webp', 679, 0);
+            board.addElement('modifierboard', 'img/modifierboard.webp', 132, 988);
+            board.addElement('diceboard', 'img/diceboard.webp', 1770, 496);
+            board.addElement('starcluster', 'img/starcluster.webp', 265, 350);
+            board.setScale(0.5);
+            board.moveTo(0, -300);
+            // board.rotate(90, 1108, 1192);
+            board.start();
             
-            elements.moveTo(0, 200);
-            elements.rotate(-90);
+            // board.setCenter();
+            // board.rotate('rotation', 90);
 /*
             this.diceStock = dicestock("dicearea");
             connect.publish("server/dicerolled", { dice: gamedatas.diceboard });

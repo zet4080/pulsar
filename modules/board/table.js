@@ -40,8 +40,8 @@ define([
             context.save();
             context.scale(viewport.scale[0], viewport.scale[1]);
             context.translate(viewport.center.left, viewport.center.top);
-            context.translate(-viewport.left, -viewport.top);            
             context.rotate(viewport.rotate.angle);
+            context.translate(-viewport.left, -viewport.top);
             if (background.img) {
                 context.drawImage(background.img, background.left - viewport.center.left, background.top - viewport.center.top);
             }
@@ -52,6 +52,7 @@ define([
         };
     
         var updateViewport = function () {
+            debugger;
             aspectRatio = context.canvas.width / context.canvas.height;
             viewport.width = distance * Math.tan(fieldOfView);
             viewport.height = viewport.width / aspectRatio;
