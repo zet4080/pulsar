@@ -56,9 +56,11 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard) {
             board.addElement('diceboard', 'img/diceboard.webp', 1770, 496);
             board.addElement('starcluster', 'img/starcluster.webp', 265, 350);
             board.setScale(0.5);
-            board.moveTo(0, -300);
-            // board.rotate(90, 1108, 1192);
-            board.start();
+            board.moveTo(0, 300);
+            board.start().then(function() {
+                board.rotate(-90, 1108, 1192, ['gyrodyne', 'modifierboard', 'diceboard']);
+                board.drawScene();
+            });
             
             // board.setCenter();
             // board.rotate('rotation', 90);

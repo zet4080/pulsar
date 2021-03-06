@@ -6,24 +6,18 @@ define([
     var factory = function (element) {
     
         var context;
-        var elements = {};
+        var boardelements = {};
         var loader = [];
 
         var viewport = {
             scale: 1.0,
-            rotation: {
-                x: 0,
-                y: 0,
-                angle: 0
-            },
             offset: {
                 x: 0,
-                y:0
+                y: 0
             }
         };
 
         var addElement = function (id, url, x, y) {
-            
             var deferred = new Deferred();
             loader.push(deferred);
             var image = new Image();
@@ -41,7 +35,7 @@ define([
         };
     
         var start = function () {
-            all(loader).then(function (results) {
+            return all(loader).then(function (results) {
                 createCanvas();
                 addImagesToDictionary(results);
                 drawScene();
@@ -60,10 +54,11 @@ define([
 
         var addImagesToDictionary = function (results) {
             for (var i = 0; i < results.length; i++) {
-                elements[results[i].id] = {
+                boardelements[results[i].id] = {
                     x: results[i].x,
                     y: results[i].y,
-                    image: results[i].image
+                    image: results[i].image,
+                    rotation: {x: 0, y: 0, angle: 0}
                 };
             }
         };
@@ -72,26 +67,19 @@ define([
             context.clearRect(0, 0, context.canvas.width, context.canvas.height);
             context.save();            
             context.scale(viewport.scale, viewport.scale);
-            context.translate(viewport.rotation.x, viewport.rotation.y);
-            context.rotate(viewport.rotation.angle);
-            context.translate(viewport.offset.x, viewport.offset.y);
-            for (elem in elements) {
-                var e = elements[elem];
-                context.drawImage(e.image, e.x - viewport.rotation.x, e.y - viewport.rotation.y);
+            for (elem in boardelements) {
+                context.save();
+                var e = boardelements[elem];
+                context.translate(e.rotation.x - viewport.offset.x, e.rotation.y - viewport.offset.y);
+                context.rotate(e.rotation.angle);
+                context.drawImage(e.image, e.x - e.rotation.x, e.y - e.rotation.y);
+                context.restore();
             }
             context.restore();
         };
 
         var setScale = function (scale) {
             viewport.scale = scale;
-        };
-
-        var rotate = function (angle, x, y) {
-            viewport.rotation = {
-                x: x || 0,
-                y: y || 0,
-                angle: angle * Math.PI / 180
-            };
         };
 
         var moveTo = function (x, y) {
@@ -101,10 +89,14 @@ define([
             };
         };
 
-        var createLayer = function (layer) {
-            layer = layer || 'base';
-            if (!layers[layer]) {
-                layers[layer] = {};
+        var rotate = function (angle, x, y, elements) {
+            for (var i = 0; i < elements.length; i++) {
+                var elem = elements[i];
+                boardelements[elem].rotation = {
+                    x: x,
+                    y: y,
+                    angle: angle * Math.PI / 180
+                };
             }
         };
     
@@ -112,8 +104,9 @@ define([
             addElement: addElement,
             start: start,
             setScale: setScale,
+            moveTo: moveTo,
             rotate: rotate,
-            moveTo: moveTo
+            drawScene: drawScene
         };
 
     };
