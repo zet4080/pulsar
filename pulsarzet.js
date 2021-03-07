@@ -22,10 +22,11 @@ define([
     "bgagame/modules/stocks/marker",
     "bgagame/modules/stocks/shipsdiceboard",
     "bgagame/modules/board/gameboard",
+    "bgagame/modules/board/imageloader",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, connect, dicestock, marker, shipsdiceboard, gameboard) {
+function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imageloader) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
         constructor: function() {
             console.log('pulsarzet constructor');
@@ -49,38 +50,49 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard) {
             console.log( "Starting game setup" );
             this.setupNotifications();
 
-            var board = gameboard('table');
-            
-            board.addElement('playerboard1', 'img/playerboardA2.webp', 72, 2070)
-            board.addElement('playerboard2', 'img/playerboardA2.webp', 2690, 1710)
-            board.addElement('playerboard3', 'img/playerboardA2.webp', 2010, 2070)
-            board.addElement('playerboard4', 'img/playerboardA2.webp', 2690, 2070)
+            var board;
 
-            board.addElement('diceboard', 'img/diceboard.webp', 483, 0);
-            board.addElement('gyrodyne', 'img/gyrodyneboard.webp', 2, 1018);
-            board.addElement('modifierboard', 'img/modifierboard.webp', 238, 610);
+            imageloader.addImage('playerboard1', 'img/playerboardA2.webp');
+            imageloader.addImage('playerboard2', 'img/playerboardA2.webp')
+            imageloader.addImage('playerboard3', 'img/playerboardA2.webp')
+            imageloader.addImage('playerboard4', 'img/playerboardA2.webp')
 
-            board.addElement('tech3', 'img/A3.webp', 2597, 954);
-            board.addElement('tech2', 'img/A2.webp', 2228, 919);
-            board.addElement('tech1', 'img/A1.webp', 1962, 849);
+            imageloader.addImage('diceboard', 'img/diceboard.webp');
+            imageloader.addImage('gyrodyne', 'img/gyrodyneboard.webp');
+            imageloader.addImage('modifierboard', 'img/modifierboard.webp');
 
-            board.addElement('starcluster', 'img/starcluster.webp', 352, 408);
+            imageloader.addImage('tech3', 'img/A3.webp');
+            imageloader.addImage('tech2', 'img/A2.webp');
+            imageloader.addImage('tech1', 'img/A1.webp');
+            imageloader.addImage('starcluster', 'img/starcluster.webp');
+            imageloader.loadImages().then(function (imagelist) {
+                board = gameboard('table');
 
-            board.setScale(0.5);
-            // board.moveTo(-300, 300);
-            board.start().then(function() {
-                board.rotate(90, 1194, 1251, ['gyrodyne', 'modifierboard', 'diceboard', 'tech1', 'tech2', 'tech3']);
+                board.addTableElement('playerboard1', imagelist['playerboard1'], 72, 2070)
+                board.addTableElement('playerboard2', imagelist['playerboard2'], 2690, 1710)
+                board.addTableElement('playerboard3', imagelist['playerboard3'], 2010, 2070)
+                board.addTableElement('playerboard4', imagelist['playerboard4'], 2690, 2070)
+    
+                board.addTableElement('diceboard', imagelist['diceboard'], 483, 0);
+                board.addTableElement('gyrodyne', imagelist['gyrodyne'], 2, 1018);
+                board.addTableElement('modifierboard', imagelist['modifierboard'], 238, 610);
+    
+                board.addTableElement('tech3', imagelist['tech3'], 2597, 954);
+                board.addTableElement('tech2', imagelist['tech2'], 2228, 919);
+                board.addTableElement('tech1', imagelist['tech1'], 1962, 849);                   
+
+                board.addTableElement('starcluster', imagelist['starcluster'], 352, 408); 
+                board.setScale(0.5);
                 board.drawScene();
             });
 
-/*
-            this.diceStock = dicestock("dicearea");
-            connect.publish("server/dicerolled", { dice: gamedatas.diceboard });
-            connect.publish("server/markerset", { markerposition: gamedatas.markerposition });
+            // this.diceStock = dicestock("dicearea");
+            // connect.publish("server/dicerolled", { dice: gamedatas.diceboard });
+            //connect.publish("server/markerset", { markerposition: gamedatas.markerposition });
             
-            this.playershipsdiceboard = shipsdiceboard();
-            connect.publish("server/playerordercalculated", gamedatas.players);
- */
+            // this.playershipsdiceboard = shipsdiceboard();
+            // connect.publish("server/playerordercalculated", gamedatas.players);
+
             console.log( "Ending game setup" );
         },
        
@@ -142,12 +154,12 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard) {
             console.log( 'notifications subscriptions setup' );
             connect.subscribe("server/dicerolled", this, function (args) {
                 for(var i = 0; i < args.dice.length; i++) {
-                    this.diceStock.addToStockWithId(args.dice[i].value, args.dice[i].id);
+                    this.diceStock.addDice(args.dice[i].id, args.dice[i].value);
                 }
             });
 
             connect.subscribe("server/markerset", this, function (args) {
-                marker(args.markerposition);
+                marker.setMarker(args.markerposition);
             });
 
             connect.subscribe("server/playerordercalculated", this, function (players) {
