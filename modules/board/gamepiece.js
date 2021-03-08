@@ -13,16 +13,24 @@ define([
         var y = properties.y || 0;
         var rotation = properties.rotation || 0;
 
-        var sx = properties.sx || null;
-        var sy = properties.sy  || null;
-        var swidth = properties.swidth  || null;
-        var sheight = properties.sheight || null;
+        var sx = properties.sx;
+        var sy = properties.sy;
+        var swidth = properties.swidth;
+        var sheight = properties.sheight;
+
+        var drawImage = function (context, image) {
+            if (sx == undefined || sx == null) {
+                context.drawImage(image, 0, 0);
+            } else {
+                context.drawImage(image, sx, sy, swidth, sheight, 0, 0, swidth, sheight);                
+            }
+        };
 
         var draw = function (context) {
             context.save();
             context.translate(x, y);
             context.rotate(rotation);
-            context.drawImage(image, 0, 0);
+            drawImage(context, image);
             for (var key in sprites) {
                 sprites[key].draw(context);
             }
@@ -33,16 +41,15 @@ define([
             var template = spriteTemplates[id];
             var pos = template.getPosition(posid);
             var variant = template.getVariant(varid) || {};
-
             var sprite = factory({
                 image: template.getImage(),
                 x: pos.x,
                 y: pos.y,
                 rotation: pos.rotation,
-                sx: variant.sx,
-                sy: variant.sy,
-                swidth: variant.swidth,
-                sheight: variant.sheight
+                sx: variant.x,
+                sy: variant.y,
+                swidth: variant.width,
+                sheight: variant.height
             });
             sprites[id] = sprite;
         };
@@ -94,7 +101,6 @@ define([
             getPosition: getPosition,
             getImage: getImage
         };
-
         return that;
     };
     return factory;    

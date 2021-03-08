@@ -60,7 +60,6 @@ define([
             drawScene: drawScene,
             setScale: setScale
         };
-
     };
 
     return factory;
