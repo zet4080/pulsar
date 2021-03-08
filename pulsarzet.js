@@ -51,6 +51,7 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imagel
             this.setupNotifications();
             var that = this;
             imageloader.addImage('marker', 'img/marker.webp');
+            imageloader.addImage('ships', 'img/shipsprites.webp');
 
             imageloader.addImage('playerboard1', 'img/playerboardA2.webp');
             imageloader.addImage('playerboard2', 'img/playerboardA2.webp')
@@ -83,7 +84,8 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imagel
 
                 board.addTableElement('starcluster', imagelist['starcluster'], 352, 408); 
 
-                var marker = board.addSprite('marker', imagelist['marker'], 'diceboard');
+                var diceboard = board.getTableElement('diceboard');
+                var marker = diceboard.addSpriteTemplate('marker', imagelist['marker']);
                 marker.addPosition(1, 175, 484, -31);
                 marker.addPosition(2, 268, 431, -25);
                 marker.addPosition(3, 370, 389, -16);
@@ -95,10 +97,26 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imagel
                 marker.addPosition(9, 1003, 377, 26);
                 marker.addPosition(10, 1107, 415, 36);
                 marker.addPosition(11, 1201, 466, 40);
+                diceboard.addSprite('marker', 1);
+                
+                var ships = diceboard.addSpriteTemplate('ships', imagelist['ships']);
+                ships.addPosition(1, 364, 88, 120);
+                ships.addPosition(2, 378, 88, 120);
+                ships.addPosition(3, 392, 88, 120);
+                ships.addPosition(4, 406, 88, 120);
+                ships.addVariant(1, 0, 0, 80, 64);
+                ships.addVariant(2, 0, 64, 80, 64);
+                ships.addVariant(3, 0, 128, 80, 64);
+                ships.addVariant(4, 0, 192, 80, 64);
+                diceboard.addSprite('ships', 1, 1);
+                diceboard.addSprite('ships', 2, 2);
+                diceboard.addSprite('ships', 3, 3);
+                diceboard.addSprite('ships', 4, 4);
+
                 board.setScale(0.5);
                 board.drawScene();
                 that.board = board;
-                connect.publish("server/markerset", { markerposition: gamedatas.markerposition });
+                // connect.publish("server/markerset", { markerposition: gamedatas.markerposition });
             });
 
             // this.diceStock = dicestock("dicearea");
@@ -174,7 +192,7 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imagel
             });
 
             connect.subscribe("server/markerset", this, function (args) {
-                this.board.getSprite('marker').setPosition(args.markerposition);
+                this.board.getSprite('marker').addSprite(args.markerposition);
                 this.board.drawScene();
             });
 

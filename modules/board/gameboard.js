@@ -5,7 +5,6 @@ define([
     var factory = function (element) {
     
         var tableElements = {};
-        var sprites = {};
         var viewport = {
             scale: 1.0,
             offset: {
@@ -35,6 +34,10 @@ define([
             return tile;
         };
 
+        var getTableElement = function (id) {
+            return tableElements[id];
+        };
+
         var drawScene = function () {
             context.clearRect(0, 0, context.canvas.width, context.canvas.height);
             context.save();            
@@ -49,23 +52,13 @@ define([
             viewport.scale = scale;
         };
 
-        var addSprite = function (id, image, parent) {
-            sprites[id] = tableElements[parent].addSprite(id, image);
-            return sprites[id];
-        };
-
-        var getSprite = function(id) {
-            return sprites[id];
-        };
-
         var context = createCanvas(element);
 
         return {
             addTableElement: addTableElement,
+            getTableElement: getTableElement,            
             drawScene: drawScene,
-            setScale: setScale,
-            addSprite: addSprite,
-            getSprite: getSprite
+            setScale: setScale
         };
 
     };
