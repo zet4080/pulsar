@@ -52,6 +52,7 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imagel
             var that = this;
             imageloader.addImage('marker', 'img/marker.webp');
             imageloader.addImage('ships', 'img/shipsprites.webp');
+            imageloader.addImage('dice', 'img/dice.webp');
 
             imageloader.addImage('playerboard1', 'img/playerboardA2.webp');
             imageloader.addImage('playerboard2', 'img/playerboardA2.webp')
@@ -97,32 +98,36 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imagel
                 marker.addPosition(9, 1003, 377, 26);
                 marker.addPosition(10, 1107, 415, 36);
                 marker.addPosition(11, 1201, 466, 40);
-                diceboard.addSprite('marker', 1);
                 
                 var ships = diceboard.addSpriteTemplate('ships', imagelist['ships']);
                 ships.addPosition(1, 364, 88, 120);
-                ships.addPosition(2, 378, 88, 120);
-                ships.addPosition(3, 392, 88, 120);
-                ships.addPosition(4, 406, 88, 120);
-                ships.addVariant(1, 0, 0, 80, 64);
-                ships.addVariant(2, 0, 64, 80, 64);
-                ships.addVariant(3, 0, 128, 80, 64);
-                ships.addVariant(4, 0, 192, 80, 64);
+                ships.addPosition(2, 327, 102, 120);
+                ships.addPosition(3, 280, 116, 120);
+                ships.addPosition(4, 240, 130, 120);
+                ships.addVariant(1, 0, 0, 60, 48);
+                ships.addVariant(2, 0, 48, 60, 48);
+                ships.addVariant(3, 0, 96, 60, 48);
+                ships.addVariant(4, 0, 144, 60, 48);
                 diceboard.addSprite('ships', 1, 1);
                 diceboard.addSprite('ships', 2, 2);
                 diceboard.addSprite('ships', 3, 3);
                 diceboard.addSprite('ships', 4, 4);
 
+                var dice = diceboard.addSpriteTemplate('dice', imagelist['dice']);
+                dice.addVariant(1, 0, 0, 35, 35);
+                dice.addVariant(2, 35, 0, 35, 35);
+                dice.addVariant(3, 70, 0, 35, 35);
+                dice.addVariant(4, 105, 0, 35, 35);
+                dice.addVariant(5, 140, 0, 35, 35);
+                dice.addVariant(6, 175, 0, 35, 35);
+
                 board.setScale(0.5);
                 board.drawScene();
                 that.board = board;
-                // connect.publish("server/markerset", { markerposition: gamedatas.markerposition });
+                connect.publish("server/markerset", { markerposition: gamedatas.markerposition });
+                connect.publish("server/dicerolled", { dice: gamedatas.diceboard });
             });
 
-            // this.diceStock = dicestock("dicearea");
-            // connect.publish("server/dicerolled", { dice: gamedatas.diceboard });
-            //
-            
             // this.playershipsdiceboard = shipsdiceboard();
             // connect.publish("server/playerordercalculated", gamedatas.players);
 
@@ -186,13 +191,18 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imagel
         {
             console.log( 'notifications subscriptions setup' );
             connect.subscribe("server/dicerolled", this, function (args) {
-                for(var i = 0; i < args.dice.length; i++) {
-                    this.diceStock.addDice(args.dice[i].id, args.dice[i].value);
+                var coords = dicestock(args.dice);
+                var diceboard = this.board.getTableElement('diceboard');
+                var template = diceboard.getSpriteTemplate('dice');
+                for(var i = 0; i < coords.length; i++) {
+                    template.addPosition(i, coords[i][0], coords[i][1]);
+                    diceboard.addSprite('dice', i, args.dice[i].value);
                 }
+                this.board.drawScene();
             });
 
             connect.subscribe("server/markerset", this, function (args) {
-                this.board.getSprite('marker').addSprite(args.markerposition);
+                this.board.getTableElement('diceboard').addSprite('marker', args.markerposition);
                 this.board.drawScene();
             });
 

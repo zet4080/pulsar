@@ -1,6 +1,6 @@
 define([
-    "bgagame/modules/board/gamepiece"
-], function (gamepiece) {
+    "bgagame/modules/board/gametile"
+], function (gametile) {
 
     var factory = function (element) {
     
@@ -25,7 +25,7 @@ define([
         };
 
         var addTableElement = function (id, image, x, y) {
-            var tile = gamepiece({
+            var tile = gametile({
                 image: image,
                 x: x,
                 y: y

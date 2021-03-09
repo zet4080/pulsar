@@ -32,7 +32,9 @@ define([
             context.rotate(rotation);
             drawImage(context, image);
             for (var key in sprites) {
-                sprites[key].draw(context);
+                for (var i = 0; i < sprites[key].length; i++) {
+                    sprites[key][i].draw(context);
+                }
             }
             context.restore();
         };
@@ -51,7 +53,10 @@ define([
                 swidth: variant.width,
                 sheight: variant.height
             });
-            sprites[id] = sprite;
+            if (!sprites[id]) {
+                sprites[id] = [];
+            }
+            sprites[id].push(sprite);
         };
 
         var addSpriteTemplate = function (id, image) {
@@ -59,7 +64,11 @@ define([
                 image: image
             });
             return spriteTemplates[id];
-        }        
+        }    
+        
+        var getSpriteTemplate = function (id) {
+            return spriteTemplates[id];
+        };
 
         var addPosition = function (id, x, y, rotation) {
             rotation = rotation || 0;
@@ -95,6 +104,7 @@ define([
             draw: draw, 
             addSprite: addSprite,
             addSpriteTemplate: addSpriteTemplate,
+            getSpriteTemplate: getSpriteTemplate,
             addPosition: addPosition,
             addVariant: addVariant,
             getVariant: getVariant,
