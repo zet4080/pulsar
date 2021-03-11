@@ -47,7 +47,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} must choose a dice'),
         "type" => "activeplayer",
         "possibleactions" => array( "chooseDie" ),
-        "transitions" => array( "diceChoosen" => STATE_NEXT_PLAYER_DURING_DICE_PHASE )
+        "transitions" => array( "dieChoosen" => STATE_NEXT_PLAYER_DURING_DICE_PHASE )
     ),
     
     STATE_NEXT_PLAYER_DURING_DICE_PHASE => array(

@@ -18,16 +18,17 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/connect",
-    "bgagame/modules/stocks/dicestock",
-    "bgagame/modules/stocks/marker",
-    "bgagame/modules/stocks/shipsdiceboard",
-    "bgagame/modules/board/gameboard",
-    "bgagame/modules/board/imageloader",
+    "dojo/_base/lang",
+    "bgagame/modules/board/pulsarboard",
+    "bgagame/modules/board/canvas",
+    "bgagame/modules/stocks/calculatedicepositions",
+    "bgagame/modules/util/backend",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imageloader) {
+function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, backend) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
+        
         constructor: function() {
             console.log('pulsarzet constructor');
         },
@@ -48,88 +49,16 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imagel
         setup: function( gamedatas )
         {
             console.log( "Starting game setup" );
+            
             this.setupNotifications();
-            var that = this;
-            imageloader.addImage('marker', 'img/marker.webp');
-            imageloader.addImage('ships', 'img/shipsprites.webp');
-            imageloader.addImage('dice', 'img/dice.webp');
-
-            imageloader.addImage('playerboard1', 'img/playerboardA2.webp');
-            imageloader.addImage('playerboard2', 'img/playerboardA2.webp')
-            imageloader.addImage('playerboard3', 'img/playerboardA2.webp')
-            imageloader.addImage('playerboard4', 'img/playerboardA2.webp')
-
-            imageloader.addImage('diceboard', 'img/diceboard.webp');
-            imageloader.addImage('gyrodyne', 'img/gyrodyneboard.webp');
-            imageloader.addImage('modifierboard', 'img/modifierboard.webp');
-
-            imageloader.addImage('tech3', 'img/A3.webp');
-            imageloader.addImage('tech2', 'img/A2.webp');
-            imageloader.addImage('tech1', 'img/A1.webp');
-            imageloader.addImage('starcluster', 'img/starcluster.webp');
-            imageloader.loadImages().then(function (imagelist) {
-                var board = gameboard('table');
-
-                board.addTableElement('playerboard1', imagelist['playerboard1'], 72, 2070)
-                board.addTableElement('playerboard2', imagelist['playerboard2'], 2690, 1710)
-                board.addTableElement('playerboard3', imagelist['playerboard3'], 2010, 2070)
-                board.addTableElement('playerboard4', imagelist['playerboard4'], 2690, 2070)
-    
-                board.addTableElement('diceboard', imagelist['diceboard'], 483, 0);
-                board.addTableElement('gyrodyne', imagelist['gyrodyne'], 2, 1018);
-                board.addTableElement('modifierboard', imagelist['modifierboard'], 238, 610);
-    
-                board.addTableElement('tech3', imagelist['tech3'], 2597, 954);
-                board.addTableElement('tech2', imagelist['tech2'], 2228, 919);
-                board.addTableElement('tech1', imagelist['tech1'], 1962, 849);                   
-
-                board.addTableElement('starcluster', imagelist['starcluster'], 352, 408); 
-
-                var diceboard = board.getTableElement('diceboard');
-                var marker = diceboard.addSpriteTemplate('marker', imagelist['marker']);
-                marker.addPosition(1, 175, 484, -31);
-                marker.addPosition(2, 268, 431, -25);
-                marker.addPosition(3, 370, 389, -16);
-                marker.addPosition(4, 471, 355, -11);
-                marker.addPosition(5, 581, 336, -3);
-                marker.addPosition(6, 684, 328);
-                marker.addPosition(7, 793, 332, 8);
-                marker.addPosition(8, 898, 350, 21);
-                marker.addPosition(9, 1003, 377, 26);
-                marker.addPosition(10, 1107, 415, 36);
-                marker.addPosition(11, 1201, 466, 40);
-                
-                var ships = diceboard.addSpriteTemplate('ships', imagelist['ships']);
-                ships.addPosition(1, 364, 88, 120);
-                ships.addPosition(2, 327, 102, 120);
-                ships.addPosition(3, 280, 116, 120);
-                ships.addPosition(4, 240, 130, 120);
-                ships.addVariant(1, 0, 0, 60, 48);
-                ships.addVariant(2, 0, 48, 60, 48);
-                ships.addVariant(3, 0, 96, 60, 48);
-                ships.addVariant(4, 0, 144, 60, 48);
-                diceboard.addSprite('ships', 1, 1);
-                diceboard.addSprite('ships', 2, 2);
-                diceboard.addSprite('ships', 3, 3);
-                diceboard.addSprite('ships', 4, 4);
-
-                var dice = diceboard.addSpriteTemplate('dice', imagelist['dice']);
-                dice.addVariant(1, 0, 0, 35, 35);
-                dice.addVariant(2, 35, 0, 35, 35);
-                dice.addVariant(3, 70, 0, 35, 35);
-                dice.addVariant(4, 105, 0, 35, 35);
-                dice.addVariant(5, 140, 0, 35, 35);
-                dice.addVariant(6, 175, 0, 35, 35);
-
-                board.setScale(0.5);
-                board.drawScene();
-                that.board = board;
+            canvas.createTable('table');
+            canvas.setScale(0.5);
+            pulsarboard.then(lang.hitch(this, function (board) {
+                this.board = board;
                 connect.publish("server/markerset", { markerposition: gamedatas.markerposition });
                 connect.publish("server/dicerolled", { dice: gamedatas.diceboard });
-            });
-
-            // this.playershipsdiceboard = shipsdiceboard();
-            // connect.publish("server/playerordercalculated", gamedatas.players);
+                connect.publish("server/playerordercalculated", gamedatas.players);
+            }));
 
             console.log( "Ending game setup" );
         },
@@ -174,7 +103,6 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imagel
         ///////////////////////////////////////////////////
         //// Player's action
         
-        
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications
 
@@ -187,33 +115,39 @@ function (declare, connect, dicestock, marker, shipsdiceboard, gameboard, imagel
                   your pulsarzet.game.php file.
         
         */
-        setupNotifications: function()
+        setupNotifications: function ()
         {
             console.log( 'notifications subscriptions setup' );
             connect.subscribe("server/dicerolled", this, function (args) {
-                var coords = dicestock(args.dice);
-                var diceboard = this.board.getTableElement('diceboard');
-                var template = diceboard.getSpriteTemplate('dice');
-                for(var i = 0; i < coords.length; i++) {
-                    template.addPosition(i, coords[i][0], coords[i][1]);
-                    diceboard.addSprite('dice', i, args.dice[i].value);
+                var coords = calculatedicepositions(args.dice);
+                var diceboard = this.board.getGameTile('diceboard');
+                diceboard.removeAllTokens('dice');
+                for (var i = 0; i < coords.length; i++) {
+                    diceboard.placeTokenAtPosition('dice', coords[i], args.dice[i].value);
                 }
-                this.board.drawScene();
+                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("server/markerset", this, function (args) {
-                this.board.getTableElement('diceboard').addSprite('marker', args.markerposition);
-                this.board.drawScene();
+                var diceboard = this.board.getGameTile('diceboard');
+                diceboard.removeAllTokens('marker');
+                diceboard.placeTokenAtPosition('marker', args.markerposition - 1);
+                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("server/playerordercalculated", this, function (players) {
+                var diceboard = this.board.getGameTile('diceboard');
+                diceboard.removeAllTokens('ship');
                 for (var player in players) {
-                    this.playershipsdiceboard.addToStockWithId(players[player].nr, players[player].id);
+                    diceboard.placeTokenAtPosition('ship', players[player].nr, players[player].color);
                 }
+                canvas.drawBoard(this.board);
             });
 
-            connect.subscribe("changeselection/diceboard", this, function () {
-                debugger;
+            connect.subscribe("click/diceboard", this, function (info) {
+                backend.call('chooseDie', {
+                    value: info['id']
+                });
             });
 
         },  

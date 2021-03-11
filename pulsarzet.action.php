@@ -38,10 +38,10 @@
       }
   	} 
   	
-    public function chooseDice() {
+    public function chooseDie() {
       self::setAjaxMode();
-      $id = self::getArg( "id", AT_posint, true );
-      $this->game->chooseDice($id);
+      $value = self::getArg( "value", AT_posint, true );
+      $this->game->chooseDie($value);
       self::ajaxResponse();
     }
   }

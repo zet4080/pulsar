@@ -165,6 +165,19 @@ class PulsarZet extends Table
         return DBUtil::get('dice', array('location' => 'diceboard'), 'value', 'id, value');
     }
 
+    function moveDiceFromBoardToPlayer($value) {
+        self::checkAction('chooseDie'); 
+        $dice = DBUtil::get('dice', array('location' => 'diceboard', 'value' => $value), null, 'id');
+        $die = array_shift($dice);
+        if (!is_null($die)) {
+            $update = array (
+                'location' => 'player',
+                'player' => self::getCurrentPlayerId()
+            );
+            DBUtil::updateRow('dice', $die['id'], $update);
+        }
+    }
+
     function calculateMarker () {
         $dice = $this->getDiceboard();
         $middleDie = $dice[3]['value'];
@@ -196,6 +209,11 @@ class PulsarZet extends Table
 //////////// Player actions
 //////////// 
 
+    function chooseDie($value) {
+        self::checkAction('chooseDie'); 
+        self::moveDiceFromBoardToPlayer($value);
+        $this->gamestate->nextState("dieChoosen");
+    }
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
@@ -210,6 +228,11 @@ class PulsarZet extends Table
         self::rollDice();
         self::calculateMarker();
         $this->gamestate->nextState("roundStarted");
+    }
+
+    function stCalculateNextPlayerDuringDicePhase () {
+        $this->activeNextPlayer();
+        $this->gamestate->nextState("nextPlayerCalculated");
     }
 
 //////////////////////////////////////////////////////////////////////////////

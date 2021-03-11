@@ -1,116 +1,101 @@
 define([
-], function () {
+    "bgagame/modules/board/token"
+], function (token) {
     var factory = function (properties) {
-
-        var spriteTemplates = {};
-        
-        var sprites = {};
+       
+        var tokens = {};
         var positions = {};
-        var variants = {};
+        var tokensOnTile = {};
+        var clickareas = {};
 
-        var image = properties.image;
-        var x = properties.x || 0;
-        var y = properties.y || 0;
-        var rotation = properties.rotation || 0;
+        var dummy = {
+            x: 0, y: 0, rotation: 0
+        };
 
-        var sx = properties.sx;
-        var sy = properties.sy;
-        var swidth = properties.swidth;
-        var sheight = properties.sheight;
-
-        var drawImage = function (context, image) {
-            if (sx == undefined || sx == null) {
-                context.drawImage(image, 0, 0);
-            } else {
-                context.drawImage(image, sx, sy, swidth, sheight, 0, 0, swidth, sheight);                
+        var addTokenPosition = function (tokenId, positionId, x, y, rotation) {
+            if (!positions[tokenId]) {
+                positions[tokenId] = {};
             }
-        };
-
-        var draw = function (context) {
-            context.save();
-            context.translate(x, y);
-            context.rotate(rotation);
-            drawImage(context, image);
-            for (var key in sprites) {
-                for (var i = 0; i < sprites[key].length; i++) {
-                    sprites[key][i].draw(context);
-                }
-            }
-            context.restore();
-        };
-
-        var addSprite = function (id, posid, varid) {
-            var template = spriteTemplates[id];
-            var pos = template.getPosition(posid);
-            var variant = template.getVariant(varid) || {};
-            var sprite = factory({
-                image: template.getImage(),
-                x: pos.x,
-                y: pos.y,
-                rotation: pos.rotation,
-                sx: variant.x,
-                sy: variant.y,
-                swidth: variant.width,
-                sheight: variant.height
-            });
-            if (!sprites[id]) {
-                sprites[id] = [];
-            }
-            sprites[id].push(sprite);
-        };
-
-        var addSpriteTemplate = function (id, image) {
-            spriteTemplates[id] = factory({
-                image: image
-            });
-            return spriteTemplates[id];
-        }    
-        
-        var getSpriteTemplate = function (id) {
-            return spriteTemplates[id];
-        };
-
-        var addPosition = function (id, x, y, rotation) {
-            rotation = rotation || 0;
-            positions[id] = {
-                x: x || 0,
-                y: y || 0, 
+            positions[tokenId][positionId] = {
+                x: x,
+                y: y,
                 rotation: rotation * Math.PI / 180
             };
         };
 
-        var addVariant = function (id, x, y, width, height) {
-            variants[id] = {
-                x: x, 
-                y: y,
-                width: width,
-                height: height
+        var removeAllTokenPositions = function () {
+            removeAllTokens();
+            positions = {};
+        };     
+
+        var addTokenPositions = function (tokenId, posarray) {
+            for (let i = 0; i < posarray.length; i++) {
+                addTokenPosition(tokenId, i, posarray[i][0], posarray[i][1], posarray[i][2] || 0);
             }
         };
 
-        var getVariant = function (id) {
-            return variants[id];
+        var removeAllTokens = function (tokenId) {
+            tokensOnTile[tokenId] = {};
         };
 
-        var getPosition = function (id) {
-            return positions[id];
+        var placeTokenAtPosition = function (tokenId, posId, variantId) {
+            variantId = variantId || 0;
+            if (!tokensOnTile[tokenId]) {
+                tokensOnTile[tokenId] = {};
+            }
+            var variant = tokens[tokenId].getTokenVariant(variantId);
+            var pos = positions[tokenId][posId] || dummy;
+            tokensOnTile[tokenId][posId] = {
+                image: variant.image,
+                x: pos.x,
+                y: pos.y,
+                rotation: pos.rotation,
+                sx: variant.sx,
+                sy: variant.sy,
+                swidth: variant.swidth,
+                sheight: variant.sheight
+            };
         };
 
-        var getImage = function () {
-            return image;
+        var addClickArea = function (id, path, info) {
+            info = info || {};
+            info['id'] = info['id'] || id;
+            clickareas[id] = {
+                path: path,
+                info: info
+            };
+        };
+
+        var getAllClickAreas = function () {
+            return clickareas;
+        };
+
+        var addToken = function (id, image) {
+            tokens[id] = token(image);
+            return tokens[id];
+        };
+
+        var getProperties = function () {
+            return properties;
+        };
+
+        var getAllTokens = function () {
+            return tokensOnTile;
         };
 
         var that = {
-            draw: draw, 
-            addSprite: addSprite,
-            addSpriteTemplate: addSpriteTemplate,
-            getSpriteTemplate: getSpriteTemplate,
-            addPosition: addPosition,
-            addVariant: addVariant,
-            getVariant: getVariant,
-            getPosition: getPosition,
-            getImage: getImage
+            addToken: addToken,
+            addTokenPosition: addTokenPosition,
+            addTokenPositions: addTokenPositions,
+            removeAllTokenPositions: removeAllTokenPositions,
+            removeAllTokens: removeAllTokens,
+            placeTokenAtPosition: placeTokenAtPosition,
+            getProperties: getProperties,
+            getAllTokens: getAllTokens,
+            addClickArea: addClickArea,
+            getAllClickAreas: getAllClickAreas
         };
+
         return that;
     };
     return factory;    
