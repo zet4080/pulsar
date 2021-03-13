@@ -6,20 +6,21 @@ define([
     
         var tableElements = {};
 
-        var addGameTile = function (id, image, x, y, rotation) {
+        var addGameTile = function (tileId, image, x, y, rotation) {
             rotation = rotation || 0;
             var tile = gametile({
+                tileId: tileId,
                 image: image,
                 x: x,
                 y: y,
                 rotation: rotation * Math.PI / 180
             });
-            tableElements[id] = tile;
+            tableElements[tileId] = tile;
             return tile;
         };
 
-        var getGameTile = function (id) {
-            return tableElements[id];
+        var getGameTile = function (tileId) {
+            return tableElements[tileId];
         };
 
         var getAllGameTiles = function () {

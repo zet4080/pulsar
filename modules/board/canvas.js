@@ -1,11 +1,44 @@
 define([
-    "dojo/_base/connect"
-], function (connect) {
+    "dojo/_base/connect",
+    "bgagame/modules/util/backend",
+], function (connect, backend) {
     
     var table;
     var clickarea;
 
     var clickAreaInfos = {};
+
+    var color = (function () {
+        let fillColor = 16777215;
+
+        var getColorString = function () {
+            return '#' + Number(fillColor).toString(16);
+        };
+
+        var getColor = function () {
+            return Number(fillColor).toString(16);
+        };
+
+        var nextColor = function () {
+            fillColor = fillColor - 10;
+        };
+
+        var reset = function () {
+            fillColor = 16777215;
+        };
+
+        var getColorFromPixel = function (pixel) {
+            return Number(pixel[0]).toString(16) + Number(pixel[1]).toString(16) + Number(pixel[2]).toString(16);
+        };
+
+        return {
+            getColorString: getColorString,
+            getColor: getColor,
+            nextColor: nextColor,
+            reset: reset,
+            getColorFromPixel: getColorFromPixel
+        };
+    })();
 
     var viewport = {
         scale: 1.0,
@@ -45,6 +78,21 @@ define([
         }
     };    
 
+    var iterateClickableTokens = function (board, fct) {
+        let elements = board.getAllGameTiles();
+        for (let elem in elements) {
+            let e = elements[elem].getProperties();
+            let clickableTokens = elements[elem].getClickableTokens();
+            let tokens = elements[elem].getAllTokens();
+            for (let t in clickableTokens) {    
+                let token = tokens[t];
+                for(var posid in token) {
+                    fct(token[posid], e.x, e.y, e.rotation);
+                }
+            }
+        }
+    };
+
     var drawToken = function (context, token) {
         if (token.sx == undefined || token.sx == null) {
             context.drawImage(token.image, 0, 0);
@@ -79,27 +127,55 @@ define([
     };
 
     var drawClickCanvas = function (board) {
-        let color = 16777215;
         clickAreaInfos = {};
+        color.reset();
 
         clickarea.clearRect(0, 0, table.canvas.width, table.canvas.height);
         clickarea.save();            
         clickarea.scale(viewport.scale, viewport.scale);
+
+        drawClickAreas(board);
+        drawClickableTokens(board);
+
+        clickarea.restore();
+    };
+
+    var drawClickAreas = function (board) {
         iterateClickAreas(board, function (path, info, x, y) {
-            clickarea.save();
-            clickarea.translate(x, y);
-            let fillColor = Number(color).toString(16);
-            clickarea.fillStyle = '#' + fillColor;
-            clickarea.beginPath();
-            clickarea.moveTo(path[0][0], path[0][1]);
-            for (var i = 1; i < path.length; i++) {
-                clickarea.lineTo(path[i][0], path[i][1]);
-            }
-            clickarea.fill();
-            clickAreaInfos[fillColor] = info;
-            color = color - 10;
-            clickarea.restore();
+            drawClickPath(path, info, x, y);
         });
+    };
+
+    var drawClickableTokens = function (board) {
+        iterateClickableTokens(board, function (token, x, y, rotation) {
+            let tx = token.x;
+            let ty = token.y;
+            let tw = token.swidth || token.image.width;
+            let th = token.sheight || token.image.height;
+
+            let path = [[tx, ty], [tx + tw, ty], [tx + tw, ty + th], [tx, ty + th]];
+            let info = {
+                tileId: token.tileId,
+                tokenId: token.tokenId,
+                posId: token.posId,
+                variantId: token.variantId
+            };
+            drawClickPath(path, info, x, y);
+        });
+    };
+
+    var drawClickPath = function (path, info, x, y) {
+        clickarea.save();
+        clickarea.translate(x, y);
+        clickarea.fillStyle = color.getColorString();
+        clickarea.beginPath();
+        clickarea.moveTo(path[0][0], path[0][1]);
+        for (var i = 1; i < path.length; i++) {
+            clickarea.lineTo(path[i][0], path[i][1]);
+        }
+        clickarea.fill();
+        clickAreaInfos[color.getColor()] = info;
+        color.nextColor();
         clickarea.restore();
     };
 
@@ -120,10 +196,10 @@ define([
 
     var publishClick = function (e) {
         const pixel = clickarea.getImageData(e.offsetX, e.offsetY, 1, 1).data;
-        const color = Number(pixel[0]).toString(16) + Number(pixel[1]).toString(16) + Number(pixel[2]).toString(16);
-        let info = clickAreaInfos[color];
+        const c = color.getColorFromPixel(pixel);
+        let info = clickAreaInfos[c];
         if (info) {
-            connect.publish('click/' + info.tileId, info);
+            connect.publish('click', info);
         }
     };
 
@@ -132,6 +208,17 @@ define([
         clickarea = createCanvas(element, "yellow");
         table.canvas.addEventListener('click', publishClick);
     };
+
+    connect.subscribe("click", this, function (info) {
+        let args = {
+            tileId: String(info.tileId),
+            tokenId: String(info.tokenId),
+            posId: String(info.posId),
+            variantId: String(info.variantId)
+        };
+        backend.call("click", args);
+    });
+
 
     return {
         createTable: createTable,

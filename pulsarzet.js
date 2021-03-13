@@ -23,10 +23,11 @@ define([
     "bgagame/modules/board/canvas",
     "bgagame/modules/stocks/calculatedicepositions",
     "bgagame/modules/util/backend",
+    // "bgagame/modules/tests/boardtests",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, backend) {
+function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, backend, tests) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
         
         constructor: function() {
@@ -49,15 +50,16 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
         setup: function( gamedatas )
         {
             console.log( "Starting game setup" );
-            
+
             this.setupNotifications();
             canvas.createTable('table');
             canvas.setScale(0.5);
-            pulsarboard.then(lang.hitch(this, function (board) {
+            pulsarboard.createPulsarBoard(gamedatas.players).then(lang.hitch(this, function (board) {
                 this.board = board;
-                connect.publish("server/markerset", { markerposition: gamedatas.markerposition });
-                connect.publish("server/dicerolled", { dice: gamedatas.diceboard });
-                connect.publish("server/playerordercalculated", gamedatas.players);
+                connect.publish("setup/marker", gamedatas.markerposition);
+                connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
+                connect.publish("setup/playerdice", { players: gamedatas.players, dice: gamedatas.playerdice });
+                connect.publish("setup/playerordercalculated", gamedatas.players);
             }));
 
             console.log( "Ending game setup" );
@@ -118,7 +120,8 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
         setupNotifications: function ()
         {
             console.log( 'notifications subscriptions setup' );
-            connect.subscribe("server/dicerolled", this, function (args) {
+
+            connect.subscribe("setup/diceboard", this, function (args) {
                 var coords = calculatedicepositions(args.dice);
                 var diceboard = this.board.getGameTile('diceboard');
                 diceboard.removeAllTokens('dice');
@@ -128,28 +131,41 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
                 canvas.drawBoard(this.board);
             });
 
-            connect.subscribe("server/markerset", this, function (args) {
-                var diceboard = this.board.getGameTile('diceboard');
-                diceboard.removeAllTokens('marker');
-                diceboard.placeTokenAtPosition('marker', args.markerposition - 1);
+            connect.subscribe("setup/playerdice", this, function (args) {
+                var dice = args.dice;
+                for (var i = 0; i < dice.length; i++) {
+                    let playerboard = this.board.getGameTile(dice[i].player);
+                    let pos = playerboard.isPositionOccupied('dice', 0) ? 1 : 0;
+                    playerboard.placeTokenAtPosition('dice', pos, dice[i]['value']);
+                }
                 canvas.drawBoard(this.board);
             });
 
-            connect.subscribe("server/playerordercalculated", this, function (players) {
+            connect.subscribe("setup/marker", this, function (markerposition) {
+                var diceboard = this.board.getGameTile('diceboard');
+                diceboard.removeAllTokens('marker');
+                diceboard.placeTokenAtPosition('marker', markerposition - 1);
+                canvas.drawBoard(this.board);
+            });            
+            
+            connect.subscribe("setup/playerorder", this, function (players) {
                 var diceboard = this.board.getGameTile('diceboard');
                 diceboard.removeAllTokens('ship');
                 for (var player in players) {
                     diceboard.placeTokenAtPosition('ship', players[player].nr, players[player].color);
                 }
                 canvas.drawBoard(this.board);
-            });
+            });            
 
-            connect.subscribe("click/diceboard", this, function (info) {
-                backend.call('chooseDie', {
-                    value: info['id']
-                });
+            connect.subscribe("server/dice/player_choose_dice", this, function (args) {
+                let diceboard = this.board.getGameTile('diceboard');
+                let playerboard = this.board.getGameTile(args.player_id);
+                diceboard.removeTokenFromPosition('dice', args.posId);
+                
+                let pos = playerboard.isPositionOccupied('dice', 0) ? 1 : 0;
+                playerboard.placeTokenAtPosition('dice', pos, args.variantId);
+                canvas.drawBoard(this.board);
             });
-
         },  
    });             
 });

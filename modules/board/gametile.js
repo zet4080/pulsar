@@ -7,6 +7,7 @@ define([
         var positions = {};
         var tokensOnTile = {};
         var clickareas = {};
+        var clickableTokens = {};
 
         var dummy = {
             x: 0, y: 0, rotation: 0
@@ -53,8 +54,23 @@ define([
                 sx: variant.sx,
                 sy: variant.sy,
                 swidth: variant.swidth,
-                sheight: variant.sheight
+                sheight: variant.sheight,
+                tileId: properties.tileId,
+                tokenId: tokenId,
+                posId: posId,
+                variantId: variantId
             };
+        };
+
+        var removeTokenFromPosition = function (tokenId, posId) {
+            delete tokensOnTile[tokenId][posId];
+        };
+        
+        var isPositionOccupied = function (tokenId, posid) {
+            if (tokensOnTile[tokenId] && tokensOnTile[tokenId][posid]) {
+                return true;
+            }
+            return false;
         };
 
         var addClickArea = function (id, path, info) {
@@ -64,6 +80,10 @@ define([
                 path: path,
                 info: info
             };
+        };
+
+        var makeTokensClickable = function (tokenId) {
+            clickableTokens[tokenId] = true;
         };
 
         var getAllClickAreas = function () {
@@ -83,6 +103,10 @@ define([
             return tokensOnTile;
         };
 
+        var getClickableTokens = function () {
+            return clickableTokens;
+        };
+
         var that = {
             addToken: addToken,
             addTokenPosition: addTokenPosition,
@@ -90,10 +114,14 @@ define([
             removeAllTokenPositions: removeAllTokenPositions,
             removeAllTokens: removeAllTokens,
             placeTokenAtPosition: placeTokenAtPosition,
+            removeTokenFromPosition: removeTokenFromPosition,
+            isPositionOccupied: isPositionOccupied,
             getProperties: getProperties,
             getAllTokens: getAllTokens,
             addClickArea: addClickArea,
-            getAllClickAreas: getAllClickAreas
+            getAllClickAreas: getAllClickAreas,
+            makeTokensClickable: makeTokensClickable,
+            getClickableTokens: getClickableTokens
         };
 
         return that;

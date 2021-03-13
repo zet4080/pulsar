@@ -42,16 +42,16 @@ $machinestates = array(
     ),    
     
     STATE_PLAYER_CHOOSE_DICE => array(
-        "name" => "playerChooseDice",
+        "name" => "player_choose_dice",
         "description" => clienttranslate('${actplayer} must choose a dice'),
         "descriptionmyturn" => clienttranslate('${you} must choose a dice'),
         "type" => "activeplayer",
-        "possibleactions" => array( "chooseDie" ),
+        "possibleactions" => array( "click", "chooseDie" ),
         "transitions" => array( "dieChoosen" => STATE_NEXT_PLAYER_DURING_DICE_PHASE )
     ),
     
     STATE_NEXT_PLAYER_DURING_DICE_PHASE => array(
-        "name" => "nextPlayerDuringDicePhase",
+        "name" => "next_player_during_dice_phase",
         "description" => "",
         "type" => "game",
         "action" => "stCalculateNextPlayerDuringDicePhase",
@@ -59,7 +59,7 @@ $machinestates = array(
     ),    
 
     STATE_NEXT_PLAYER_DURING_ACTION_PHASE => array(
-        "name" => "nextPlayerDuringDicePhase",
+        "name" => "next_player_during_dice_phase",
         "description" => "",
         "type" => "game",
         "action" => "stCalculateNextPlayerDuringDicePhase",

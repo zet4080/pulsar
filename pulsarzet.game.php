@@ -98,10 +98,10 @@ class PulsarZet extends Table
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_no nr, player_score score FROM player ";
-        $result['players'] = self::getCollectionFromDb( $sql );
-
+        
+        $result['players'] = self::getAllPlayers();
         $result['diceboard'] = self::getDiceboard();
+        $result['playerdice'] = self::getPlayerDice();
         $result['markerposition'] = self::getGameStateValue('markerPosition');
   
         return $result;
@@ -165,8 +165,11 @@ class PulsarZet extends Table
         return DBUtil::get('dice', array('location' => 'diceboard'), 'value', 'id, value');
     }
 
+    function getPlayerDice() {
+        return DBUtil::get('dice', array('location' => 'player'), null, 'id, value, player');
+    }
+
     function moveDiceFromBoardToPlayer($value) {
-        self::checkAction('chooseDie'); 
         $dice = DBUtil::get('dice', array('location' => 'diceboard', 'value' => $value), null, 'id');
         $die = array_shift($dice);
         if (!is_null($die)) {
@@ -203,15 +206,33 @@ class PulsarZet extends Table
         self::setGameStateValue("markerPosition", $marker);
     }
 
+    function respond ($tileId, $tokenId, $posId, $variantId) {
+        $currentState = $this->gamestate->state();
+        self::notifyAllPlayers("serverresponse", '', array(
+            'player_id'   => self::getActivePlayerId(),
+            'player_name' => self::getActivePlayerName(),
+            'players'     => self::getAllPlayers(),
+            'state'       => $currentState['name'],  
+            'tileId'      => $tileId,
+            'tokenId'     => $tokenId,
+            'posId'       => $posId,
+            'variantId'   => $variantId
+        ));
+    }
 
+    function getAllPlayers () {
+        $sql = "SELECT player_id id, player_no nr, player_score score FROM player ";
+        return self::getCollectionFromDb( $sql );        
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
 
-    function chooseDie($value) {
+    function click_dice_in_state_player_choose_dice($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('chooseDie'); 
-        self::moveDiceFromBoardToPlayer($value);
+        self::moveDiceFromBoardToPlayer($variantId);
+        $this->respond($tileId, $tokenId, $posId, $variantId);
         $this->gamestate->nextState("dieChoosen");
     }
     

@@ -38,10 +38,17 @@
       }
   	} 
   	
-    public function chooseDie() {
+    public function click() {
       self::setAjaxMode();
-      $value = self::getArg( "value", AT_posint, true );
-      $this->game->chooseDie($value);
+      $tileId = self::getArg("tileId", AT_alphanum, true);
+      $tokenId = self::getArg("tokenId", AT_alphanum, true);
+      $posId = self::getArg("posId", AT_alphanum, true);
+      $variantId = self::getArg("variantId", AT_alphanum, true);
+      
+      $currentState = $this->game->gamestate->state();
+      $methodName = "click_" . $tokenId . '_in_state_' . $currentState['name'];
+      $this->game->$methodName($tileId, $tokenId, $posId, $variantId);
+
       self::ajaxResponse();
     }
   }

@@ -1,6 +1,7 @@
 define([
-    "dojo/Deferred"
-], function (Deferred) {
+    "dojo/Deferred",
+    "dojo/_base/connect"
+], function (Deferred, connect) {
 
     var checkIfActionIsValid = function(action) {
         var validAction = dojo.filter(gameui.gamedatas.gamestate.possibleactions, function(item) {
@@ -35,6 +36,11 @@ define([
 
         return deferred;
     };
+
+    connect.subscribe("serverresponse", function (args) {
+        let topic = 'server/' + args.args.tokenId + '/' + args.args.state;
+        connect.publish(topic, args.args);
+    });
 
     return {
         call: call
