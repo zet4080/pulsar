@@ -38,7 +38,9 @@ define([
     };
 
     connect.subscribe("serverresponse", function (args) {
-        let topic = 'server/' + args.args.tokenId + '/' + args.args.state;
+        let topic = 'server/' + (args.args.tokenId || args.args.clickAreaId) + '/' + args.args.state;
+        console.log("serverresponse: " + topic);
+        console.log(args);
         connect.publish(topic, args.args);
     });
 

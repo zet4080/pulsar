@@ -56,10 +56,11 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
             canvas.setScale(0.5);
             pulsarboard.createPulsarBoard(gamedatas.players).then(lang.hitch(this, function (board) {
                 this.board = board;
+                connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });
                 connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
                 connect.publish("setup/playerdice", { players: gamedatas.players, dice: gamedatas.playerdice });
-                connect.publish("setup/playerordercalculated", gamedatas.players);
+                connect.publish("setup/playerorder", gamedatas.players);
             }));
 
             console.log( "Ending game setup" );
@@ -101,7 +102,19 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
 
         ///////////////////////////////////////////////////
         //// Utility methods
-        
+
+        setColorstonesOnDiceboardTracks: function (tokenType, tracks, players) {
+            var diceboard = this.board.getGameTile('diceboard');
+            diceboard.removeAllTokens(tokenType);
+            for (let pos in tracks) {
+                let track = tracks[pos];
+                for (let i = 0; i < track.length; i++) {
+                    let token = pos + '-' + (4 - i);
+                    diceboard.placeTokenAtPosition(tokenType, token, players[track[i]].color);
+                }
+            }
+        },
+
         ///////////////////////////////////////////////////
         //// Player's action
         
@@ -120,6 +133,17 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
         setupNotifications: function ()
         {
             console.log( 'notifications subscriptions setup' );
+
+            var setColorstonesOnDiceboardTracks = function (tracks, prefix, players) {
+                var diceboard = this.board.getGameTile('diceboard');
+                for (let pos in tracks) {
+                    let track = tracks[pos];
+                    for (let i = 0; i < track.length; i++) {
+                        let token = prefix + '-' + pos + '-' + (4 - i);
+                        diceboard.placeTokenAtPosition('colorstone', token, players[track[i]].color);
+                    }
+                }
+            };            
 
             connect.subscribe("setup/diceboard", this, function (args) {
                 var coords = calculatedicepositions(args.dice);
@@ -156,6 +180,19 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
                 }
                 canvas.drawBoard(this.board);
             });            
+
+            connect.subscribe("setup/tracks", this, function (args) {
+                let initiativeTrack  = args.itrack; 
+                let engineerTrack = args.etrack;
+                this.setColorstonesOnDiceboardTracks('initiativeToken', initiativeTrack, args.players);
+                this.setColorstonesOnDiceboardTracks('engineerToken', engineerTrack, args.players);
+                canvas.drawBoard(this.board);
+            });
+
+            connect.subscribe("server/engineeringtrack/player_choose_track", this, function (args) {
+                this.setColorstonesOnDiceboardTracks('engineerToken', args.track, args.players);
+                canvas.drawBoard(this.board);
+            });
 
             connect.subscribe("server/dice/player_choose_dice", this, function (args) {
                 let diceboard = this.board.getGameTile('diceboard');

@@ -212,10 +212,15 @@ define([
     connect.subscribe("click", this, function (info) {
         let args = {
             tileId: String(info.tileId),
-            tokenId: String(info.tokenId),
-            posId: String(info.posId),
-            variantId: String(info.variantId)
         };
+        if (info.tokenId) {
+            args['tokenId'] = String(info.tokenId);
+            args['posId'] = String(info.posId);
+            args['variantId'] = String(info.variantId);
+        }
+        if (info.id) {
+            args['clickAreaId'] = String(info.id);
+        }
         backend.call("click", args);
     });
 

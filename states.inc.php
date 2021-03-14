@@ -19,6 +19,7 @@ if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, sin
     define("STATE_PLAYER_CHOOSE_DICE", 3);
     define("STATE_NEXT_PLAYER_DURING_DICE_PHASE", 4);
     define("STATE_NEXT_PLAYER_DURING_ACTION_PHASE", 5);
+    define("STATE_PLAYER_CHOOSE_TRACK", 6);
     define("STATE_END_GAME", 99);
  }
  
@@ -47,8 +48,17 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} must choose a dice'),
         "type" => "activeplayer",
         "possibleactions" => array( "click", "chooseDie" ),
-        "transitions" => array( "dieChoosen" => STATE_NEXT_PLAYER_DURING_DICE_PHASE )
+        "transitions" => array( "dieChoosen" => STATE_PLAYER_CHOOSE_TRACK )
     ),
+
+    STATE_PLAYER_CHOOSE_TRACK => array(
+        "name" => "player_choose_track",
+        "description" => clienttranslate('${actplayer} must choose a track'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a track'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "click", "chooseEngineeringTrack", "chooseInitiativeTrack" ),
+        "transitions" => array( "trackChoosen" => STATE_NEXT_PLAYER_DURING_DICE_PHASE )
+    ),    
     
     STATE_NEXT_PLAYER_DURING_DICE_PHASE => array(
         "name" => "next_player_during_dice_phase",

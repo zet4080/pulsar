@@ -19,6 +19,7 @@
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 require_once 'modules/DBUtil.php';
+require_once 'modules/Track.php';
 
 class PulsarZet extends Table
 {
@@ -33,7 +34,8 @@ class PulsarZet extends Table
         parent::__construct();
         
         self::initGameStateLabels(array( 
-            "markerPosition" => 10
+            "markerPosition" => 10,
+            "choosenDie" => 20,
         ));        
 	}
 	
@@ -75,7 +77,8 @@ class PulsarZet extends Table
         /************ Start the game initialization *****/
 
         self::createDice ();
-        self::setGameStateInitialValue("markerPosition", 0);
+        self::initializeDiceboardTracks();
+        self::setGameStateInitialValue('markerPosition', 0);
         $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
@@ -98,12 +101,12 @@ class PulsarZet extends Table
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        
         $result['players'] = self::getAllPlayers();
         $result['diceboard'] = self::getDiceboard();
         $result['playerdice'] = self::getPlayerDice();
         $result['markerposition'] = self::getGameStateValue('markerPosition');
-  
+        $result['engineeringTrack'] = Track::getTrackForClient('engineeringTrack');        
+        $result['initiativeTrack'] = Track::getTrackForClient('initiativeTrack');
         return $result;
     }
 
@@ -147,6 +150,18 @@ class PulsarZet extends Table
             );
         }
         DBUtil::insertRows('dice', $dice);        
+    }
+
+    function initializeDiceboardTracks() {
+        $engineeringtrack = new Track('engineeringtrack');
+        $initiativetrack = new Track('initiativetrack');
+        $players = self::getAllPlayers();
+        foreach ($players as $player_id => $player) {
+            $engineeringtrack->addPlayer($player_id, 8);
+            $initiativetrack->addPlayer($player_id, 8);
+        }
+        $engineeringtrack->save();
+        $initiativetrack->save();
     }
 
     function rollDice () {
@@ -221,8 +236,28 @@ class PulsarZet extends Table
     }
 
     function getAllPlayers () {
-        $sql = "SELECT player_id id, player_no nr, player_score score FROM player ";
+        $sql = "SELECT player_id id, player_no nr, player_score score, player_color color FROM player ";
         return self::getCollectionFromDb( $sql );        
+    }
+
+    function calculateMarkerDistance() {
+        $markerPos = self::getGameStateValue('markerPosition');
+        $choosenDie = self::getGameStateValue('choosenDie');
+        $dieValue = 2 * $choosenDie - 1;
+        $distance = $dieValue - $markerPos;
+        return $distance;
+    }
+
+    function sendTrackInformation($trackId, $track) {
+        $currentState = $this->gamestate->state();
+        self::notifyAllPlayers("serverresponse", '', array(
+            'player_id'   => self::getActivePlayerId(),
+            'player_name' => self::getActivePlayerName(),
+            'players'     => self::getAllPlayers(),
+            'state'       => $currentState['name'],
+            'clickAreaId' => $trackId,
+            'track'       => $track->getTrackForClient()            
+        ));
     }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -232,8 +267,19 @@ class PulsarZet extends Table
     function click_dice_in_state_player_choose_dice($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('chooseDie'); 
         self::moveDiceFromBoardToPlayer($variantId);
+        self::setGameStateValue("choosenDie", $variantId);
         $this->respond($tileId, $tokenId, $posId, $variantId);
         $this->gamestate->nextState("dieChoosen");
+    }
+
+    function click_engineeringtrack_in_state_player_choose_track($tileId) {
+        self::checkAction('chooseEngineeringTrack');
+        $dist = self::calculateMarkerDistance();
+        $track = new Track('engineeringtrack');
+        $track->movePlayer(self::getActivePlayerId(), $dist);
+        $track->save();
+        self::sendTrackInformation('engineeringtrack', $track);
+        $this->gamestate->nextState("trackChoosen");
     }
     
 //////////////////////////////////////////////////////////////////////////////

@@ -12,6 +12,26 @@ define([
         dice.addTokenVariant(6, 175, 0, 35, 35);
     };
 
+
+    var addAllPos = function (diceboard, type, column, x, y) {
+        diceboard.addTokenPosition(type, column +  '-1', x, y, 0);
+        diceboard.addTokenPosition(type, column +  '-2', x, y + 11, 0);
+        diceboard.addTokenPosition(type, column +  '-3', x, y + 22, 0);
+        diceboard.addTokenPosition(type, column +  '-4', x, y + 33, 0);
+    };
+
+    var addEngineerTokenPositions = function (diceboard) {
+        addAllPos(diceboard, 'engineerToken', 1, 369, 163); addAllPos(diceboard, 'engineerToken', 2, 413, 151); addAllPos(diceboard, 'engineerToken', 3, 460, 142); addAllPos(diceboard, 'engineerToken', 4, 504, 134); addAllPos(diceboard, 'engineerToken', 5, 550, 127);
+        addAllPos(diceboard, 'engineerToken', 6, 595, 123); addAllPos(diceboard, 'engineerToken', 7, 641, 119); addAllPos(diceboard, 'engineerToken', 8, 688, 119); addAllPos(diceboard, 'engineerToken', 9, 733, 119); addAllPos(diceboard, 'engineerToken', 10, 779, 122);
+        addAllPos(diceboard, 'engineerToken', 11, 823, 126); addAllPos(diceboard, 'engineerToken', 12, 868, 133); addAllPos(diceboard, 'engineerToken', 13, 915, 139); addAllPos(diceboard, 'engineerToken', 14, 960, 150); addAllPos(diceboard, 'engineerToken', 15, 1006, 163);
+    };
+
+    var addInitiativeTokenPositions = function (diceboard) {
+        addAllPos(diceboard, 'initiativeToken', 1, 369, 65); addAllPos(diceboard, 'initiativeToken', 2, 413, 49); addAllPos(diceboard, 'initiativeToken', 3, 460, 40); addAllPos(diceboard, 'initiativeToken', 4, 504, 32); addAllPos(diceboard, 'initiativeToken', 5, 550, 25);
+        addAllPos(diceboard, 'initiativeToken', 6, 595, 21); addAllPos(diceboard, 'initiativeToken', 7, 641, 17); addAllPos(diceboard, 'initiativeToken', 8, 688, 17); addAllPos(diceboard, 'initiativeToken', 9, 733, 17); addAllPos(diceboard, 'initiativeToken', 10, 779, 20);
+        addAllPos(diceboard, 'initiativeToken', 11, 823, 24); addAllPos(diceboard, 'initiativeToken', 12, 868, 31); addAllPos(diceboard, 'initiativeToken', 13, 915, 37); addAllPos(diceboard, 'initiativeToken', 14, 960, 48); addAllPos(diceboard, 'initiativeToken', 15, 1006, 61);
+    };
+
     var playerboards = {
         1: { x: 72, y: 2070 },
         2: { x: 2690, y: 1710 },
@@ -23,6 +43,7 @@ define([
         imageloader.addImage('marker', 'img/marker.webp');
         imageloader.addImage('ships', 'img/shipsprites.webp');
         imageloader.addImage('dice', 'img/dice.webp');
+        imageloader.addImage('colorstone', 'img/colorstone.webp');
 
         imageloader.addImage('playerboard1', 'img/playerboardA2.webp');
         imageloader.addImage('playerboard2', 'img/playerboardA2.webp')
@@ -94,6 +115,24 @@ define([
                 playerboard.addTokenPosition('dice', 0, 25, 20);
                 playerboard.addTokenPosition('dice', 1, 70, 20);
             }
+            
+            var engineertoken = diceboard.addToken('engineerToken', imagelist['colorstone']);
+            engineertoken.addTokenVariant("0000ff", 0, 22, 27, 11);
+            engineertoken.addTokenVariant("008000", 0, 0, 27, 11);
+            engineertoken.addTokenVariant("ffa500", 0, 35, 27, 11);
+            engineertoken.addTokenVariant("ff0000", 0, 11, 27, 11);
+            addEngineerTokenPositions(diceboard);
+
+            var initiativetoken = diceboard.addToken('initiativeToken', imagelist['colorstone']);
+            initiativetoken.addTokenVariant("0000ff", 0, 22, 27, 11);
+            initiativetoken.addTokenVariant("008000", 0, 0, 27, 11);
+            initiativetoken.addTokenVariant("ffa500", 0, 35, 27, 11);
+            initiativetoken.addTokenVariant("ff0000", 0, 11, 27, 11);
+            addInitiativeTokenPositions(diceboard);
+
+            diceboard.addClickArea('engineeringtrack', [[358, 162], [404, 151], [452, 142], [494, 132], [539, 127], [585, 122], [631, 119], [679, 119], [769, 119], [814, 122], [858, 127], [904, 133], [950, 141], [997, 151], [1042, 162],
+                [1042, 212], [997,212], 
+                [949, 200], [903, 190], [858, 182], [813, 175], [768, 170], [723, 167], [678, 167], [631, 169], [585, 171], [539, 175], [496, 182], [451, 190], [407, 200], [359, 212]]);
 
             return board;            
         });

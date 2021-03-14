@@ -41,12 +41,19 @@
     public function click() {
       self::setAjaxMode();
       $tileId = self::getArg("tileId", AT_alphanum, true);
-      $tokenId = self::getArg("tokenId", AT_alphanum, true);
-      $posId = self::getArg("posId", AT_alphanum, true);
-      $variantId = self::getArg("variantId", AT_alphanum, true);
+      $tokenId = self::getArg("tokenId", AT_alphanum, false);
+      $posId = self::getArg("posId", AT_alphanum, false);
+      $variantId = self::getArg("variantId", AT_alphanum, false);
+      $clickAreaId = self::getArg("clickAreaId", AT_alphanum, false);
       
+      if (isset($tokenId)) {
+        $methodName = $tokenId;
+      } else {
+        $methodName = $clickAreaId;
+      }
+
       $currentState = $this->game->gamestate->state();
-      $methodName = "click_" . $tokenId . '_in_state_' . $currentState['name'];
+      $methodName = "click_" . $methodName . '_in_state_' . $currentState['name'];
       $this->game->$methodName($tileId, $tokenId, $posId, $variantId);
 
       self::ajaxResponse();
