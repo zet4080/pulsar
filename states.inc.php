@@ -20,6 +20,8 @@ if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, sin
     define("STATE_NEXT_PLAYER_DURING_DICE_PHASE", 4);
     define("STATE_NEXT_PLAYER_DURING_ACTION_PHASE", 5);
     define("STATE_PLAYER_CHOOSE_TRACK", 6);
+    define("STATE_START_ACTION_PHASE", 7);
+    define("STATE_PLAYER_CHOOSE_ACTION", 8);
     define("STATE_END_GAME", 99);
  }
  
@@ -39,7 +41,7 @@ $machinestates = array(
         "description" => "",
         "type" => "game",
         "action" => "stStartRound",
-        "transitions" => array( "roundStarted" => STATE_PLAYER_CHOOSE_DICE )
+        "transitions" => array( "roundStarted" => STATE_NEXT_PLAYER_DURING_DICE_PHASE )
     ),    
     
     STATE_PLAYER_CHOOSE_DICE => array(
@@ -65,16 +67,33 @@ $machinestates = array(
         "description" => "",
         "type" => "game",
         "action" => "stCalculateNextPlayerDuringDicePhase",
-        "transitions" => array( "nextPlayerCalculated" => STATE_PLAYER_CHOOSE_DICE, "startActionPhase" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE )
+        "transitions" => array( "nextPlayerCalculated" => STATE_PLAYER_CHOOSE_DICE, "startActionPhase" => STATE_START_ACTION_PHASE )
+    ),    
+
+    STATE_START_ACTION_PHASE => array(
+        "name" => "start_action_phase",
+        "description" => "",
+        "type" => "game",
+        "action" => "stStartActionPhase",
+        "transitions" => array( "actionPhaseStarted" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE )
     ),    
 
     STATE_NEXT_PLAYER_DURING_ACTION_PHASE => array(
         "name" => "next_player_during_dice_phase",
         "description" => "",
         "type" => "game",
-        "action" => "stCalculateNextPlayerDuringDicePhase",
-        "transitions" => array( "nextPlayerCalculated" => STATE_PLAYER_CHOOSE_DICE )
+        "action" => "stCalculateNextPlayerDuringActionPhase",
+        "transitions" => array( "nextPlayerCalculated" => STATE_PLAYER_CHOOSE_ACTION )
     ),
+
+    STATE_PLAYER_CHOOSE_ACTION => array(
+        "name" => "player_choose_action",
+        "description" => clienttranslate('${actplayer} must choose an action'),
+        "descriptionmyturn" => clienttranslate('${you} must choose an action'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "click", "chooseEngineeringTrack", "chooseInitiativeTrack" ),
+        "transitions" => array( "trackChoosen" => STATE_NEXT_PLAYER_DURING_DICE_PHASE )
+    ),      
     
     // Final state.
     // Please do not modify (and do not overload action/args methods).

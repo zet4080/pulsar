@@ -20,6 +20,7 @@
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 require_once 'modules/DBUtil.php';
 require_once 'modules/Track.php';
+require_once 'modules/JSON.php';
 
 class PulsarZet extends Table
 {
@@ -36,6 +37,7 @@ class PulsarZet extends Table
         self::initGameStateLabels(array( 
             "markerPosition" => 10,
             "choosenDie" => 20,
+            "nrOfDice" => 30,
         ));        
 	}
 	
@@ -59,7 +61,7 @@ class PulsarZet extends Table
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $gameinfos = self::getGameinfos();
         $default_colors = $gameinfos['player_colors'];
- 
+
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
         $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
@@ -76,9 +78,10 @@ class PulsarZet extends Table
         
         /************ Start the game initialization *****/
 
-        self::createDice ();
+        self::createDice (count($players));
         self::initializeDiceboardTracks();
         self::setGameStateInitialValue('markerPosition', 0);
+        JSON::create('playerorder');
         $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
@@ -139,9 +142,47 @@ class PulsarZet extends Table
         die('ok');
     }
 
-    function createDice () {
+    function calculatePlayerOrder() {
+        $initiativeTrack = Track::getTrackForClient('initiativeTrack');
+        foreach($initiativeTrack as $slotNumber => $players) {
+            foreach ($players as $playerid) {
+                $order [] = $playerid;
+            }
+        }
+        return array_reverse($order);
+    }    
+
+    function calculatePlayerOrderDicePhase() {
+        $first = self::calculatePlayerOrder();
+        $second = array_reverse($first);
+        $order = array_merge($first, $second);
+        JSON::write('playerorder', $order);
+    }
+
+    function calculatePlayerOrderActionPhase() {
+        $order = self::calculatePlayerOrder();
+        JSON::write('playerorder', $order);
+    }
+
+    function activateNextPlayer() {
+        $order = JSON::read('playerorder');
+        if (count($order) > 0) {
+            $nextPlayer = array_shift($order);
+            JSON::write('playerorder', $order);
+            $this->gamestate->changeActivePlayer($nextPlayer);
+            return true;
+        }
+        return false;        
+    }
+
+    function createDice ($nrOfPlayers) {
+        if ($nrOfPlayers == 4) {
+            $nrOfDice = 9;
+        } else {
+            $nrOfDice = 7;
+        }
 		$dice = array ();
-		for ($i = 0; $i < 7; $i++) {
+		for ($i = 0; $i < $nrOfDice; $i++) {
 			$dice [] = array (
                 'id' => $i,
                 'value' => bga_rand(1, 6),
@@ -149,13 +190,14 @@ class PulsarZet extends Table
                 'player' => 0
             );
         }
+        self::setGameStateInitialValue('nrOfDice', $nrOfDice);
         DBUtil::insertRows('dice', $dice);        
     }
 
     function initializeDiceboardTracks() {
         $engineeringtrack = new Track('engineeringtrack');
         $initiativetrack = new Track('initiativetrack');
-        $players = self::getAllPlayers();
+        $players = array_reverse(self::getAllPlayers(), true);
         foreach ($players as $player_id => $player) {
             $engineeringtrack->addPlayer($player_id, 8);
             $initiativetrack->addPlayer($player_id, 8);
@@ -165,7 +207,8 @@ class PulsarZet extends Table
     }
 
     function rollDice () {
-		for ($i = 0; $i < 7; $i++) {
+        $nrOfDice = self::getGameStateValue('nrOfDice');
+		for ($i = 0; $i < $nrOfDice; $i++) {
 			$dice = array (
                 'id' => $i,
                 'value' => bga_rand(1, 6),
@@ -221,20 +264,6 @@ class PulsarZet extends Table
         self::setGameStateValue("markerPosition", $marker);
     }
 
-    function respond ($tileId, $tokenId, $posId, $variantId) {
-        $currentState = $this->gamestate->state();
-        self::notifyAllPlayers("serverresponse", '', array(
-            'player_id'   => self::getActivePlayerId(),
-            'player_name' => self::getActivePlayerName(),
-            'players'     => self::getAllPlayers(),
-            'state'       => $currentState['name'],  
-            'tileId'      => $tileId,
-            'tokenId'     => $tokenId,
-            'posId'       => $posId,
-            'variantId'   => $variantId
-        ));
-    }
-
     function getAllPlayers () {
         $sql = "SELECT player_id id, player_no nr, player_score score, player_color color FROM player ";
         return self::getCollectionFromDb( $sql );        
@@ -247,6 +276,20 @@ class PulsarZet extends Table
         $distance = $dieValue - $markerPos;
         return $distance;
     }
+
+    function respond ($tileId, $tokenId, $posId, $variantId) {
+        $currentState = $this->gamestate->state();
+        self::notifyAllPlayers("serverresponse", '', array(
+            'player_id'   => self::getActivePlayerId(),
+            'player_name' => self::getActivePlayerName(),
+            'players'     => self::getAllPlayers(),
+            'state'       => $currentState['name'],  
+            'tileId'      => $tileId,
+            'tokenId'     => $tokenId,
+            'posId'       => $posId,
+            'variantId'   => $variantId
+        ));
+    }    
 
     function sendTrackInformation($trackId, $track) {
         $currentState = $this->gamestate->state();
@@ -281,6 +324,16 @@ class PulsarZet extends Table
         self::sendTrackInformation('engineeringtrack', $track);
         $this->gamestate->nextState("trackChoosen");
     }
+
+    function click_initiativetrack_in_state_player_choose_track($tileId) {
+        self::checkAction('chooseInitiativeTrack');
+        $dist = self::calculateMarkerDistance();
+        $track = new Track('initiativetrack');
+        $track->movePlayer(self::getActivePlayerId(), $dist);
+        $track->save();
+        self::sendTrackInformation('initiativetrack', $track);
+        $this->gamestate->nextState("trackChoosen");
+    }    
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
@@ -294,11 +347,25 @@ class PulsarZet extends Table
     function stStartRound () {
         self::rollDice();
         self::calculateMarker();
+        self::calculatePlayerOrderDicePhase();
         $this->gamestate->nextState("roundStarted");
     }
 
     function stCalculateNextPlayerDuringDicePhase () {
-        $this->activeNextPlayer();
+        if (self::activateNextPlayer() == true) {
+            $this->gamestate->nextState("nextPlayerCalculated");
+        } else {
+            $this->gamestate->nextState("startActionPhase");
+        }
+    }
+
+    function stStartActionPhase() {
+        self::calculatePlayerOrderActionPhase();
+        $this->gamestate->nextState("actionPhaseStarted");
+    }
+
+    function stCalculateNextPlayerDuringActionPhase() {
+        self::activateNextPlayer();
         $this->gamestate->nextState("nextPlayerCalculated");
     }
 

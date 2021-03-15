@@ -20,12 +20,22 @@ class Track {
         $this->track[$pos][] = $player;
     }
 
+    function calculateNewSlot($oldSlot, $distance) {
+        $distance = $distance / 2;
+        if ($distance < 0) {
+            $distance = (int)floor($distance);
+        } else {
+            $distance = (int)ceil($distance);
+        }
+        return $oldSlot + $distance;
+    }
+
     function movePlayer ($player, $distance) {
         foreach( $this->track as $slotNumber => $slot ) {
             $slotPos = array_search($player, $slot);
             if ($slotPos !== false) {
                 unset($this->track[$slotNumber][$slotPos]);
-                $newSlot = $slotNumber + $distance;
+                $newSlot = self::calculateNewSlot($slotNumber, $distance);
                 $this->track[$newSlot][] = (int)$player;
             }
         }
