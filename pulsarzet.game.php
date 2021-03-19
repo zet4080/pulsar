@@ -21,6 +21,7 @@ require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 require_once 'modules/DBUtil.php';
 require_once 'modules/Track.php';
 require_once 'modules/JSON.php';
+require_once 'modules/DicePosition.php';
 
 class PulsarZet extends Table
 {
@@ -232,12 +233,16 @@ class PulsarZet extends Table
     }
 
     function rollDice () {
+        $diceposition = new DicePosition();
         $nrOfDice = self::getGameStateValue('nrOfDice');
 		for ($i = 0; $i < $nrOfDice; $i++) {
+            $value = bga_rand(1, 6);
+            $position = $diceposition->calculate($value);
 			$dice = array (
                 'id' => $i,
-                'value' => bga_rand(1, 6),
+                'value' => $value,
                 'location' => 'diceboard',
+                'position' => $position,
                 'player' => 0
             );
             DBUtil::updateRow('dice', $i, $dice);
@@ -245,7 +250,7 @@ class PulsarZet extends Table
     }
 
     function getDiceboard() {
-        return DBUtil::get('dice', array('location' => 'diceboard'), 'value', 'id, value');
+        return DBUtil::get('dice', array('location' => 'diceboard'), 'value', 'id, value, position');
     }
 
     function getPlayerDice() {

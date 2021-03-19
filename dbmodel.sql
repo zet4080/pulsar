@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `dice` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `value` varchar(16) NOT NULL,
   `location` varchar(16) NOT NULL,
+  `position` tinyint UNSIGNED NOT NULL,
   `player` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

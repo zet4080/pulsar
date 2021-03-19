@@ -9,7 +9,7 @@ class JSON {
     }
 
     function write($id, $array) {
-        DBUtil::updateRow('json', $id, array('value' => DBUtil::escapeStringForDB(json_encode($array))));
+        DBUtil::updateRow('json', $id, array('value' => json_encode($array)));
     }
 
     function read($id) {
