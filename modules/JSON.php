@@ -9,12 +9,21 @@ class JSON {
     }
 
     function write($id, $array) {
-        DBUtil::updateRow('json', $id, array('value' => json_encode($array)));
+        DBUtil::updateRow('json', $id, array('value' => DBUtil::escapeStringForDB(json_encode($array))));
     }
 
     function read($id) {
-        $json = DBUtil::get('json', $id)[0];
-        return json_decode(stripslashes($json['value']), true);
+        $json = DBUtil::get('json', $id);
+        if (count($json) == 0) {
+            return null;
+        }
+        return json_decode(stripslashes($json[0]['value']), true);
     }
     
+    function error($text) {
+        echo "<pre>";
+        var_dump( $text );
+        echo "</pre>";
+        die('ok');
+    } 
 }

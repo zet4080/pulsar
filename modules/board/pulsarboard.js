@@ -58,6 +58,7 @@ define([
         imageloader.addImage('tech2', 'img/A2.webp');
         imageloader.addImage('tech1', 'img/A1.webp');
         imageloader.addImage('starcluster', 'img/starcluster.webp');
+        imageloader.addImage('token', 'img/token.webp');
         
         return imageloader.loadImages().then(function (imagelist) {
             var board = gameboard('table');
@@ -124,18 +125,33 @@ define([
             addEngineerTokenPositions(diceboard);
 
             var initiativetoken = diceboard.addToken('initiativeToken', imagelist['colorstone']);
-            initiativetoken.addTokenVariant("0000ff", 0, 22, 27, 11);
             initiativetoken.addTokenVariant("008000", 0, 0, 27, 11);
-            initiativetoken.addTokenVariant("ffa500", 0, 35, 27, 11);
             initiativetoken.addTokenVariant("ff0000", 0, 11, 27, 11);
+            initiativetoken.addTokenVariant("0000ff", 0, 22, 27, 11);
+            initiativetoken.addTokenVariant("ffa500", 0, 35, 27, 11);
             addInitiativeTokenPositions(diceboard);
 
-            diceboard.addClickArea('engineeringtrack', [[358, 162], [404, 151], [452, 142], [494, 132], [539, 127], [585, 122], [631, 119], [679, 119], [769, 119], [814, 122], [858, 127], [904, 133], [950, 141], [997, 151], [1042, 162],
-                [1042, 212], [997,212], 
-                [949, 200], [903, 190], [858, 182], [813, 175], [768, 170], [723, 167], [678, 167], [631, 169], [585, 171], [539, 175], [496, 182], [451, 190], [407, 200], [359, 212]]);
-            diceboard.addClickArea('initiativetrack', [[358, 67], [404, 51], [449, 45], [493, 39], [538, 32], [585, 28], [631, 26], [678, 26], [770, 26], [814, 32], [860, 38], [904, 46], [951, 55], [997, 66],
-                [1043, 66], [1043, 116], [997, 116],
-                [950, 103], [904, 94], [858, 86], [813, 82], [769, 77], [724, 75], [678, 75], [631, 75], [586, 77], [541, 82], [492, 84], [451, 95], [407, 105], [358, 116]]);
+            diceboard.addClickArea('engineeringtrack', [[357, 171], [701, 62, 1000, 152, 1043, 177], [1041, 217], [1001, 212, 708, 110, 363, 214]]);
+            diceboard.addClickArea('initiativetrack', [[348, 74], [578, 21, 759, 2, 1052, 74], [1045, 124], [701, 19, 379, 121, 364, 121]]);
+
+            var starcluster = board.getGameTile('starcluster');
+            var token = starcluster.addToken('token', imagelist['token']);
+            token.addTokenVariant("008000", 0, 0, 35, 35);
+            token.addTokenVariant("ff0000", 0, 35, 35, 35);
+            token.addTokenVariant("ffa500", 35, 0, 35, 35);
+            token.addTokenVariant("0000ff", 35, 35, 35, 35);
+
+            var tech1 = board.getGameTile('tech1');
+            var token = tech1.addToken('token', imagelist['token']);
+            token.addTokenVariant("008000", 0, 0, 35, 35);
+            token.addTokenVariant("ff0000", 0, 35, 35, 35);
+            token.addTokenVariant("ffa500", 35, 0, 35, 35);
+            token.addTokenVariant("0000ff", 35, 35, 35, 35);
+
+            tech1.addTokenPosition('token', '1-1-1', 94, 109);
+            tech1.addTokenPosition('token', '1-1-2', 55, 121);
+            tech1.addClickArea('t_1_1', [[143, 150], [140, 135, 168, 237, 173, 308], [89, 316], [78, 236, 60, 158, 56, 172]]);
+
             return board;            
         });
     };

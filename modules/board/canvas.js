@@ -160,8 +160,30 @@ define([
                 posId: token.posId,
                 variantId: token.variantId
             };
-            drawClickPath(path, info, x, y);
+            drawClickArea(path, info, x, y);
         });
+    };
+
+    var drawClickArea = function (path, info, x, y) {
+        if (Array.isArray(path[0])) {
+            drawClickPath(path, info, x, y);
+        } else {
+            drawClickCircle(path, info, x, y);
+        }
+    };
+
+    var drawClickCircle = function (path, info, x, y) {
+        clickarea.save();
+        clickarea.translate(x, y);
+        clickarea.fillStyle = color.getColorString();
+        clickarea.beginPath();
+        clickarea.moveTo(path[0][0], path[0][1]);
+        clickarea.arc(path[0],path[1],path[2], 0, 2 * Math.PI);
+        clickarea.fill();
+        clickAreaInfos[color.getColor()] = info;
+        color.nextColor();
+        clickarea.restore();
+
     };
 
     var drawClickPath = function (path, info, x, y) {
@@ -171,7 +193,12 @@ define([
         clickarea.beginPath();
         clickarea.moveTo(path[0][0], path[0][1]);
         for (var i = 1; i < path.length; i++) {
-            clickarea.lineTo(path[i][0], path[i][1]);
+            if (path[i].length == 2) {
+                clickarea.lineTo(path[i][0], path[i][1]);
+            } else {
+                let p = path[i];
+                clickarea.bezierCurveTo(p[0],p[1],p[2],p[3],p[4],p[5]);
+            }
         }
         clickarea.fill();
         clickAreaInfos[color.getColor()] = info;
@@ -183,10 +210,12 @@ define([
         viewport.scale = scale;
     };
 
-    var createCanvas = function (element, color) {
+    var createCanvas = function (element, nodisplay) {
         var parent = $(element);
         var canvas = document.createElement("canvas");
-        canvas.style = "border: solid " + color + " 3px";
+        if (nodisplay) {
+            canvas.style = "display: none;";
+        }
         parent.appendChild(canvas);
         canvas.width = parent.clientWidth;
         canvas.height = parent.clientHeight;
@@ -204,8 +233,8 @@ define([
     };
 
     var createTable = function (element) {
-        table = createCanvas(element, "blue");
-        clickarea = createCanvas(element, "yellow");
+        table = createCanvas(element);
+        clickarea = createCanvas(element, true);
         table.canvas.addEventListener('click', publishClick);
     };
 

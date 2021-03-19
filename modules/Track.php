@@ -1,19 +1,16 @@
 <?php
 
-require_once 'DBUtil.php';
+require_once 'JSON.php';
 
 class Track {
     
     function __construct($jsonid)
 	{
-        $this->track = DBUtil::get('json', $jsonid);
         $this->jsonid = $jsonid;
+        $this->track = JSON::read($jsonid);
         if ($this->track == null) {
-            $this->track = array ();
-            DBUtil::insertRow('json', array('id' => $this->jsonid, 'value' => DBUtil::escapeStringForDB(json_encode($this->track))));
-        } else {
-            $this->track = json_decode(stripslashes(DBUtil::get('json', $jsonid)[0]['value']), true);
-        }
+            JSON::create($jsonid);
+        } 
     }
 
     function addPlayer ($player, $pos) {
@@ -42,14 +39,29 @@ class Track {
     }
 
     function save() {
-        $save =  DBUtil::escapeStringForDB(json_encode($this->track));
-        DBUtil::updateRow('json', $this->jsonid, array('value' => $save));
+        JSON::write($this->jsonid, $this->track);
+    }
+
+    function getPlayerOrder ($jsonid = null) {
+        if (isset($jsonid)) {
+            $track = JSON::read($jsonid);
+        } else {
+            $track = $this->track;
+        }
+        ksort($track);
+        $return = array();
+        foreach($track as $slot => $players ) {
+            $reverse = array_reverse($players);
+            foreach($reverse as $player) {
+                $return [] = $player;
+            }
+        }        
+        return $return;
     }
 
     function getTrackForClient($jsonid = null) {
         if (isset($jsonid)) {
-            $json = DBUtil::get('json', $jsonid)[0];
-            $track = json_decode(stripslashes($json['value']), true);
+            $track = JSON::read($jsonid);
         } else {
             $track = $this->track;
         }
