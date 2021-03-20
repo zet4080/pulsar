@@ -32,6 +32,17 @@ define([
         addAllPos(diceboard, 'initiativeToken', 11, 823, 24); addAllPos(diceboard, 'initiativeToken', 12, 868, 31); addAllPos(diceboard, 'initiativeToken', 13, 915, 37); addAllPos(diceboard, 'initiativeToken', 14, 960, 48); addAllPos(diceboard, 'initiativeToken', 15, 1006, 61);
     };
 
+    var addStarclusterTokenPositions = function (starcluster, radius) {
+        let step = (2 * Math.PI / 101);
+        for (let i = 0; i < 100; i++) {
+            let sin = Math.sin(i * step + 0.01);
+            let cos = Math.cos(i * step + 0.01);
+            let x = Math.floor((radius  * sin) + 842 - 17);
+            let y = Math.floor((radius  * cos) + 842 - 17);
+            starcluster.addTokenPosition('token', i, x, y);
+        }
+    }
+
     var playerboards = {
         1: { x: 72, y: 2070 },
         2: { x: 2690, y: 1710 },
@@ -140,6 +151,7 @@ define([
             token.addTokenVariant("ff0000", 0, 35, 35, 35);
             token.addTokenVariant("ffa500", 35, 0, 35, 35);
             token.addTokenVariant("0000ff", 35, 35, 35, 35);
+            addStarclusterTokenPositions(starcluster, 820);
 
             dice = starcluster.addToken('dice', imagelist['dice']);
             addDiceVariants(dice);
