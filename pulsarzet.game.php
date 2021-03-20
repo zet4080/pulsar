@@ -101,9 +101,11 @@ class PulsarZet extends Table
         $result['shiporder'] = JSON::read('playerorderround');
         $result['diceboard'] = self::getDiceboard();
         $result['playerdice'] = self::getPlayerDice();
+        $result['blackhole'] = self::getBlackholeDice();
         $result['markerposition'] = self::getGameStateValue('markerPosition');
         $result['engineeringTrack'] = Track::getTrackForClient('engineeringTrack');        
         $result['initiativeTrack'] = Track::getTrackForClient('initiativeTrack');
+        $result['techboardtokens'] = self::getAllTechboardTokens();
         return $result;
     }
 
@@ -142,6 +144,24 @@ class PulsarZet extends Table
     }    
 
 //////////////////////////////////////////////////////////////////////////////
+//////////// Gamestate Functions
+////////////    
+
+function getAllTechboardTokens () {
+    $patents = DBUtil::get('patents');
+    $techboardtokens = array();
+    foreach ($patents as $patent) {
+        if ($patent['player1'] != 0) {
+            $techboardtokens[$patent['patent']] [] = $patent['player1'];
+        }
+        if ($patent['player2'] != 0) {
+            $techboardtokens[$patent['patent']] [] = $patent['player2'];
+        }
+    }
+    return $techboardtokens;
+}    
+
+//////////////////////////////////////////////////////////////////////////////
 //////////// TechBoard Player Action
 ////////////    
 
@@ -154,11 +174,48 @@ class PulsarZet extends Table
 ////////////      
 
     function checkIfPatentIsAvailable($patentId) {
+        $check = DBUtil::get('patents', $patentId);
+        if (count($check) == 0) {
+            return true;
+        }
 
+        if (count($check) == 1 && $check[0]['locked'] == false && ($check[0]['player1'] == "" || $check[0]['player2'] == "")) {
+            return true;
+        }
+        throw new BgaUserException( self::_("This patent is not available.") );     
     }
 
     function checkIfPlayerHasCorrectDice($neededDice) {
+        $player = self::getActivePlayerId();
+        $check = DBUtil::get('dice', array('player' => $player, 'value' => $neededDice));
+        if (count($check) == 0) {
+            throw new BgaUserException( self::_("You do not have the correct die.") );    
+        }
+    }
 
+    function assignPatentToPlayer($patent) {
+        $player = self::getActivePlayerId();
+        $patentRow = DBUtil::get('patents', $patent);
+        
+        if (count($patentRow) == 0) {
+            $patentRow = array(
+                'patent' => $patent,
+                'locked' => 0,
+                'player1' => 0,
+                'player2' => 0
+            );
+            DBUtil::insertRow('patents', $patentRow);
+        } else {
+            $patentRow = $patentRow[0];
+        }
+
+        if ($patentRow['player1'] == "") {
+            $patentRow['player1'] = $player;
+        } else {
+            $patentRow['player2'] = $player;
+        }
+
+        DBUtil::updateRow('patents', $patent, $patentRow);
     }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -198,7 +255,9 @@ class PulsarZet extends Table
 ////////////     
 
     function movePlayerDieToBlackHole ($die) {
-
+        $player = self::getActivePlayerId();
+        $id = DBUtil::get('dice', array('player' => $player, 'value' => $die), null, 'id')[0]['id'];
+        DBUtil::updateRow('dice', $id, array('location' => 'blackhole'));
     }
 
     function createDice ($nrOfPlayers) {
@@ -249,13 +308,17 @@ class PulsarZet extends Table
         }          
     }
 
-    function getDiceboard() {
+    function getDiceboard () {
         return DBUtil::get('dice', array('location' => 'diceboard'), 'value', 'id, value, position');
     }
 
-    function getPlayerDice() {
+    function getPlayerDice () {
         return DBUtil::get('dice', array('location' => 'player'), null, 'id, value, player');
     }
+
+    function getBlackholeDice () {
+        return DBUtil::get('dice', array('location' => 'blackhole'), null, 'id, value');
+    }    
 
     function moveDiceFromBoardToPlayer($value) {
         $dice = DBUtil::get('dice', array('location' => 'diceboard', 'value' => $value), null, 'id');
@@ -351,6 +414,21 @@ class PulsarZet extends Table
         ));
     }
 
+    function sendTechboardToken($patent) {
+        self::notifyAllPlayers("server/settechboardtoken", '', array(
+            'player_id' => self::getActivePlayerId(),
+            'patent' => $patent
+        ));
+    }
+
+    function sendDieUpdate() {
+        self::notifyAllPlayers("server/updatedie", '', array(
+            'player_id' => self::getActivePlayerId(),
+            'playerdice' => self::getPlayerDice(),
+            'blackholedice' => self::getBlackholeDice()
+        ));
+    }
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -383,12 +461,14 @@ class PulsarZet extends Table
         $this->gamestate->nextState("trackChoosen");
     }  
     
-    function click_t_1_1_in_state_player_choose_action($tileId) {
+    function click_A_1_1_in_state_player_choose_action($tileId) {
         self::checkAction('patentTechnology');
-        self::checkIfPatentIsAvailable("1-1");
+        self::checkIfPatentIsAvailable("A-1-1");
         self::checkIfPlayerHasCorrectDice(1);
-        self::addGreenFlightBonusToPlayer();
+        self::assignPatentToPlayer("A-1-1");
         self::movePlayerDieToBlackHole(1);
+        self::sendTechboardToken("A-1-1");
+        self::sendDieUpdate(1);
         $this->gamestate->nextState("actionChoosen");
     }
     

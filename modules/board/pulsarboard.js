@@ -141,6 +141,12 @@ define([
             token.addTokenVariant("ffa500", 35, 0, 35, 35);
             token.addTokenVariant("0000ff", 35, 35, 35, 35);
 
+            dice = starcluster.addToken('dice', imagelist['dice']);
+            addDiceVariants(dice);
+            starcluster.addTokenPositions('dice', [
+                [753, 744], [898, 758], [867, 706], [751, 873], [818, 883], [900, 818], [874, 874], [800, 694], [716, 816]
+            ]);
+
             var tech1 = board.getGameTile('tech1');
             var token = tech1.addToken('token', imagelist['token']);
             token.addTokenVariant("008000", 0, 0, 35, 35);
@@ -148,9 +154,9 @@ define([
             token.addTokenVariant("ffa500", 35, 0, 35, 35);
             token.addTokenVariant("0000ff", 35, 35, 35, 35);
 
-            tech1.addTokenPosition('token', '1-1-1', 94, 109);
-            tech1.addTokenPosition('token', '1-1-2', 55, 121);
-            tech1.addClickArea('t_1_1', [[143, 150], [140, 135, 168, 237, 173, 308], [89, 316], [78, 236, 60, 158, 56, 172]]);
+            tech1.addTokenPosition('token', 'A-1-1-1', 94, 109);
+            tech1.addTokenPosition('token', 'A-1-1-2', 55, 121);
+            tech1.addClickArea('A_1_1', [[143, 150], [140, 135, 168, 237, 173, 308], [89, 316], [78, 236, 60, 158, 56, 172]]);
 
             return board;            
         });

@@ -9,6 +9,14 @@
 
 -- dbmodel.sql
 
+CREATE TABLE IF NOT EXISTS `patents` (
+  `patent` varchar(5) NOT NULL,
+  `locked` TINYINT(1) NOT NULL,
+  `player1` int(11) NOT NULL,
+  `player2` int(11) NOT NULL,
+  PRIMARY KEY (`patent`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `dice` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `value` varchar(16) NOT NULL,

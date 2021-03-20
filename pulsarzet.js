@@ -46,7 +46,7 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
             
             "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
         */
-        
+        players: {},
         setup: function( gamedatas )
         {
             console.log( "Starting game setup" );
@@ -54,15 +54,18 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
             this.setupNotifications();
             canvas.createTable('table');
             canvas.setScale(0.5);
+            this.players = gamedatas.players;
             pulsarboard.createPulsarBoard(gamedatas.players).then(lang.hitch(this, function (board) {
+                debugger;
                 this.board = board;
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });
                 connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
                 connect.publish("setup/playerdice", { players: gamedatas.players, dice: gamedatas.playerdice });
+                connect.publish("setup/blackholedice", { dice: gamedatas.blackhole });
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
+                connect.publish("setup/techboardtokens", { players: gamedatas.players, tokens: gamedatas.techboardtokens });
             }));
-
             console.log( "Ending game setup" );
         },
        
@@ -115,6 +118,14 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
             }
         },
 
+        setTokenOnTechBoard: function (player, patent) {
+            let techboard = this.board.getGameTile('tech1');
+            let pos1 = patent + '-1';
+            let pos2 = patent + '-2';
+            let pos = techboard.isPositionOccupied('token', pos1) ? pos2 : pos1;
+            techboard.placeTokenAtPosition('token', pos, this.players[player].color);
+        },
+
         ///////////////////////////////////////////////////
         //// Player's action
         
@@ -134,6 +145,20 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
         {
             console.log( 'notifications subscriptions setup' );
 
+            connect.subscribe("setup/techboardtokens", this, function (args) {
+                let players = args.players;
+                let tokens = args.tokens;
+                let techboard = this.board.getGameTile('tech1');
+                techboard.removeAllTokens('token');
+                for (let tech in tokens) {
+                    for (let i = 0; i < tokens[tech].length; i++) {
+                        let variant = players[tokens[tech][i]].color;
+                        techboard.placeTokenAtPosition('token', tech + '-' + (2 - i), variant);
+                    }
+                }
+                canvas.drawBoard(this.board);
+            });            
+
             connect.subscribe("setup/diceboard", this, function (args) {
                 let dice = args.dice || args.args.dice;
                 var diceboard = this.board.getGameTile('diceboard');
@@ -148,10 +173,22 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
                 var dice = args.dice;
                 for (var i = 0; i < dice.length; i++) {
                     let playerboard = this.board.getGameTile(dice[i].player);
+                    playerboard.removeAllTokens('dice');
+                }
+                for (var i = 0; i < dice.length; i++) {
+                    let playerboard = this.board.getGameTile(dice[i].player);
                     let pos = playerboard.isPositionOccupied('dice', 0) ? 1 : 0;
                     playerboard.placeTokenAtPosition('dice', pos, dice[i]['value']);
                 }
                 canvas.drawBoard(this.board);
+            });
+
+            connect.subscribe("setup/blackholedice", this, function (args) {
+                let dice = args.dice;
+                let starcluster = this.board.getGameTile('starcluster');
+                for (var i = 0; i < dice.length; i++) {
+                    starcluster.placeTokenAtPosition('dice', i, dice[i].value);
+                }
             });
 
             connect.subscribe("setup/marker", this, function (args) {
@@ -189,7 +226,17 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
             connect.subscribe("server/initiativetrack/player_choose_track", this, function (args) {
                 this.setColorstonesOnDiceboardTracks('initiativeToken', args.track, args.players);
                 canvas.drawBoard(this.board);
-            });            
+            });       
+            
+            connect.subscribe("server/settechboardtoken", this, function(args) {
+                this.setTokenOnTechBoard(args.args.player_id, args.args.patent);
+                canvas.drawBoard(this.board);
+            });
+
+            connect.subscribe("server/updatedie", this, function(args) {
+                connect.publish("setup/blackholedice", { dice: args.args.blackholedice });
+                connect.publish("setup/playerdice", { dice: args.args.playerdice });
+            });
 
             connect.subscribe("server/dice/player_choose_dice", this, function (args) {
                 let diceboard = this.board.getGameTile('diceboard');
