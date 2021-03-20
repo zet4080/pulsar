@@ -56,6 +56,7 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
             canvas.setScale(0.5);
             this.players = gamedatas.players;
             pulsarboard.createPulsarBoard(gamedatas.players).then(lang.hitch(this, function (board) {
+                debugger;
                 this.board = board;
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });
                 connect.publish("setup/marker", gamedatas.markerposition);
@@ -64,6 +65,7 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
                 connect.publish("setup/blackholedice", { dice: gamedatas.blackhole });
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
                 connect.publish("setup/techboardtokens", { players: gamedatas.players, tokens: gamedatas.techboardtokens });
+                connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
                 canvas.drawBoard(this.board);
             }));
             console.log( "Ending game setup" );
@@ -245,6 +247,16 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
                 
                 let pos = playerboard.isPositionOccupied('dice', 0) ? 1 : 0;
                 playerboard.placeTokenAtPosition('dice', pos, args.variantId);
+                canvas.drawBoard(this.board);
+            });
+
+            connect.subscribe("setup/playerpoints", this, function (args) {
+                let playerpoints = args.playerpoints;
+                let starcluster = this.board.getGameTile('starcluster');
+                starcluster.removeAllTokens();
+                for (let id in playerpoints) {
+                    starcluster.placeTokenAtPosition('token', playerpoints[id], this.players[id].color);
+                };
                 canvas.drawBoard(this.board);
             });
         },  

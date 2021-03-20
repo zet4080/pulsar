@@ -82,6 +82,7 @@ class PulsarZet extends Table
         self::setGameStateInitialValue('markerPosition', 0);
         JSON::create('playerorderround');
         JSON::create('playerorderphase');
+        JSON::create('playerpoints');
 
         /************ End of the game initialization *****/
     }
@@ -106,6 +107,7 @@ class PulsarZet extends Table
         $result['engineeringTrack'] = Track::getTrackForClient('engineeringTrack');        
         $result['initiativeTrack'] = Track::getTrackForClient('initiativeTrack');
         $result['techboardtokens'] = self::getAllTechboardTokens();
+        $result['playerpoints'] = JSON::read('playerpoints');
         return $result;
     }
 
@@ -484,13 +486,14 @@ function getAllTechboardTokens () {
     // in the first round the player order and the tokens on the engineering track do not match!
     // the first player is on the bottom of the stack.
     function stStartFirstRound () {
-        
         $players = DBUtil::get('player', null, 'player_no', 'player_id');
         for ($i = 0; $i < count($players); $i++) {
             $order [] = $players[$i]['player_id'];
+            $points [$players[$i]['player_id']] = $i + 5;
         }
         self::createDice (count($players));
-        JSON::write('playerorderround', $order);        
+        JSON::write('playerorderround', $order);
+        JSON::write('playerpoints', $points);
         self::initializeDiceboardTracks();
 
         $this->gamestate->nextState("roundStarted");
