@@ -15,16 +15,23 @@
  */
 
 if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
+    
     define("STATE_START_ROUND", 2);
     define("STATE_PLAYER_CHOOSE_DICE", 3);
     define("STATE_NEXT_PLAYER_DURING_DICE_PHASE", 4);
     define("STATE_NEXT_PLAYER_DURING_ACTION_PHASE", 5);
     define("STATE_PLAYER_CHOOSE_TRACK", 6);
     define("STATE_START_ACTION_PHASE", 7);
-    define("STATE_PLAYER_CHOOSE_ACTION", 8);
+    define("STATE_PLAYER_CHOOSE_ACTION_OR_MODIFIER", 8);
     define("STATE_START_PRODUCTION_PHASE", 9);
     define("STATE_START_DICE_PHASE", 10);
     define("STATE_START_FIRST_ROUND", 11);
+    define("STATE_CHOOSE_SHIP_ENTRYPOINT", 12);
+    define("STATE_NEXT_PLAYER_SHIPPLACEMENT", 13);
+    define("STATE_SELECT_SHIP_ROUTE", 14);
+    define("STATE_PLAYER_CHOOSE_MODIFIER", 15);
+    define("STATE_PLAYER_CHOOSE_ACTION_DIE", 16);
+
     define("STATE_END_GAME", 99);
  }
  
@@ -44,8 +51,25 @@ $machinestates = array(
         "description" => "",
         "type" => "game",
         "action" => "stStartFirstRound",
-        "transitions" => array( "roundStarted" => STATE_START_DICE_PHASE )
+        "transitions" => array( "roundStarted" => STATE_NEXT_PLAYER_SHIPPLACEMENT )
     ),      
+
+    STATE_CHOOSE_SHIP_ENTRYPOINT => array(
+        "name" => "player_choose_entrypoint",
+        "description" => clienttranslate('${actplayer} must choose an entry point'),
+        "descriptionmyturn" => clienttranslate('${you} must choose an entry point'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "click", "chooseEntryPoint" ),
+        "transitions" => array( "shipChoosen" => STATE_NEXT_PLAYER_SHIPPLACEMENT,  )
+    ),
+
+    STATE_NEXT_PLAYER_SHIPPLACEMENT => array(
+        "name" => "startround",
+        "description" => "",
+        "type" => "game",
+        "action" => "stCalculateNextPlayerDuringShipPlacement",
+        "transitions" => array( "nextPlayerCalculated" => STATE_CHOOSE_SHIP_ENTRYPOINT, "startDicePhase" => STATE_START_DICE_PHASE )
+    ),    
 
     STATE_START_ROUND => array(
         "name" => "startround",
@@ -102,18 +126,39 @@ $machinestates = array(
         "description" => "",
         "type" => "game",
         "action" => "stCalculateNextPlayerDuringActionPhase",
-        "transitions" => array( "nextPlayerCalculated" => STATE_PLAYER_CHOOSE_ACTION, "roundEnded" => STATE_START_PRODUCTION_PHASE ) 
+        "transitions" => array( "nextPlayerCalculated" => STATE_PLAYER_CHOOSE_ACTION_DIE, "roundEnded" => STATE_START_PRODUCTION_PHASE ) 
     ),
 
-    STATE_PLAYER_CHOOSE_ACTION => array(
-        "name" => "player_choose_action",
-        "description" => clienttranslate('${actplayer} must choose an action'),
-        "descriptionmyturn" => clienttranslate('${you} must choose an action'),
+    STATE_PLAYER_CHOOSE_ACTION_DIE => array(
+        "name" => "player_choose_action_die",
+        "description" => clienttranslate('${actplayer} must choose a die'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a die'),
         "type" => "activeplayer",
-        "possibleactions" => array( "click", "flyShip", "developPulsar", "buildArray", "patentTechnology", "workOnHQProject" ),
-        "transitions" => array( "actionChoosen" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE )
+        "possibleactions" => array( "click", "chooseDie"),
+        "transitions" => array( "dieChoosen" => STATE_PLAYER_CHOOSE_ACTION_OR_MODIFIER)
+    ), 
+
+    STATE_PLAYER_CHOOSE_ACTION_OR_MODIFIER => array(
+        "name" => "player_choose_action_or_modifier",
+        "description" => clienttranslate('${actplayer} must choose an action or a modifier'),
+        "descriptionmyturn" => clienttranslate('${you} must choose an action or a modifier'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "click", "chooseModifier", "flyShip", "developPulsar", "buildArray", "patentTechnology", "workOnHQProject" ),
+        "transitions" => array( 
+            "modifierChoosen" => STATE_PLAYER_CHOOSE_ACTION_OR_MODIFIER, 
+            "flyShip" => STATE_SELECT_SHIP_ROUTE
+        )
     ),   
     
+    STATE_SELECT_SHIP_ROUTE => array (
+        "name" => "player_select_ship_route",
+        "description" => clienttranslate('${actplayer} must choose next node'),
+        "descriptionmyturn" => clienttranslate('${you} must choose next node'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "click", "selectNode", "endRoute" ),
+        "transitions" => array( "nodeSelected" => STATE_SELECT_SHIP_ROUTE, "routeEnded" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE)
+    ),
+
     STATE_START_PRODUCTION_PHASE => array(
         "name" => "start_production_phase",
         "description" => "",

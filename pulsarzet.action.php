@@ -45,19 +45,28 @@
       $posId = self::getArg("posId", AT_alphanum, false);
       $variantId = self::getArg("variantId", AT_alphanum, false);
       $clickAreaId = self::getArg("clickAreaId", AT_alphanum, false);
-      
-      if (isset($tokenId)) {
-        $methodName = $tokenId;
-      } else {
-        $methodName = $clickAreaId;
-      }
-
       $currentState = $this->game->gamestate->state();
-      $methodName = "click_" . $methodName . '_in_state_' . $currentState['name'];
-      $this->game->$methodName($tileId, $tokenId, $posId, $variantId);
 
+      if (isset($tokenId)) {
+        $methodName = "click_" . $tokenId . '_in_state_' . $currentState['name'];
+        $this->game->$methodName($tileId, $tokenId, $posId, $variantId);
+      } else if ($tileId == "starcluster") {
+        $methodName = "click_" . $tileId . '_in_state_' . $currentState['name'];
+        $this->game->$methodName($tileId, $clickAreaId);
+      } else {
+        $methodName = "click_" . $clickAreaId . '_in_state_' . $currentState['name'];
+        $this->game->$methodName($tileId, $clickAreaId);
+      }
       self::ajaxResponse();
     }
+
+    function error($text) {
+      echo "<pre>";
+      var_dump( $text );
+      echo "</pre>";
+      die('ok');
+    }
+
   }
   
 

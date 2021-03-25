@@ -142,7 +142,7 @@ define([
 
     var drawClickAreas = function (board) {
         iterateClickAreas(board, function (path, info, x, y) {
-            drawClickPath(path, info, x, y);
+            drawClickArea(path, info, x, y);
         });
     };
 
@@ -167,9 +167,22 @@ define([
     var drawClickArea = function (path, info, x, y) {
         if (Array.isArray(path[0])) {
             drawClickPath(path, info, x, y);
-        } else {
+        } else if (path.length == 3) {
             drawClickCircle(path, info, x, y);
+        } else if (path.length == 4) {
+            drawClickRectangle(path, info, x, y);
         }
+    };
+
+    var drawClickRectangle = function (path, info, x, y) {
+        clickarea.save();
+        clickarea.translate(x, y);
+        clickarea.fillStyle = color.getColorString();
+        clickarea.beginPath();
+        clickarea.fillRect(path[0],path[1],path[2], path[3]);
+        clickAreaInfos[color.getColor()] = info;
+        color.nextColor();
+        clickarea.restore();
     };
 
     var drawClickCircle = function (path, info, x, y) {
@@ -234,7 +247,8 @@ define([
 
     var createTable = function (element) {
         table = createCanvas(element);
-        clickarea = createCanvas(element, true);
+        // clickarea = createCanvas(element, true);
+        clickarea = table;
         table.canvas.addEventListener('click', publishClick);
     };
 

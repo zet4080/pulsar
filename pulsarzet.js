@@ -66,6 +66,7 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
                 connect.publish("setup/techboardtokens", { players: gamedatas.players, tokens: gamedatas.techboardtokens });
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
+                connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });
                 canvas.drawBoard(this.board);
             }));
             console.log( "Ending game setup" );
@@ -159,11 +160,22 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
                     }
                 }
                 canvas.drawBoard(this.board);
-            });            
+            });     
+            
+            connect.subscribe("setup/shippositions", this, function (args) {
+                let shippositions = args.shippositions || args.args.shippositions;
+                let starcluster = this.board.getGameTile('starcluster');
+                starcluster.removeAllTokens('ship');
+                for (let i = 0; i < shippositions.length; i++) {
+                    starcluster.placeTokenAtPosition('ship', shippositions[i].position, this.players[shippositions[i].playerid].color);
+                }
+                canvas.drawBoard(this.board);
+            });
 
             connect.subscribe("setup/diceboard", this, function (args) {
                 let dice = args.dice || args.args.dice;
-                var diceboard = this.board.getGameTile('diceboard');
+                this.board.getGameTile('starcluster').removeAllTokens('dice');
+                let diceboard = this.board.getGameTile('diceboard');
                 diceboard.removeAllTokens('dice');
                 for (var i = 0; i < dice.length; i++) {
                     diceboard.placeTokenAtPosition('dice', dice[i].position, dice[i].value);
@@ -173,9 +185,8 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
 
             connect.subscribe("setup/playerdice", this, function (args) {
                 var dice = args.dice;
-                for (var i = 0; i < dice.length; i++) {
-                    let playerboard = this.board.getGameTile(dice[i].player);
-                    playerboard.removeAllTokens('dice');
+                for (let player in this.players) {
+                    this.board.getGameTile(player).removeAllTokens('dice');
                 }
                 for (var i = 0; i < dice.length; i++) {
                     let playerboard = this.board.getGameTile(dice[i].player);

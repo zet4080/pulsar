@@ -31,3 +31,9 @@ CREATE TABLE IF NOT EXISTS `json` (
   `value` varchar(65535) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `shipposition` (
+  `playerid` int(11) NOT NULL,
+  `position` tinyint UNSIGNED NOT NULL,
+  PRIMARY KEY (`playerid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

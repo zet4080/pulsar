@@ -108,6 +108,7 @@ class PulsarZet extends Table
         $result['initiativeTrack'] = Track::getTrackForClient('initiativeTrack');
         $result['techboardtokens'] = self::getAllTechboardTokens();
         $result['playerpoints'] = JSON::read('playerpoints');
+        $result['shippositions'] = self::getShipPositions();
         return $result;
     }
 
@@ -187,11 +188,9 @@ function getAllTechboardTokens () {
         throw new BgaUserException( self::_("This patent is not available.") );     
     }
 
-    function checkIfPlayerHasCorrectDice($neededDice) {
-        $player = self::getActivePlayerId();
-        $check = DBUtil::get('dice', array('player' => $player, 'value' => $neededDice));
-        if (count($check) == 0) {
-            throw new BgaUserException( self::_("You do not have the correct die.") );    
+    function checkIfItIsPlayerDie($tileId) {
+        if (self::getActivePlayerId() != $tileId) {
+            throw new BgaUserException( self::_("This is not your die! Choose one of your dice!") );     
         }
     }
 
@@ -219,15 +218,76 @@ function getAllTechboardTokens () {
 
         DBUtil::updateRow('patents', $patent, $patentRow);
     }
+    
+    function checkIfEntryPointIsValid($entryPoint) {
+        if (array_search($entryPoint, $this->entrypoints) === false) {
+            throw new BgaUserException(self::_("This is not a valid entry point!"));
+        }
+        $occupied = DBUtil::get('shipposition', array(
+            'position' => $entryPoint
+        ));
+        if (count($occupied) > 0) {
+            throw new BgaUserException(self::_("This entry point is already used!"));
+        }
+    }
+
+    function placeShipAtEntryPoint($entrypoint) {
+        $player = self::getActivePlayerId();
+        DBUtil::insertRow('shipposition', array(
+            'playerid' => $player,
+            'position' => $entrypoint
+        ));
+    }
+
+    function checkIfCorrectShipIsChoosen($variantId) {
+        $player = DBUtil::get('player', array('player_id' => self::getActivePlayerId()), null, 'player_color color')[0];
+        if ($player['color'] != $variantId) {
+            throw new BgaUserException(self::_("This is not your ship!"));
+        }
+    }
+
+    function calculateFlightPath($nodeId) {
+        $currentPosition = DBUtil::get('shipposition', self::getActivePlayerId(), null, 'position')[0]['position'];
+        If ($nodeId > $currentPosition) {
+            $path = $currentPosition . '-' . $nodeId;
+        } else {
+            $path = $nodeId . '-' . $currentPosition;
+        }
+        return $path;
+    }
+
+    function checkIfNodeIsReachable($path) {
+        if (array_search($path, $this->segments) === false) {
+            throw new BgaUserException(self::_("Node is not reachable from your current position!"));
+        }
+    }
+
+    function checkIfPathIsAlreadyUsed($path) {
+
+    }
+
+    function moveShip($newPosition) {
+        DBUtil::updateRow('shipposition', self::getActivePlayerId(), array ('position' => $newPosition));
+    }
+
+    function isPathFinished() {
+        return false;
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player Order
 ////////////     
 
     function calculatePlayerOrderRound() {
-        $players = Track::getPlayerOrder('initiativeTrack');
-        JSON::write('playerorderround', $players);                        
+        $order = Track::getPlayerOrder('initiativeTrack');
+        JSON::write('playerorderround', $order);                        
     }
+
+    function calculatePlayerOrderShipPlacement() {
+        $order = JSON::read('playerorderround');
+        $order = array_reverse($order);
+        JSON::write('playerorderphase', $order);
+    }    
 
     function calculatePlayerOrderDicePhase() {
         $first = JSON::read('playerorderround');
@@ -321,6 +381,10 @@ function getAllTechboardTokens () {
     function getBlackholeDice () {
         return DBUtil::get('dice', array('location' => 'blackhole'), null, 'id, value');
     }    
+
+    function getShipPositions () {
+        return DBUtil::get('shipposition');
+    }
 
     function moveDiceFromBoardToPlayer($value) {
         $dice = DBUtil::get('dice', array('location' => 'diceboard', 'value' => $value), null, 'id');
@@ -431,6 +495,12 @@ function getAllTechboardTokens () {
         ));
     }
 
+    function sendShipPosition() {
+        self::notifyAllPlayers("setup/shippositions", '', array(
+            'shippositions' => self::getShipPositions()
+        ));
+    }
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -462,6 +532,40 @@ function getAllTechboardTokens () {
         self::sendTrackInformation('initiativetrack', $track);
         $this->gamestate->nextState("trackChoosen");
     }  
+
+    function click_starcluster_in_state_player_choose_entrypoint($tileId, $clickAreaId) {
+        self::checkAction('chooseEntryPoint');
+        self::checkIfEntryPointIsValid($clickAreaId);
+        self::placeShipAtEntryPoint($clickAreaId);
+        self::sendShipPosition();
+        $this->gamestate->nextState("shipChoosen");
+    }    
+
+    function click_starcluster_in_state_player_select_ship_route($tileId, $clickAreaId) {
+        $path = self::calculateFlightPath($clickAreaId);
+        self::checkIfNodeIsReachable($path);
+        self::checkIfPathIsAlreadyUsed($path);
+        self::moveShip($clickAreaId);
+        self::sendShipPosition();
+        if (self::isPathFinished()) {
+            $this->gamestate->nextState("routeEnded");
+        }
+    }        
+
+    function click_ship_in_state_player_choose_action_or_modifier($tileId, $tokenId, $posId, $variantId) {
+        self::checkAction('flyShip');
+        self::checkIfCorrectShipIsChoosen($variantId);
+        $this->gamestate->nextState("flyShip");
+    }
+
+    function click_dice_in_state_player_choose_action_die($tileId, $tokenId, $posId, $variantId) {
+        self::checkAction('chooseDie');
+        self::checkIfItIsPlayerDie($tileId);
+        self::movePlayerDieToBlackHole($variantId);
+        self::sendDieUpdate($variantId);
+        self::setGameStateValue("choosenDie", $variantId);
+        $this->gamestate->nextState("dieChoosen");
+    }
     
     function click_A_1_1_in_state_player_choose_action($tileId) {
         self::checkAction('patentTechnology');
@@ -494,6 +598,8 @@ function getAllTechboardTokens () {
         self::createDice (count($players));
         JSON::write('playerorderround', $order);
         JSON::write('playerpoints', $points);
+        
+        self::calculatePlayerOrderShipPlacement();
         self::initializeDiceboardTracks();
 
         $this->gamestate->nextState("roundStarted");
@@ -504,6 +610,14 @@ function getAllTechboardTokens () {
         self::sendShipOrder();
         $this->gamestate->nextState("roundStarted");
     }
+    
+    function stCalculateNextPlayerDuringShipPlacement () {
+        if (self::activateNextPlayer() == true) {
+            $this->gamestate->nextState("nextPlayerCalculated");
+        } else {
+            $this->gamestate->nextState("startDicePhase");
+        }
+    }    
 
     function stStartDicePhase () {
         self::rollDice();

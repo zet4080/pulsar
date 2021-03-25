@@ -52,6 +52,8 @@ define([
     };
 
     var createPulsarBoard = function (players) {
+        imageloader.addImage('starcluster', 'img/starcluster-normal.webp');
+
         imageloader.addImage('marker', 'img/marker.webp');
         imageloader.addImage('ships', 'img/shipsprites.webp');
         imageloader.addImage('dice', 'img/dice.webp');
@@ -69,8 +71,8 @@ define([
         imageloader.addImage('tech3', 'img/A3.webp');
         imageloader.addImage('tech2', 'img/A2.webp');
         imageloader.addImage('tech1', 'img/A1.webp');
-        imageloader.addImage('starcluster', 'img/starcluster.webp');
         imageloader.addImage('token', 'img/token.webp');
+        imageloader.addImage('rings', 'img/pulsarrings.webp');
         
         return imageloader.loadImages().then(function (imagelist) {
             var board = gameboard('table');
@@ -127,6 +129,7 @@ define([
                 addDiceVariants(dice);
                 playerboard.addTokenPosition('dice', 0, 25, 20);
                 playerboard.addTokenPosition('dice', 1, 70, 20);
+                playerboard.makeTokensClickable('dice');
             }
             
             var engineertoken = diceboard.addToken('engineerToken', imagelist['colorstone']);
@@ -146,7 +149,14 @@ define([
             diceboard.addClickArea('engineeringtrack', [[357, 171], [701, 62, 1000, 152, 1043, 177], [1041, 217], [1001, 212, 708, 110, 363, 214]]);
             diceboard.addClickArea('initiativetrack', [[348, 74], [578, 21, 759, 2, 1052, 74], [1045, 124], [701, 19, 379, 121, 364, 121]]);
 
+            // ====================================================================================
+            // Starcluster
+            // ====================================================================================
+
             var starcluster = board.getGameTile('starcluster');
+
+            // Points
+
             var token = starcluster.addToken('token', imagelist['token']);
             token.addTokenVariant("008000", 0, 0, 35, 35);
             token.addTokenVariant("ff0000", 0, 35, 35, 35);
@@ -154,11 +164,74 @@ define([
             token.addTokenVariant("0000ff", 35, 35, 35, 35);
             addStarclusterTokenPositions(starcluster, 820);
 
+            // dice in black hole
+
             dice = starcluster.addToken('dice', imagelist['dice']);
             addDiceVariants(dice);
             starcluster.addTokenPositions('dice', [
-                [753, 744], [898, 758], [867, 706], [751, 873], [818, 883], [900, 818], [874, 874], [800, 694], [716, 816]
+                [753, 744], [898, 758], [867, 706], [751, 873], [818, 883], [900, 818], [874, 874], [800, 694]
             ]);
+
+            // ships
+            var ships = starcluster.addToken('ship', imagelist['ships']);
+            ships.addTokenVariant("0000ff", 0, 0, 60, 48);
+            ships.addTokenVariant("008000", 0, 48, 60, 48);
+            ships.addTokenVariant("ffa500", 0, 96, 60, 48);
+            ships.addTokenVariant("ff0000", 0, 144, 60, 48);            
+
+            let positions = [
+                [0,0], [91, 540], [161, 561], [298, 413], [405, 322], [422, 188], [559, 263], [577, 142], [635, 81], [796, 99], [916, 149],
+                [1019, 122], [1103, 163], [1050, 249], [1253, 213], [1178, 295], [1179, 453], [1261, 416], [1348, 440], [1434, 502], [1335, 606],
+                [1306, 717], [1439, 718], [1355, 813], [1524, 818], [1392, 909], [1388, 1025], [1374, 1126], [1263, 1152], [1347, 1240], [1267, 1351],
+                [1192, 1446], [1035, 1509], [757, 1539], [721, 1423], [634, 1378], [616, 1479], [463, 1482], [505, 1408], [362, 1362], [469, 1282],
+                [361, 1179], [262, 1204], [250, 1075], [159, 956], [176, 841], [117, 769], [108, 670], [231, 679], [303, 974], [404, 1032],
+                [458, 936], [581, 848], [567, 1052], [546, 1160], [629, 1234], [756, 1293], [805, 1368], [872, 1444], [934, 1294], [1059, 1282],
+                [1072, 1192], [949, 1065], [815, 979], [666, 942], [702, 1059], [794, 1116], [1056, 928], [1109, 778], [1238, 852], [1212, 969],
+                [1187, 639], [1058, 682], [993, 534], [1039, 371], [891, 420], [878, 296], [844, 550], [870, 667], [753, 649], [626, 678],
+                [518, 656], [484, 744], [350, 768], [391, 628], [503, 450], [715, 325], [656, 450]             
+            ];
+            starcluster.addTokenPositions('ship', positions);
+            starcluster.makeTokensClickable('ship');
+            for (let i = 1; i < positions.length; i++) {
+                starcluster.addClickArea(i, [positions[i][0], positions[i][1], 60, 50]);
+            };
+
+            // pulsar rings
+
+            var rings = starcluster.addToken('ring', imagelist['rings']);
+            rings.addTokenVariant("ffa500", 0, 0, 105, 105);
+            rings.addTokenVariant("0000ff", 0, 105, 105, 105);
+            rings.addTokenVariant("008000", 105, 0, 105, 105);
+            rings.addTokenVariant("ff0000", 105, 105, 105, 105);
+
+            starcluster.addTokenPosition('ring', 8, 477, 424);
+            starcluster.addTokenPosition('ring', 9, 623, 499);
+            starcluster.addTokenPosition('ring', 10, 726, 244);
+            starcluster.addTokenPosition('ring', 16, 1062, 265);
+            starcluster.addTokenPosition('ring', 23, 1133, 502);
+            starcluster.addTokenPosition('ring', 24, 1268, 581);
+            starcluster.addTokenPosition('ring', 27, 1489, 893);
+            starcluster.addTokenPosition('ring', 31, 1307, 902);
+            starcluster.addTokenPosition('ring', 37, 1014, 899);
+            starcluster.addTokenPosition('ring', 45, 1049, 1264);
+            starcluster.addTokenPosition('ring', 53, 803, 1048);
+            starcluster.addTokenPosition('ring', 58, 638, 1339);
+            starcluster.addTokenPosition('ring', 64, 362, 1092);
+            starcluster.addTokenPosition('ring', 74, 461, 556);
+            starcluster.addTokenPosition('ring', 79, 85, 759);
+
+            // gyrodynes
+
+            // click areas
+
+            starcluster.addClickArea(1, [108, 544, 44, 44]);
+            starcluster.addClickArea(14, [1266, 215, 44, 44]);
+            starcluster.addClickArea(24, [1542, 822, 44, 44]);
+            starcluster.addClickArea(37, [482, 1484, 44, 44]);
+
+            // ====================================================================================
+            // Techboards
+            // ====================================================================================
 
             var tech1 = board.getGameTile('tech1');
             var token = tech1.addToken('token', imagelist['token']);
