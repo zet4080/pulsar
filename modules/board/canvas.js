@@ -12,11 +12,11 @@ define([
         let fillColor = 16777215;
 
         var getColorString = function () {
-            return '#' + Number(fillColor).toString(16);
+            return '#' + Number(fillColor).toString(16).padStart(6, '0');
         };
 
         var getColor = function () {
-            return Number(fillColor).toString(16);
+            return Number(fillColor).toString(16).padStart(6, '0');
         };
 
         var nextColor = function () {
@@ -28,7 +28,7 @@ define([
         };
 
         var getColorFromPixel = function (pixel) {
-            return Number(pixel[0]).toString(16) + Number(pixel[1]).toString(16) + Number(pixel[2]).toString(16);
+            return Number(pixel[0]).toString(16).padStart(2, '0') + Number(pixel[1]).toString(16).padStart(2, '0') + Number(pixel[2]).toString(16).padStart(2, '0');
         };
 
         return {
@@ -247,8 +247,8 @@ define([
 
     var createTable = function (element) {
         table = createCanvas(element);
-        // clickarea = createCanvas(element, true);
-        clickarea = table;
+        clickarea = createCanvas(element, true);
+        // clickarea = table;
         table.canvas.addEventListener('click', publishClick);
     };
 

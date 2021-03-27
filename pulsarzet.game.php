@@ -38,7 +38,7 @@ class PulsarZet extends Table
         self::initGameStateLabels(array( 
             "markerPosition" => 10,
             "choosenDie" => 20,
-            "nrOfDice" => 30,
+            "nrOfDice" => 30
         ));        
 	}
 	
@@ -83,6 +83,7 @@ class PulsarZet extends Table
         JSON::create('playerorderround');
         JSON::create('playerorderphase');
         JSON::create('playerpoints');
+        JSON::create('flightpath');
 
         /************ End of the game initialization *****/
     }
@@ -256,21 +257,35 @@ function getAllTechboardTokens () {
         return $path;
     }
 
-    function checkIfNodeIsReachable($path) {
+    function checkIfNodeIsReachable($targetNode, $path) {
         if (array_search($path, $this->segments) === false) {
             throw new BgaUserException(self::_("Node is not reachable from your current position!"));
+        }
+
+        if (array_search($targetNode, array("1", "14", "24", "37"))) {
+            throw new BgaUserException(self::_("Can't fly back to starting position!"));
         }
     }
 
     function checkIfPathIsAlreadyUsed($path) {
-
+        $flightpath = JSON::read('flightpath')['path'];
+        if (array_search($path, $flightpath)) {
+            throw new BgaUserException(self::_("Segment already used!"));
+        }
     }
 
-    function moveShip($newPosition) {
+    function moveShip($newPosition, $path) {
         DBUtil::updateRow('shipposition', self::getActivePlayerId(), array ('position' => $newPosition));
+        $flightpath = JSON::read('flightpath');
+        $flightpath["path"][] = $path;
+        JSON::write('flightpath', $flightpath);
     }
 
     function isPathFinished() {
+        $flightpath = JSON::read('flightpath');
+        if (count($flightpath["path"]) == self::getGameStateValue('choosenDie')) {
+            return true;
+        }
         return false;
     }
 
@@ -543,9 +558,9 @@ function getAllTechboardTokens () {
 
     function click_starcluster_in_state_player_select_ship_route($tileId, $clickAreaId) {
         $path = self::calculateFlightPath($clickAreaId);
-        self::checkIfNodeIsReachable($path);
+        self::checkIfNodeIsReachable($clickAreaId, $path);
         self::checkIfPathIsAlreadyUsed($path);
-        self::moveShip($clickAreaId);
+        self::moveShip($clickAreaId, $path);
         self::sendShipPosition();
         if (self::isPathFinished()) {
             $this->gamestate->nextState("routeEnded");
@@ -555,6 +570,7 @@ function getAllTechboardTokens () {
     function click_ship_in_state_player_choose_action_or_modifier($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('flyShip');
         self::checkIfCorrectShipIsChoosen($variantId);
+        JSON::write('flightpath', array('path' => []));
         $this->gamestate->nextState("flyShip");
     }
 
