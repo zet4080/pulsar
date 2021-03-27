@@ -56,7 +56,6 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
             canvas.setScale(0.5);
             this.players = gamedatas.players;
             pulsarboard.createPulsarBoard(gamedatas.players).then(lang.hitch(this, function (board) {
-                debugger;
                 this.board = board;
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });
                 connect.publish("setup/marker", gamedatas.markerposition);

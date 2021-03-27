@@ -35,9 +35,10 @@ define([
     var addStarclusterTokenPositions = function (starcluster, radius) {
         let full = 2 * Math.PI;
         let step = (2 * Math.PI / 101);
+        let offset = Math.PI + 0.095;
         for (let i = 0; i < 100; i++) {
-            let sin = Math.sin(full - (i * step) + 0.01 - 2 * step);
-            let cos = Math.cos(full - (i * step) + 0.01 - 2 * step);
+            let sin = Math.sin(full - (i * step) + offset - 2 * step);
+            let cos = Math.cos(full - (i * step) + offset - 2 * step);
             let x = Math.floor((radius  * sin) + 842 - 17);
             let y = Math.floor((radius  * cos) + 842 - 17);
             starcluster.addTokenPosition('token', i, x, y);
