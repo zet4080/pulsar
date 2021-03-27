@@ -110,6 +110,7 @@ class PulsarZet extends Table
         $result['techboardtokens'] = self::getAllTechboardTokens();
         $result['playerpoints'] = JSON::read('playerpoints');
         $result['shippositions'] = self::getShipPositions();
+        $result['pulsars'] = self::getPulsars();
         return $result;
     }
 
@@ -289,6 +290,22 @@ function getAllTechboardTokens () {
         return false;
     }
 
+    function lookForAndCapturePulsar($node) {
+        if (array_search($node, $this->pulsar) !== false) {
+            $pulsar = DBUtil::get('pulsar', array ('node' => $node));
+            if (count($pulsar) === 0) {
+                DBUtil::insertRow('pulsar', array(
+                    'playerid' => self::getActivePlayerId(),
+                    'node' => $node,
+                    'gyrodyne' => 0,
+                    'active' => 0
+                ));
+                return true;
+            }
+        }
+        return false;
+    }
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player Order
 ////////////     
@@ -399,6 +416,10 @@ function getAllTechboardTokens () {
 
     function getShipPositions () {
         return DBUtil::get('shipposition');
+    }
+
+    function getPulsars () {
+        return DBUtil::get('pulsar');
     }
 
     function moveDiceFromBoardToPlayer($value) {
@@ -516,6 +537,12 @@ function getAllTechboardTokens () {
         ));
     }
 
+    function sendPulsarInformation() {
+        self::notifyAllPlayers("setup/pulsars", '', array(
+            'pulsars' => self::getPulsars()
+        ));
+    }
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -563,6 +590,9 @@ function getAllTechboardTokens () {
         self::moveShip($clickAreaId, $path);
         self::sendShipPosition();
         if (self::isPathFinished()) {
+            if (self::lookForAndCapturePulsar($clickAreaId)) {
+                self::sendPulsarInformation();
+            };
             $this->gamestate->nextState("routeEnded");
         }
     }        

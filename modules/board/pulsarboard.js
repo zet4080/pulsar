@@ -169,7 +169,6 @@ define([
             token.addTokenVariant("ffa500", 35, 0, 35, 35);
             token.addTokenVariant("0000ff", 35, 35, 35, 35);
             addStarclusterTokenPositions(starcluster, 820);
-            starcluster.placeTokenAtPosition('token', 0, '008000');
 
             // dice in black hole
 
@@ -206,26 +205,27 @@ define([
             // pulsar rings
 
             var rings = starcluster.addToken('ring', imagelist['rings']);
-            rings.addTokenVariant("ffa500", 0, 0, 105, 105);
-            rings.addTokenVariant("0000ff", 0, 105, 105, 105);
-            rings.addTokenVariant("008000", 105, 0, 105, 105);
-            rings.addTokenVariant("ff0000", 105, 105, 105, 105);
+            rings.addTokenVariant("008000", 0, 0, 85, 85);
+            rings.addTokenVariant("ffa500", 85, 0, 85, 85);
+            rings.addTokenVariant("0000ff", 170, 0, 85, 85);
+            rings.addTokenVariant("ff0000", 255, 0, 85, 85);
 
-            starcluster.addTokenPosition('ring', 8, 477, 424);
-            starcluster.addTokenPosition('ring', 9, 623, 499);
-            starcluster.addTokenPosition('ring', 10, 726, 244);
-            starcluster.addTokenPosition('ring', 16, 1062, 265);
-            starcluster.addTokenPosition('ring', 23, 1133, 502);
-            starcluster.addTokenPosition('ring', 24, 1268, 581);
-            starcluster.addTokenPosition('ring', 27, 1489, 893);
-            starcluster.addTokenPosition('ring', 31, 1307, 902);
-            starcluster.addTokenPosition('ring', 37, 1014, 899);
-            starcluster.addTokenPosition('ring', 45, 1049, 1264);
-            starcluster.addTokenPosition('ring', 53, 803, 1048);
-            starcluster.addTokenPosition('ring', 58, 638, 1339);
-            starcluster.addTokenPosition('ring', 64, 362, 1092);
-            starcluster.addTokenPosition('ring', 74, 461, 556);
-            starcluster.addTokenPosition('ring', 79, 85, 759);
+            starcluster.addTokenPosition('ring', 5, 416, 172);
+            starcluster.addTokenPosition('ring', 11, 1011, 108);
+            starcluster.addTokenPosition('ring', 16, 1170, 438);
+            starcluster.addTokenPosition('ring', 22, 1429, 698);
+            starcluster.addTokenPosition('ring', 28, 1256, 1134);
+            starcluster.addTokenPosition('ring', 35, 630, 1366);
+            starcluster.addTokenPosition('ring', 42, 254, 1189);
+            starcluster.addTokenPosition('ring', 47, 109, 653);
+            starcluster.addTokenPosition('ring', 50, 401, 1018);            
+            starcluster.addTokenPosition('ring', 61, 1063, 1174);
+            starcluster.addTokenPosition('ring', 66, 785, 1102);
+            starcluster.addTokenPosition('ring', 70, 1207, 951);            
+            starcluster.addTokenPosition('ring', 71, 1189, 626);
+            starcluster.addTokenPosition('ring', 76, 870, 279);
+            starcluster.addTokenPosition('ring', 78, 866, 654);
+            starcluster.addTokenPosition('ring', 87, 652, 432);
 
             // gyrodynes
 

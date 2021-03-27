@@ -66,6 +66,7 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
                 connect.publish("setup/techboardtokens", { players: gamedatas.players, tokens: gamedatas.techboardtokens });
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
                 connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });
+                connect.publish("setup/pulsars", { pulsars: gamedatas.pulsars });
                 canvas.drawBoard(this.board);
             }));
             console.log( "Ending game setup" );
@@ -227,6 +228,16 @@ function (declare, connect, lang, pulsarboard, canvas, calculatedicepositions, b
                 let engineerTrack = args.etrack;
                 this.setColorstonesOnDiceboardTracks('initiativeToken', initiativeTrack, args.players);
                 this.setColorstonesOnDiceboardTracks('engineerToken', engineerTrack, args.players);
+                canvas.drawBoard(this.board);
+            });
+
+            connect.subscribe("setup/pulsars", this, function (args) {
+                let pulsars = args.pulsars || args.args.pulsars;
+                let starcluster = this.board.getGameTile('starcluster');
+                starcluster.removeAllTokens('ring');
+                for (let i = 0; i < pulsars.length; i++) {
+                    starcluster.placeTokenAtPosition('ring', pulsars[i].node, this.players[pulsars[i].playerid].color);
+                }
                 canvas.drawBoard(this.board);
             });
 

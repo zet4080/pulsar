@@ -37,3 +37,11 @@ CREATE TABLE IF NOT EXISTS `shipposition` (
   `position` tinyint UNSIGNED NOT NULL,
   PRIMARY KEY (`playerid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `pulsar` (
+  `playerid` int(11) NOT NULL,
+  `node` tinyint UNSIGNED NOT NULL,
+  `gyrodyne` tinyint UNSIGNED NOT NULL,
+  `active` tinyint UNSIGNED NOT NULL,
+  PRIMARY KEY (`playerid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
