@@ -35,14 +35,19 @@ define([
     var addStarclusterTokenPositions = function (starcluster, radius) {
         let full = 2 * Math.PI;
         let step = (2 * Math.PI / 101);
-        let offset = Math.PI + 0.095;
-        for (let i = 0; i < 100; i++) {
-            let sin = Math.sin(full - (i * step) + offset - 2 * step);
-            let cos = Math.cos(full - (i * step) + offset - 2 * step);
+        let offset = Math.PI - 0.5 * step;
+        for (let i = 1; i < 100; i++) {
+            let sin = Math.sin(full - (i * step) + offset);
+            let cos = Math.cos(full - (i * step) + offset);
             let x = Math.floor((radius  * sin) + 842 - 17);
             let y = Math.floor((radius  * cos) + 842 - 17);
             starcluster.addTokenPosition('token', i, x, y);
         }
+        let sin = Math.sin(full + offset + 0.03);
+        let cos = Math.cos(full + offset + 0.03);
+        let x = Math.floor((radius  * sin) + 842 - 17);
+        let y = Math.floor((radius  * cos) + 842 - 17);
+        starcluster.addTokenPosition('token', 0, x, y);
     }
 
     var playerboards = {
@@ -164,6 +169,7 @@ define([
             token.addTokenVariant("ffa500", 35, 0, 35, 35);
             token.addTokenVariant("0000ff", 35, 35, 35, 35);
             addStarclusterTokenPositions(starcluster, 820);
+            starcluster.placeTokenAtPosition('token', 0, '008000');
 
             // dice in black hole
 
