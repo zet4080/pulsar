@@ -1,37 +1,55 @@
 define([
-    "bgagame/modules/board/gametile"
-], function (gametile) {
+    "dojo/_base/lang"
+], function (lang) {
 
-    var factory = function () {
-    
-        var tableElements = {};
+    const factory = function () {
 
-        var addGameTile = function (tileId, image, x, y, rotation) {
-            rotation = rotation || 0;
-            var tile = gametile({
-                tileId: tileId,
-                image: image,
+        let tilePositions = {};
+        let gametiles = {};
+        
+        const addTilePosition = function (position, parent, x, y, width, height) {
+            if (!lang.isString(parent)) {
+                height = width;
+                width = y;
+                y = x;
+                x = parent;
+                parent = null;
+            }
+            tilePositions[position] = {
+                parent: parent,
                 x: x,
                 y: y,
-                rotation: rotation * Math.PI / 180
-            });
-            tableElements[tileId] = tile;
-            return tile;
+                width: width,
+                height: height,
+            }
         };
 
-        var getGameTile = function (tileId) {
-            return tableElements[tileId];
+        const addGameTile = function (gametile, position) {
+            gametiles[position] = gametile;
         };
 
-        var getAllGameTiles = function () {
-            return tableElements;
+        const getAllGameTiles = function () {
+            return gametiles;
         };
+
+        const getGameTile = function (position) {
+            return gametiles[position];
+        }
+
+        const getTilePosition = function (position) {
+            return tilePositions[position];
+        }
 
         return {
+            addTilePosition: addTilePosition,
             addGameTile: addGameTile,
-            getGameTile: getGameTile,   
-            getAllGameTiles: getAllGameTiles         
-        };
+            getAllGameTiles: getAllGameTiles,
+            getTilePosition: getTilePosition,
+            getGameTile: getGameTile
+        }
+
     };
+
     return factory;
+
 });

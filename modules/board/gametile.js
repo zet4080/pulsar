@@ -1,130 +1,174 @@
 define([
-    "bgagame/modules/board/token"
-], function (token) {
-    var factory = function (properties) {
-       
-        var tokens = {};
-        var positions = {};
-        var tokensOnTile = {};
-        var clickareas = {};
-        var clickableTokens = {};
+    "bgagame/modules/board/clickarea"
+], function (clickarea) {
 
-        var dummy = {
-            x: 0, y: 0, rotation: 0
+    const getSprite = function (simage, sx, sy, swidth, sheight) {
+        if (simage && Number.isFinite(sx) && Number.isFinite(sy)) {
+            let canvas = document.createElement("canvas");
+            canvas.width = swidth;
+            canvas.height = sheight;
+            let context = canvas.getContext('2d');
+            context.drawImage(simage, sx, sy, swidth, sheight, 0, 0, swidth, sheight);
+            let image = new Image();
+            image.src = canvas.toDataURL("image/webp");
+            return image;
+        } 
+        return simage;
+    }
+
+    const overlay = function () {
+
+        const positions = {};
+
+        let tokens = {};
+        
+        let clickableTokens = false;
+        let clickinfo = null;
+
+        const addInsertPositions = function (posarray) {
+            for (let i = 0; i < posarray.length; i++) {
+                addInsertPosition(i, posarray[i][0], posarray[i][1], posarray[i][2]);
+            }
         };
 
-        var addTokenPosition = function (tokenId, positionId, x, y, rotation) {
-            if (!positions[tokenId]) {
-                positions[tokenId] = {};
-            }
-            positions[tokenId][positionId] = {
-                x: x,
-                y: y,
+        const addInsertPosition = function (posid, x, y, rotation) {
+            positions[posid] = {
+                x, y, 
                 rotation: rotation * Math.PI / 180
             };
         };
 
-        var removeAllTokenPositions = function () {
-            removeAllTokens();
-            positions = {};
-        };     
+        const removeAllTokens = function () {
+            tokens = {};
+        };
 
-        var addTokenPositions = function (tokenId, posarray) {
-            for (let i = 0; i < posarray.length; i++) {
-                addTokenPosition(tokenId, i, posarray[i][0], posarray[i][1], posarray[i][2] || 0);
+        const slotTokenInPosition = function (posid, token) {
+            tokens[posid] = [token, positions[posid].x, positions[posid].y, positions[posid].rotation];
+        };
+                
+        const makeTokensClickable = function (info) {
+            clickableTokens = true;
+            clickinfo = info;
+        }
+
+        const draw = function (context) {
+            for (let key in tokens) {
+                context.save();
+                context.translate(tokens[key][1], tokens[key][2]);
+                context.rotate(tokens[key][3]);
+                tokens[key][0].draw(context);
+                context.restore();
             }
         };
-
-        var removeAllTokens = function (tokenId) {
-            tokensOnTile[tokenId] = {};
-        };
-
-        var placeTokenAtPosition = function (tokenId, posId, variantId) {
-            variantId = variantId || 0;
-            if (!tokensOnTile[tokenId]) {
-                tokensOnTile[tokenId] = {};
+        const drawClickableTokens = function (context) {
+            if (clickableTokens == false) {
+                return;
             }
-            var variant = tokens[tokenId].getTokenVariant(variantId);
-            var pos = positions[tokenId][posId] || dummy;
-            tokensOnTile[tokenId][posId] = {
-                image: variant.image,
-                x: pos.x,
-                y: pos.y,
-                rotation: pos.rotation,
-                sx: variant.sx,
-                sy: variant.sy,
-                swidth: variant.swidth,
-                sheight: variant.sheight,
-                tileId: properties.tileId,
-                tokenId: tokenId,
-                posId: posId,
-                variantId: variantId
-            };
-        };
-
-        var removeTokenFromPosition = function (tokenId, posId) {
-            delete tokensOnTile[tokenId][posId];
-        };
-        
-        var isPositionOccupied = function (tokenId, posid) {
-            if (tokensOnTile[tokenId] && tokensOnTile[tokenId][posid]) {
-                return true;
+            for (let key in tokens) {
+                context.save();
+                context.translate(tokens[key][1], tokens[key][2]);
+                context.rotate(tokens[key][3]);
+                tokens[key][0].drawClickArea(context, clickinfo);
+                context.restore();
             }
-            return false;
-        };
+        };       
 
-        var addClickArea = function (id, path, info) {
-            info = info || {};
-            info['id'] = info['id'] || id;
-            clickareas[id] = {
-                path: path,
-                info: info
-            };
-        };
-
-        var makeTokensClickable = function (tokenId) {
-            clickableTokens[tokenId] = true;
-        };
-
-        var getAllClickAreas = function () {
-            return clickareas;
-        };
-
-        var addToken = function (id, image) {
-            tokens[id] = token(image);
-            return tokens[id];
-        };
-
-        var getProperties = function () {
-            return properties;
-        };
-
-        var getAllTokens = function () {
-            return tokensOnTile;
-        };
-
-        var getClickableTokens = function () {
-            return clickableTokens;
-        };
-
-        var that = {
-            addToken: addToken,
-            addTokenPosition: addTokenPosition,
-            addTokenPositions: addTokenPositions,
-            removeAllTokenPositions: removeAllTokenPositions,
+        return {
+            addInsertPositions: addInsertPositions,
+            addInsertPosition: addInsertPosition,
             removeAllTokens: removeAllTokens,
-            placeTokenAtPosition: placeTokenAtPosition,
-            removeTokenFromPosition: removeTokenFromPosition,
-            isPositionOccupied: isPositionOccupied,
-            getProperties: getProperties,
-            getAllTokens: getAllTokens,
-            addClickArea: addClickArea,
-            getAllClickAreas: getAllClickAreas,
+            slotTokenInPosition: slotTokenInPosition,
             makeTokensClickable: makeTokensClickable,
-            getClickableTokens: getClickableTokens
+            draw: draw,
+            drawClickableTokens: drawClickableTokens
+        };
+    };
+
+    const factory = function (simage, sx, sy, swidth, sheight) {
+        
+        let image = getSprite(simage, sx, sy, swidth, sheight);
+        
+        const overlays = {};
+
+        const tiles = {};
+
+        const clickareas = {};
+
+        const createOverlay = function (overlayName) {
+            overlays[overlayName] = overlay();
+            return overlays[overlayName];
         };
 
-        return that;
-    };
-    return factory;    
+        const getOverlay = function (overlayName) {
+            return overlays[overlayName];
+        };
+
+        const addGameTile = function (id, tile, x, y) {
+            tiles[id] = { tile, x, y };
+        };
+
+        const getGameTile = function (id) {
+            return tiles[id].tile;
+        };        
+
+        const draw = function (context) {
+            if (image) {
+                context.drawImage(image, 0, 0);
+            }
+            for (let i in tiles) {
+                context.save();
+                context.translate(tiles[i].x, tiles[i].y);
+                tiles[i].tile.draw(context);
+                context.restore();
+            }
+            for (let key in overlays) {
+                overlays[key].draw(context);
+            }
+        };
+
+        const drawClickAreas = function (context) {
+            for (let key in clickareas) {
+                clickareas[key].draw(context);
+            }
+            for (let i in tiles) {
+                context.save();
+                context.translate(tiles[i].x, tiles[i].y);
+                tiles[i].tile.drawClickAreas(context);
+                context.restore();
+            }
+            for (let key in overlays) {
+                overlays[key].drawClickableTokens(context);
+            }
+        };        
+        
+        const addClickArea = function (id, path, info) {
+            info = info || {};
+            info.id = id;
+            clickareas[id] = clickarea(path, info);
+        };
+
+        const addClickAreas = function (nodes, width, height, info) {
+            for (let i = 0; i < nodes.length; i++) {
+                if (Number.isFinite(width) && Number.isFinite(height)) {
+                    nodes[i][2] = width;
+                    nodes[i][3] = height;
+                }
+                addClickArea(i, nodes[i], info);
+            }
+        };
+
+        return {
+            draw: draw,
+            addGameTile: addGameTile,
+            getGameTile: getGameTile,
+            createOverlay: createOverlay,
+            getOverlay: getOverlay,
+            addClickAreas: addClickAreas,
+            addClickArea: addClickArea,
+            drawClickAreas: drawClickAreas
+        }    
+
+    }
+
+    return factory;
 });

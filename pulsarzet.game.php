@@ -79,7 +79,7 @@ class PulsarZet extends Table
         
         /************ Start the game initialization *****/
         
-        self::setGameStateInitialValue('markerPosition', 0);
+        self::setGameStateInitialValue('markerPosition', 6);
         JSON::create('playerorderround');
         JSON::create('playerorderphase');
         JSON::create('playerpoints');

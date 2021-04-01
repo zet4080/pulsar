@@ -11,6 +11,7 @@ define([
     loader.push(deferred);
 
     var image = new Image();
+    image.crossOrigin = "Anonymous";
     image.addEventListener('load', function() {
         images[id] = image;
         deferred.resolve(image);
