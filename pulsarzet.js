@@ -62,13 +62,13 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });                
+                connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });                
                 /*
                 connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
                 connect.publish("setup/playerdice", { players: gamedatas.players, dice: gamedatas.playerdice });
                 connect.publish("setup/blackholedice", { dice: gamedatas.blackhole });
                 connect.publish("setup/techboardtokens", { players: gamedatas.players, tokens: gamedatas.techboardtokens });
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
-                connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });
                 connect.publish("setup/pulsars", { pulsars: gamedatas.pulsars });
                 */
                 canvas.drawBoard(this.board);
@@ -163,17 +163,15 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                         techboard.placeTokenAtPosition('token', tech + '-' + (2 - i), variant);
                     }
                 }
-                canvas.drawBoard(this.board);
             });     
             
             connect.subscribe("setup/shippositions", this, function (args) {
                 let shippositions = args.shippositions || args.args.shippositions;
-                let starcluster = this.board.getGameTile('starcluster');
-                starcluster.removeAllTokens('ship');
+                let overlay = this.board.getGameTile('starcluster').getOverlay('ships');
+                overlay.removeAllTokens();
                 for (let i = 0; i < shippositions.length; i++) {
-                    starcluster.placeTokenAtPosition('ship', shippositions[i].position, this.players[shippositions[i].playerid].color);
+                    overlay.slotTokenInPosition( shippositions[i].position, tokentray('ship', this.players[shippositions[i].playerid].color));
                 }
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/diceboard", this, function (args) {
@@ -184,7 +182,6 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 for (var i = 0; i < dice.length; i++) {
                     overlay.slotTokenInPosition(dice[i].position, tokentray('dice', dice[i].value));
                 }
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/playerdice", this, function (args) {
@@ -197,7 +194,6 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                     let pos = playerboard.isPositionOccupied('dice', 0) ? 1 : 0;
                     playerboard.placeTokenAtPosition('dice', pos, dice[i]['value']);
                 }
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/blackholedice", this, function (args) {
@@ -213,7 +209,6 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 let overlay = this.board.getGameTile('diceboard').getOverlay('marker');
                 overlay.removeAllTokens();
                 overlay.slotTokenInPosition(markerposition - 1, tokentray("marker"));
-                canvas.drawBoard(this.board);
             });            
             
             connect.subscribe("setup/playerorder", this, function (args) {
@@ -224,7 +219,6 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 for (let i = 0; i < order.length; i++) {
                     overlay.slotTokenInPosition(i + 1, tokentray('ship', players[order[i]].color));
                 }
-                canvas.drawBoard(this.board);
             });            
 
             connect.subscribe("setup/tracks", this, function (args) {
@@ -232,7 +226,6 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 let engineerTrack = args.etrack;
                 this.setColorstonesOnDiceboardTracks('initiativeTokens', initiativeTrack, args.players);
                 this.setColorstonesOnDiceboardTracks('engineerTokens', engineerTrack, args.players);
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/pulsars", this, function (args) {
@@ -242,22 +235,18 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 for (let i = 0; i < pulsars.length; i++) {
                     starcluster.placeTokenAtPosition('ring', pulsars[i].node, this.players[pulsars[i].playerid].color);
                 }
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("server/engineeringtrack/player_choose_track", this, function (args) {
                 this.setColorstonesOnDiceboardTracks('engineerTokens', args.track, args.players);
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("server/initiativetrack/player_choose_track", this, function (args) {
                 this.setColorstonesOnDiceboardTracks('initiativeTokens', args.track, args.players);
-                canvas.drawBoard(this.board);
             });       
             
             connect.subscribe("server/settechboardtoken", this, function(args) {
                 this.setTokenOnTechBoard(args.args.player_id, args.args.patent);
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("server/updatedie", this, function(args) {
@@ -272,7 +261,6 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 
                 let pos = playerboard.isPositionOccupied('dice', 0) ? 1 : 0;
                 playerboard.placeTokenAtPosition('dice', pos, args.variantId);
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/playerpoints", this, function (args) {
@@ -282,7 +270,6 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 for (let id in playerpoints) {
                     starcluster.placeTokenAtPosition('token', playerpoints[id], this.players[id].color);
                 };
-                canvas.drawBoard(this.board);
             });
         },  
    });             

@@ -40,13 +40,20 @@
   	
     public function click() {
       self::setAjaxMode();
-      $tileId = self::getArg("tileId", AT_alphanum, true);
+      $componentId = self::getArg("componentId", AT_alphanum, true);
       $tokenId = self::getArg("tokenId", AT_alphanum, false);
       $posId = self::getArg("posId", AT_alphanum, false);
       $variantId = self::getArg("variantId", AT_alphanum, false);
       $clickAreaId = self::getArg("clickAreaId", AT_alphanum, false);
       $currentState = $this->game->gamestate->state();
 
+      if ($componentId == "starcluster") {
+        $methodName = "click_" . $componentId . '_in_state_' . $currentState['name'];
+        $this->game->$methodName($componentId, $clickAreaId);
+      } else {
+        self::error('ERROR IN ACTION');
+      }
+/*
       if (isset($tokenId)) {
         $methodName = "click_" . $tokenId . '_in_state_' . $currentState['name'];
         $this->game->$methodName($tileId, $tokenId, $posId, $variantId);
@@ -57,6 +64,7 @@
         $methodName = "click_" . $clickAreaId . '_in_state_' . $currentState['name'];
         $this->game->$methodName($tileId, $clickAreaId);
       }
+*/
       self::ajaxResponse();
     }
 

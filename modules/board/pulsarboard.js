@@ -39,65 +39,80 @@ define([
         imageloader.addImage('tech1', 'img/A1.webp');
 
         imageloader.addImage('marker', 'img/marker.webp');
-        imageloader.addImage('ships', 'img/shipsprites.webp');
-        imageloader.addImage('dice', 'img/dice.webp');
-        imageloader.addImage('colorstone', 'img/colorstone.webp');
-        imageloader.addImage('token', 'img/token.webp');
+        imageloader.addImage('ships', 'img/shipsprites.webp', {
+            "0000ff": [0, 0, 60, 48],
+            "008000": [0, 48, 60, 48],
+            "ffa500": [0, 96, 60, 48],
+            "ff0000": [0, 144, 60, 48]
+        });
+        imageloader.addImage('dice', 'img/dice.webp', {
+            "1": [0, 0, 35, 35],
+            "2": [35, 0, 35, 35],
+            "3": [70, 0, 35, 35],
+            "4": [105, 0, 35, 35],
+            "5": [140, 0, 35, 35],
+            "6": [175, 0, 35, 35]
+        });
+        imageloader.addImage('token', 'img/token.webp', {
+            "0000ff": [35, 35, 35, 35],
+            "008000": [0, 0, 35, 35],
+            "ffa500": [35, 0, 35, 35],
+            "ff0000": [0, 35, 35, 35]
+        });
         imageloader.addImage('rings', 'img/pulsarrings.webp');
 
         return imageloader.loadImages().then(function (imagelist) {
-
-            tokentray("starcluster", gametile(imagelist.starcluster));
-            tokentray("diceboard", gametile(imagelist.diceboard));
-            tokentray("gyrodyneboard", gametile(imagelist.gyrodyneboard));
-            tokentray("modifierboard", gametile(imagelist.modifierboard));
+            tokentray(gametile("starcluster", imagelist.starcluster));
+            tokentray(gametile("diceboard", imagelist.diceboard));
+            tokentray(gametile("gyrodyneboard", imagelist.gyrodyneboard));
+            tokentray(gametile("modifierboard", imagelist.modifierboard));
             
-            tokentray("tech1", gametile(imagelist.tech1));
-            tokentray("tech2", gametile(imagelist.tech2));
-            tokentray("tech3", gametile(imagelist.tech3));
+            tokentray(gametile("tech1", imagelist.tech1));
+            tokentray(gametile("tech2", imagelist.tech2));
+            tokentray(gametile("tech3", imagelist.tech3));
 
-            tokentray("playerboard1", gametile(imagelist.playerboard));
-            tokentray("playerboard2", gametile(imagelist.playerboard));
-            tokentray("playerboard3", gametile(imagelist.playerboard));
-            tokentray("playerboard4", gametile(imagelist.playerboard));
+            tokentray(gametile("playerboard1", imagelist.playerboard));
+            tokentray(gametile("playerboard2", imagelist.playerboard));
+            tokentray(gametile("playerboard3", imagelist.playerboard));
+            tokentray(gametile("playerboard4", imagelist.playerboard));
 
-            tokentray('marker', token(imagelist.marker));
+            tokentray(token(imagelist.marker, 'marker'));
 
-            tokentray('ship', "0000ff", token(imagelist.ships, 0, 0, 60, 48));
-            tokentray('ship', "008000", token(imagelist.ships, 0, 48, 60, 48));
-            tokentray('ship', "ffa500", token(imagelist.ships, 0, 96, 60, 48));
-            tokentray('ship', "ff0000", token(imagelist.ships, 0, 144, 60, 48));
+            tokentray(token(imagelist["ships"]["0000ff"], 'ship', '0000ff'));
+            tokentray(token(imagelist["ships"]["008000"], 'ship', "008000"));
+            tokentray(token(imagelist["ships"]["ffa500"], 'ship', "ffa500"));
+            tokentray(token(imagelist["ships"]["ff0000"], 'ship', "ff0000"));
 
-            tokentray('dice', 1, token(imagelist.dice, 0, 0, 35, 35));
-            tokentray('dice', 2, token(imagelist.dice, 35, 0, 35, 35));
-            tokentray('dice', 3, token(imagelist.dice, 70, 0, 35, 35));
-            tokentray('dice', 4, token(imagelist.dice, 105, 0, 35, 35));
-            tokentray('dice', 5, token(imagelist.dice, 140, 0, 35, 35));
-            tokentray('dice', 6, token(imagelist.dice, 175, 0, 35, 35));
+            tokentray(token(imagelist["dice"]["1"], 'dice', 1));
+            tokentray(token(imagelist["dice"]["2"], 'dice', 2));
+            tokentray(token(imagelist["dice"]["3"], 'dice', 3));
+            tokentray(token(imagelist["dice"]["4"], 'dice', 4));
+            tokentray(token(imagelist["dice"]["5"], 'dice', 5));
+            tokentray(token(imagelist["dice"]["6"], 'dice', 6));
 
-            tokentray('token', "0000ff", token(imagelist.token, 35, 35, 35, 35));
-            tokentray('token', "008000", token(imagelist.token, 0, 0, 35, 35));
-            tokentray('token', "ffa500", token(imagelist.token, 35, 0, 35, 35));
-            tokentray('token', "ff0000", token(imagelist.token, 0, 35, 35, 35));
+            tokentray(token(imagelist["token"]["0000ff"], 'token', "0000ff"));
+            tokentray(token(imagelist["token"]["008000"], 'token', "008000"));
+            tokentray(token(imagelist["token"]["ffa500"], 'token', "ffa500"));
+            tokentray(token(imagelist["token"]["ff0000"], 'token', "ff0000"));
             
         }).then(function () {
 
             const board = gametile()
 
-            board.addGameTile('diceboard', tokentray('diceboard'), 483, 0);
-            board.addGameTile('gyrondyneboard', tokentray('gyrodyneboard'), 0, 503);
-            board.addGameTile('modifierboard', tokentray('modifierboard'), 220, 1471);
+            board.addGameTile(tokentray('diceboard'), 483, 0);
+            board.addGameTile(tokentray('gyrodyneboard'), 0, 503);
+            board.addGameTile(tokentray('modifierboard'), 220, 1471);
             
-            board.addGameTile('starcluster', tokentray('starcluster'), 352, 408);
+            board.addGameTile(tokentray('starcluster'), 352, 408);
 
-            board.addGameTile('tech1', tokentray('tech1'), 1958, 852);
-            board.addGameTile('tech2', tokentray('tech2'),  2224, 924);
-            board.addGameTile('tech3', tokentray('tech3'),  2591, 956);
+            board.addGameTile(tokentray('tech1'), 1958, 852);
+            board.addGameTile(tokentray('tech2'),  2224, 924);
+            board.addGameTile(tokentray('tech3'),  2591, 956);
 
-            board.addGameTile('playerboard1', tokentray('playerboard1'), 37, 2183);
-            board.addGameTile('playerboard2', tokentray('playerboard2'), 742, 2183);
-            board.addGameTile('playerboard3', tokentray('playerboard3'), 1447, 2183);
-            board.addGameTile('playerboard4', tokentray('playerboard4'), 2152, 2183)
+            board.addGameTile(tokentray('playerboard1'), 37, 2183);
+            board.addGameTile(tokentray('playerboard2'), 742, 2183);
+            board.addGameTile(tokentray('playerboard3'), 1447, 2183);
+            board.addGameTile(tokentray('playerboard4'), 2152, 2183)
             
             // ================================================================
             // Diceboard
@@ -141,14 +156,9 @@ define([
                 [518, 656], [484, 744], [350, 768], [391, 628], [503, 450], [715, 325], [656, 450]             
             ];
 
-            tokentray('starcluster').addClickAreas(nodes, 60, 50, {
-                tileId: 'starcluster'
-            });
-
+            tokentray('starcluster').addClickAreas(nodes, 60, 50);
             tokentray('starcluster').createOverlay('ships').addInsertPositions(nodes);
-            tokentray('starcluster').getOverlay('ships').makeTokensClickable({
-                tileId: 'starcluster'
-            });
+            tokentray('starcluster').getOverlay('ships').makeTokensClickable();
             
             return board;
         });

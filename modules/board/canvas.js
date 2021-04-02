@@ -1,7 +1,6 @@
 define([
-    "dojo/_base/connect",
-    "bgagame/modules/util/backend"
-], function (connect, backend) {
+    "dojo/_base/connect"
+], function (connect, when) {
     
     let table = null;
     let clickarea = null;
@@ -56,8 +55,33 @@ define([
         table.clearRect(0, 0, table.canvas.width, table.canvas.height);
         table.save();            
         table.scale(viewport.scale, viewport.scale);
-        board.draw(table);
+        recurseGameElements(board.overlays, board.tiles, table);
         table.restore();        
+    };
+
+    const recurseGameElements = function (overlays, tiles, table) {
+        drawTokens(overlays, table);
+        for (let key in tiles) {
+            let tile = tiles[key];
+            table.drawImage(tile.tile.image, tile.x, tile.y);
+            table.save();
+            table.translate(tile.x, tile.y);
+            recurseGameElements(tile.tile.overlays, tile.tile.tiles, table);
+            table.restore();
+        }
+    };
+
+    const drawTokens = function (overlays, table) {
+        for (let key in overlays) {
+            let tokens = overlays[key].tokens
+            for (let pos in tokens) {
+                table.save();
+                table.translate(tokens[pos].x, tokens[pos].y);
+                table.rotate(tokens[pos].rotation);
+                table.drawImage(tokens[pos].token.image, 0, 0);
+                table.restore();
+            }
+        }
     };
     
     const drawClickCanvas = function (board) {
@@ -65,9 +89,31 @@ define([
         clickarea.clearRect(0, 0, table.canvas.width, table.canvas.height);
         clickarea.save();            
         clickarea.scale(viewport.scale, viewport.scale);
-        board.drawClickAreas(clickarea);
+        recurseClickElements(board.clickareas, board.overlays, board.tiles, clickarea);
         clickarea.restore();
     };
+
+    const recurseClickElements = function (clickareas, overlays, tiles, table) {
+        for (let key in clickareas) { clickareas[key].draw(table); };
+        for (let key in tiles) {
+            let tile = tiles[key];
+            table.save();
+            table.translate(tile.x, tile.y);
+            recurseClickElements(tile.tile.clickareas, tile.tile.overlays, tile.tile.tiles, table);
+            table.restore();
+        }        
+    }
+
+    const drawClickAreas = function (overlays, table) {
+        for (let key in overlays) {
+            let tokens = overlays[key].clickareas;
+            for (let pos in tokens) {
+                table.save();
+
+                table.restore();
+            }
+        }        
+    }
 
     return {
         createTable: createTable,

@@ -1,6 +1,7 @@
 define([
     "dojo/_base/connect",
-], function (connect) {
+    "bgagame/modules/util/backend"
+], function (connect, backend) {
 
     let infos = {};
 
@@ -39,20 +40,10 @@ define([
             return;
         }
 
-        let args = {
-            tileId: String(info.tileId),
-        };
-
-        if (info.tokenId) {
-            args['tokenId'] = String(info.tokenId);
-            args['posId'] = String(info.posId);
-            args['variantId'] = String(info.variantId);
+        let args = {};
+        for (let key in info) {
+            args[key] = String(info[key]);
         }
-
-        if (info.id) {
-            args['clickAreaId'] = String(info.id);
-        }
-        
         backend.call("click", args);
     });    
 
@@ -67,13 +58,13 @@ define([
                 drawClickRectangle(context);
             }
             infos[color.getColor()] = info;
+            color.nextColor();
         }
         
         const drawClickRectangle = function (context) {
             context.fillStyle = color.getColorString();
             context.beginPath();
             context.fillRect(path[0],path[1],path[2], path[3]);
-            color.nextColor();
         };
     
         var drawClickCircle = function (context) {
@@ -82,7 +73,6 @@ define([
             context.moveTo(path[0][0], path[0][1]);
             context.arc(path[0],path[1],path[2], 0, 2 * Math.PI);
             context.fill();
-            color.nextColor();
         };
     
         var drawClickPath = function (context) {
@@ -98,7 +88,6 @@ define([
                 }
             }
             context.fill();
-            color.nextColor();
         };        
 
         return {
