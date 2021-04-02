@@ -83,12 +83,12 @@ define([
             tokentray(token(imagelist["ships"]["ffa500"], 'ship', "ffa500"));
             tokentray(token(imagelist["ships"]["ff0000"], 'ship', "ff0000"));
 
-            tokentray(token(imagelist["dice"]["1"], 'dice', 1));
-            tokentray(token(imagelist["dice"]["2"], 'dice', 2));
-            tokentray(token(imagelist["dice"]["3"], 'dice', 3));
-            tokentray(token(imagelist["dice"]["4"], 'dice', 4));
-            tokentray(token(imagelist["dice"]["5"], 'dice', 5));
-            tokentray(token(imagelist["dice"]["6"], 'dice', 6));
+            tokentray(token(imagelist["dice"]["1"], 'dice', "1"));
+            tokentray(token(imagelist["dice"]["2"], 'dice', "2"));
+            tokentray(token(imagelist["dice"]["3"], 'dice', "3"));
+            tokentray(token(imagelist["dice"]["4"], 'dice', "4"));
+            tokentray(token(imagelist["dice"]["5"], 'dice', "5"));
+            tokentray(token(imagelist["dice"]["6"], 'dice', "6"));
 
             tokentray(token(imagelist["token"]["0000ff"], 'token', "0000ff"));
             tokentray(token(imagelist["token"]["008000"], 'token', "008000"));
@@ -119,7 +119,7 @@ define([
             // ================================================================
 
             tokentray('diceboard').createOverlay('marker').addInsertPositions([
-                [175, 484, -31], [268, 431, -25], [370, 389, -16], [471, 355, -11], [581, 336, -3], [684, 328],
+                [], [175, 484, -31], [268, 431, -25], [370, 389, -16], [471, 355, -11], [581, 336, -3], [684, 328],
                 [793, 332, 8], [898, 350, 21], [1003, 377, 26], [1107, 415, 36], [1201, 466, 40]
             ]);            
 
@@ -159,6 +159,9 @@ define([
             tokentray('starcluster').addClickAreas(nodes, 60, 50);
             tokentray('starcluster').createOverlay('ships').addInsertPositions(nodes);
             tokentray('starcluster').getOverlay('ships').makeTokensClickable();
+            tokentray('starcluster').createOverlay('dice').addInsertPositions([
+                [753, 744], [898, 758], [867, 706], [751, 873], [818, 883], [900, 818], [874, 874], [800, 694], [800, 694]
+            ]);
             
             return board;
         });

@@ -42,7 +42,7 @@ define([
 
     const createTable = function (element) {
         table = createCanvas(element);
-        clickarea = createCanvas(element);
+        clickarea = createCanvas(element, true);
         table.canvas.addEventListener('click', publishClick);        
     };
     
