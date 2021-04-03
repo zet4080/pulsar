@@ -88,6 +88,16 @@ define([
             delete tokens[pos];
         }
 
+        const getFreePositions = function () {
+            let list = [];
+            for (let key in positions) {
+                if (!token[key]) {
+                    list.push(key);
+                }
+            }
+            return list;
+        };
+
         const that = {
             isPositionOccupied: isPositionOccupied,
             addInsertPositions: addInsertPositions,
@@ -96,6 +106,7 @@ define([
             slotTokenInPosition: slotTokenInPosition,
             makeTokensClickable: makeTokensClickable,
             getTokens: getTokens,
+            getFreePositions: getFreePositions,
             removeTokenFromPosition: removeTokenFromPosition
         };
 

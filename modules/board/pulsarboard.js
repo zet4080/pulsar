@@ -236,7 +236,63 @@ define([
             rings.addInsertPosition(42, 254, 1189); rings.addInsertPosition(47, 109, 653); rings.addInsertPosition(50, 401, 1018);            
             rings.addInsertPosition(61, 1063, 1174); rings.addInsertPosition(66, 785, 1102); rings.addInsertPosition(70, 1207, 951); 
             rings.addInsertPosition(71, 1189, 626); rings.addInsertPosition(76, 870, 279); rings.addInsertPosition(78, 866, 654);
-            rings.addInsertPosition(87, 652, 432);            
+            rings.addInsertPosition(87, 652, 432);   
+            
+            // ================================================================
+            // Planetary Systems
+            // ================================================================
+            
+            tokentray('system-01').createOverlay('blue').addInsertPositions([[12, 48], [47, 13], [94, 13], [130, 48]]);
+            tokentray('system-01').createOverlay('stone').addInsertPositions([]);
+
+            tokentray('system-02').createOverlay('blue').addInsertPositions([[12, 48], [47, 13], [130, 48]]);
+            tokentray('system-02').createOverlay('stone').addInsertPositions([]);
+
+            tokentray('system-03').createOverlay('blue').addInsertPositions([[47, 13], [130, 48]]);
+            tokentray('system-03').createOverlay('stone').addInsertPositions([[12, 48]]);
+
+            tokentray('system-04').createOverlay('blue').addInsertPositions([[94, 13]]);
+            tokentray('system-04').createOverlay('stone').addInsertPositions([[12, 48]]);
+
+            tokentray('system-05').createOverlay('blue').addInsertPositions([[47, 13]]);
+            tokentray('system-05').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
+
+            tokentray('system-06').createOverlay('blue').addInsertPositions([[47, 13]]);
+            tokentray('system-06').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
+
+            tokentray('system-07').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
+            tokentray('system-07').createOverlay('stone').addInsertPositions([[12, 48]]);
+
+            tokentray('system-08').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
+            tokentray('system-08').createOverlay('stone').addInsertPositions([[12, 48]]);
+
+            tokentray('system-09').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
+            tokentray('system-09').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
+
+            tokentray('system-10').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
+            tokentray('system-10').createOverlay('stone').addInsertPositions([[130, 48]]);
+
+            tokentray('system-11').createOverlay('blue').addInsertPositions([[47, 13]]);
+            tokentray('system-11').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
+
+            tokentray('system-12').createOverlay('blue').addInsertPositions([[94, 13]]);
+            tokentray('system-12').createOverlay('stone').addInsertPositions([[12, 48]]);
+
+            tokentray('system-13').createOverlay('blue').addInsertPositions([[47, 13]]);
+            tokentray('system-13').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
+
+            tokentray('system-14').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
+            tokentray('system-14').createOverlay('stone').addInsertPositions([]);
+
+            tokentray('system-15').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
+            tokentray('system-15').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
+
+            tokentray('system-16').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
+            tokentray('system-16').createOverlay('stone').addInsertPositions([[130, 48]]);
+
+            tokentray('system-17').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
+            tokentray('system-17').createOverlay('stone').addInsertPositions([]);            
+
             return board;
         });
     }

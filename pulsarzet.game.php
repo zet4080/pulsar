@@ -40,6 +40,9 @@ class PulsarZet extends Table
             "choosenDie" => 20,
             "nrOfDice" => 30
         ));        
+
+        $this->systemcards = self::getNew( "module.common.deck" );
+        $this->systemcards->init( "planetarysystems" );          
 	}
 	
     protected function getGameName( )
@@ -84,6 +87,12 @@ class PulsarZet extends Table
         JSON::create('playerorderphase');
         JSON::create('playerpoints');
         JSON::create('flightpath');
+
+        $systems = array();
+        for ($value = 1; $value <= 17; $value++) {
+            $array[] = array('type' => $value, 'type_arg' => $value, 'nbr' => 1);
+        }
+        $this->systemcards->createCards($systems, 'deck');
 
         /************ End of the game initialization *****/
     }

@@ -35,3 +35,23 @@ $this->segments = array (
   "72-73", "73-75", "74-75", "75-77", "77-78", "77-79", "78-79", "79-80", "80-81", "81-84", "82-84", 
   "83-84", "84-85", "85-86", "85-87", "86-87"
 );
+
+$this->systems = array(
+  1 => array("blue" => 4, "stone" => 0),
+  2 => array("blue" => 3, "stone" => 0),
+  3 => array("blue" => 2, "stone" => 1),
+  4 => array("blue" => 1, "stone" => 1),
+  5 => array("blue" => 1, "stone" => 2),
+  6 => array("blue" => 1, "stone" => 2),
+  7 => array("blue" => 2, "stone" => 1),
+  8 => array("blue" => 2, "stone" => 1),
+  9 => array("blue" => 2, "stone" => 2),
+  10 => array("blue" =>2, "stone" => 1),
+  11 => array("blue" =>1, "stone" => 2),
+  12 => array("blue" =>1, "stone" => 1),
+  13 => array("blue" =>1, "stone" => 2),
+  14 => array("blue" =>2, "stone" => 2),
+  15 => array("blue" =>2, "stone" => 2),
+  16 => array("blue" =>2, "stone" => 1),
+  17 => array("blue" =>2, "stone" => 0),
+);
