@@ -24,6 +24,24 @@ define([
         addAllPos(overlay, 11, 818, 9); addAllPos(overlay, 12, 863, 16); addAllPos(overlay, 13, 910, 22); addAllPos(overlay, 14, 955, 33); addAllPos(overlay, 15, 1001, 46);
     };    
 
+    const addStarclusterTokenPositions = function (starcluster, radius) {
+        let full = 2 * Math.PI;
+        let step = (2 * Math.PI / 101);
+        let offset = Math.PI - 0.5 * step;
+        for (let i = 1; i < 100; i++) {
+            let sin = Math.sin(full - (i * step) + offset);
+            let cos = Math.cos(full - (i * step) + offset);
+            let x = Math.floor((radius  * sin) + 842 - 17);
+            let y = Math.floor((radius  * cos) + 842 - 17);
+            starcluster.addInsertPosition(i, x, y);
+        }
+        let sin = Math.sin(full + offset + 0.03);
+        let cos = Math.cos(full + offset + 0.03);
+        let x = Math.floor((radius  * sin) + 842 - 17);
+        let y = Math.floor((radius  * cos) + 842 - 17);
+        starcluster.addInsertPosition(0, x, y);
+    };
+
     const createPulsarBoard = function (players) {
         
         imageloader.addImage('starcluster', 'img/starcluster-normal.webp');
@@ -59,8 +77,14 @@ define([
             "ffa500": [35, 0, 35, 35],
             "ff0000": [0, 35, 35, 35]
         });
-        imageloader.addImage('rings', 'img/pulsarrings.webp');
-        
+
+        imageloader.addImage('rings', 'img/pulsarrings.webp', {
+            "0000ff": [170, 0, 85, 85],
+            "008000": [0, 0, 85, 85],
+            "ffa500": [85, 0, 85, 85],
+            "ff0000": [255, 0, 85, 85]
+        });
+
         imageloader.addImage('planetarysystems', 'img/planetarysystems.webp', {
              "0": [0, 0, 177, 130],    "1": [177, 0, 177, 130],    "2": [354, 0, 177, 130],
              "3": [0, 130, 177, 130],  "4": [177, 130, 177, 130],  "5": [354, 130, 177, 130],
@@ -81,10 +105,9 @@ define([
             tokentray(gametile("tech2", imagelist.tech2));
             tokentray(gametile("tech3", imagelist.tech3));
 
-            tokentray(gametile("playerboard1", imagelist.playerboard));
-            tokentray(gametile("playerboard2", imagelist.playerboard));
-            tokentray(gametile("playerboard3", imagelist.playerboard));
-            tokentray(gametile("playerboard4", imagelist.playerboard));
+            for (let key in players) {
+                tokentray(gametile(key, imagelist.playerboard));
+            }
 
             tokentray(token(imagelist.marker, 'marker'));
 
@@ -104,6 +127,11 @@ define([
             tokentray(token(imagelist["token"]["008000"], 'token', "008000"));
             tokentray(token(imagelist["token"]["ffa500"], 'token', "ffa500"));
             tokentray(token(imagelist["token"]["ff0000"], 'token', "ff0000"));
+
+            tokentray(token(imagelist["rings"]["0000ff"], 'ring', "0000ff"));
+            tokentray(token(imagelist["rings"]["008000"], 'ring', "008000"));
+            tokentray(token(imagelist["rings"]["ffa500"], 'ring', "ffa500"));
+            tokentray(token(imagelist["rings"]["ff0000"], 'ring', "ff0000"));
 
             tokentray(gametile("system-00", imagelist["planetarysystems"]["0"])); tokentray(gametile("system-06", imagelist["planetarysystems"]["6"])); tokentray(gametile("system-12", imagelist["planetarysystems"]["12"]));
             tokentray(gametile("system-01", imagelist["planetarysystems"]["1"])); tokentray(gametile("system-07", imagelist["planetarysystems"]["7"])); tokentray(gametile("system-13", imagelist["planetarysystems"]["13"]));
@@ -126,10 +154,16 @@ define([
             board.addGameTile(tokentray('tech2'),  2224, 924);
             board.addGameTile(tokentray('tech3'),  2591, 956);
 
-            board.addGameTile(tokentray('playerboard1'), 37, 2183);
-            board.addGameTile(tokentray('playerboard2'), 742, 2183);
-            board.addGameTile(tokentray('playerboard3'), 1447, 2183);
-            board.addGameTile(tokentray('playerboard4'), 2152, 2183)
+            let plpos = [37, 742, 1447, 2152];
+            let i = 0;
+            for (let key in players) {
+                board.addGameTile(tokentray(key), plpos[i], 2183);
+                let overlay = tokentray(key).createOverlay('dice');
+                overlay.addInsertPosition("0", 25, 20);
+                overlay.addInsertPosition("1", 70, 20);
+                overlay.makeTokensClickable();
+                i++;
+            }
             
             // ================================================================
             // Diceboard
@@ -156,6 +190,9 @@ define([
             
             addEngineerTokenPositions(tokentray('diceboard').createOverlay('engineerTokens'));
             addInitiativeTokenPositions(tokentray('diceboard').createOverlay('initiativeTokens'));
+
+            tokentray('diceboard').addClickArea('engineeringtrack', [[357, 171], [701, 62, 1000, 152, 1043, 177], [1041, 217], [1001, 212, 708, 110, 363, 214]]);
+            tokentray('diceboard').addClickArea('initiativetrack', [[348, 74], [578, 21, 759, 2, 1052, 74], [1045, 124], [701, 19, 379, 121, 364, 121]]);
             
             // ================================================================
             // Starcluster
@@ -173,12 +210,17 @@ define([
                 [518, 656], [484, 744], [350, 768], [391, 628], [503, 450], [715, 325], [656, 450]             
             ];
             tokentray('starcluster').addClickAreas(nodes, 60, 50);
-            tokentray('starcluster').createOverlay('ships').addInsertPositions(nodes);
-            tokentray('starcluster').getOverlay('ships').makeTokensClickable();
+
+            tokentray('starcluster')
+                .createOverlay('ships')
+                .addInsertPositions(nodes)
+                .makeTokensClickable();
 
             tokentray('starcluster').createOverlay('dice').addInsertPositions([
                 [753, 744], [898, 758], [867, 706], [751, 873], [818, 883], [900, 818], [874, 874], [800, 694], [800, 694]
             ]);
+
+            addStarclusterTokenPositions(tokentray('starcluster').createOverlay('tokens'), 820);
 
             const systems = tokentray('starcluster').createOverlay('planetarysystems');
             systems.addInsertPosition(3, 246, 376); systems.addInsertPosition(6, 508, 219); systems.addInsertPosition(9, 743, 65);
@@ -188,6 +230,13 @@ define([
             systems.addInsertPosition(62, 899, 1028); systems.addInsertPosition(68, 1060, 739); systems.addInsertPosition(75, 848, 381);
             systems.addInsertPosition(84, 338, 585); systems.addInsertPosition(3, 246, 376);
 
+            let rings = tokentray('starcluster').createOverlay('rings');
+            rings.addInsertPosition(5, 416, 172); rings.addInsertPosition(11, 1011, 108); rings.addInsertPosition(16, 1170, 438);
+            rings.addInsertPosition(22, 1429, 698); rings.addInsertPosition(28, 1256, 1134); rings.addInsertPosition(35, 630, 1366);
+            rings.addInsertPosition(42, 254, 1189); rings.addInsertPosition(47, 109, 653); rings.addInsertPosition(50, 401, 1018);            
+            rings.addInsertPosition(61, 1063, 1174); rings.addInsertPosition(66, 785, 1102); rings.addInsertPosition(70, 1207, 951); 
+            rings.addInsertPosition(71, 1189, 626); rings.addInsertPosition(76, 870, 279); rings.addInsertPosition(78, 866, 654);
+            rings.addInsertPosition(87, 652, 432);            
             return board;
         });
     }

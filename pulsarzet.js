@@ -65,11 +65,11 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });                
                 connect.publish("setup/blackholedice", { dice: gamedatas.blackhole });                
                 connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
-                /*
                 connect.publish("setup/playerdice", { players: gamedatas.players, dice: gamedatas.playerdice });
-                connect.publish("setup/techboardtokens", { players: gamedatas.players, tokens: gamedatas.techboardtokens });
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
                 connect.publish("setup/pulsars", { pulsars: gamedatas.pulsars });
+                /*
+                connect.publish("setup/techboardtokens", { players: gamedatas.players, tokens: gamedatas.techboardtokens });
                 */
             }));
             console.log( "Ending game setup" );
@@ -189,12 +189,12 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
             connect.subscribe("setup/playerdice", this, function (args) {
                 var dice = args.dice;
                 for (let player in this.players) {
-                    this.board.getGameTile(player).removeAllTokens('dice');
+                    this.board.getGameTile(player).getOverlay('dice').removeAllTokens();
                 }
                 for (var i = 0; i < dice.length; i++) {
-                    let playerboard = this.board.getGameTile(dice[i].player);
-                    let pos = playerboard.isPositionOccupied('dice', 0) ? 1 : 0;
-                    playerboard.placeTokenAtPosition('dice', pos, dice[i]['value']);
+                    let overlay = this.board.getGameTile(dice[i].player).getOverlay('dice');
+                    let pos = overlay.isPositionOccupied("0") ? "1" : "0";
+                    overlay.slotTokenInPosition(pos, tokentray('dice', dice[i]['value']));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -238,10 +238,10 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
 
             connect.subscribe("setup/pulsars", this, function (args) {
                 let pulsars = args.pulsars || args.args.pulsars;
-                let starcluster = this.board.getGameTile('starcluster');
-                starcluster.removeAllTokens('ring');
+                let starcluster = this.board.getGameTile('starcluster').getOverlay('rings');
+                starcluster.removeAllTokens();
                 for (let i = 0; i < pulsars.length; i++) {
-                    starcluster.placeTokenAtPosition('ring', pulsars[i].node, this.players[pulsars[i].playerid].color);
+                    starcluster.slotTokenInPosition(pulsars[i].node, tokentray('ring', this.players[pulsars[i].playerid].color));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -267,21 +267,21 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
             });
 
             connect.subscribe("server/dice/player_choose_dice", this, function (args) {
-                let diceboard = this.board.getGameTile('diceboard');
-                let playerboard = this.board.getGameTile(args.player_id);
-                diceboard.removeTokenFromPosition('dice', args.posId);
+                let diceboard = this.board.getGameTile('diceboard').getOverlay('dice');
+                let playerboard = this.board.getGameTile(args.player_id).getOverlay('dice');
+                diceboard.removeTokenFromPosition(args.posId);
                 
                 let pos = playerboard.isPositionOccupied('dice', 0) ? 1 : 0;
-                playerboard.placeTokenAtPosition('dice', pos, args.variantId);
+                playerboard.slotTokenInPosition(pos, tokentray('dice', args.variantId));
                 canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/playerpoints", this, function (args) {
                 let playerpoints = args.playerpoints;
-                let starcluster = this.board.getGameTile('starcluster');
+                let starcluster = this.board.getGameTile('starcluster').getOverlay('tokens');
                 starcluster.removeAllTokens();
                 for (let id in playerpoints) {
-                    starcluster.placeTokenAtPosition('token', playerpoints[id], this.players[id].color);
+                    starcluster.slotTokenInPosition(playerpoints[id], tokentray('token', this.players[id].color));
                 };
                 canvas.drawBoard(this.board);
             });

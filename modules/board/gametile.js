@@ -14,13 +14,16 @@ define([
             for (let i = 0; i < posarray.length; i++) {
                 addInsertPosition(i, posarray[i][0], posarray[i][1], posarray[i][2]);
             }
+            return that;
         };
 
         const addInsertPosition = function (posid, x, y, rotation) {
+            posid = String(posid);
             positions[posid] = {
                 x, y, 
                 rotation: rotation * Math.PI / 180
             };
+            return that;
         };
 
         const removeAllTokens = function () {
@@ -30,6 +33,10 @@ define([
         };
 
         const slotTokenInPosition = function (posid, token) {
+            posid = String(posid);
+            if (!positions[posid]) {
+                throw Error("There is no position with id " + posid);
+            }
             if (token.createOverlay) {
                 gametile.addGameTile(token, positions[posid].x, positions[posid].y);
             } else {
@@ -41,6 +48,7 @@ define([
                 
         const makeTokensClickable = function () {
             clickableTokens = true;
+            return that;
         };
 
         const getTokens = function () {
@@ -53,28 +61,45 @@ define([
                     rotation: positions[key].rotation
                 }
                 if (clickableTokens) {
-                    token.clickarea = createClickArea(tokens[key].token);
+                    token.clickarea = createClickArea(tokens[key].token, key);
                 }
                 list.push(token);
             };
             return list;
         };
 
-        const createClickArea = function (token) {
+        const createClickArea = function (token, posid) {
+            posid = String(posid);
             return clickarea([0, 0, token.image.width, token.image.height], {
-                componentId: token.componentId,
+                tileId: gametile.componentId,
+                posId: posid,
+                tokenId: token.componentId,
                 variantId: token.variantId
             });
         };
 
-        return {
+        const isPositionOccupied = function (pos) {
+            pos = String(pos);
+            return tokens[pos] ? true : false;
+        }; 
+
+        const removeTokenFromPosition = function (pos) {
+            pos = String(pos);
+            delete tokens[pos];
+        }
+
+        const that = {
+            isPositionOccupied: isPositionOccupied,
             addInsertPositions: addInsertPositions,
             addInsertPosition: addInsertPosition,
             removeAllTokens: removeAllTokens,
             slotTokenInPosition: slotTokenInPosition,
             makeTokensClickable: makeTokensClickable,
-            getTokens: getTokens
+            getTokens: getTokens,
+            removeTokenFromPosition: removeTokenFromPosition
         };
+
+        return that;
     };
 
     const factory = function (componentId, image) {
@@ -101,12 +126,14 @@ define([
         };
 
         const getGameTile = function (id) {
+            id = String(id);
             return tiles[id].tile;
         };  
         
         const addClickArea = function (id, path, info) {
+            id = String(id);
             info = info || {
-                componentId: componentId
+                tileId: componentId
             };
             info.clickAreaId = id;
             clickareas.push(clickarea(path, info));

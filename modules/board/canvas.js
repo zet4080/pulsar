@@ -42,7 +42,7 @@ define([
 
     const createTable = function (element) {
         table = createCanvas(element);
-        clickarea = createCanvas(element);
+        clickarea = createCanvas(element, true);
         table.canvas.addEventListener('click', publishClick);        
     };
     
@@ -89,8 +89,8 @@ define([
     };
 
     const recurseGameElements = function (parent) {
-        drawTokens(parent.getTokens());
         drawClickAreas(parent.getClickAreas());
+        drawTokens(parent.getTokens());
         let tiles = parent.getChildren();
         for (let i = 0; i < tiles.length; i++) {
             let tile = tiles[i];
