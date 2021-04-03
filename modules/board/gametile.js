@@ -2,7 +2,7 @@ define([
     "bgagame/modules/board/clickarea"
 ], function (clickarea) {
 
-    const overlay = function () {
+    const overlay = function (gametile) {
 
         const positions = {};
 
@@ -30,9 +30,13 @@ define([
         };
 
         const slotTokenInPosition = function (posid, token) {
-            tokens[posid] = { 
-                token: token
-            }; 
+            if (token.createOverlay) {
+                gametile.addGameTile(token, positions[posid].x, positions[posid].y);
+            } else {
+                tokens[posid] = { 
+                    token: token
+                }; 
+            }
         };
                 
         const makeTokensClickable = function () {
@@ -82,7 +86,7 @@ define([
         const clickareas = [];
 
         const createOverlay = function (overlayName) {
-            overlays[overlayName] = overlay();
+            overlays[overlayName] = overlay(that);
             return overlays[overlayName];
         };
 
@@ -146,7 +150,7 @@ define([
             return clickareas;
         };
 
-        return {
+        const that = {
             componentId, image,
             addGameTile: addGameTile,
             getGameTile: getGameTile,
@@ -158,6 +162,8 @@ define([
             getTokens: getTokens,
             getClickAreas: getClickAreas
         }    
+
+        return that;
     }
 
     return factory;

@@ -60,6 +60,16 @@ define([
             "ff0000": [0, 35, 35, 35]
         });
         imageloader.addImage('rings', 'img/pulsarrings.webp');
+        
+        imageloader.addImage('planetarysystems', 'img/planetarysystems.webp', {
+             "0": [0, 0, 177, 130],    "1": [177, 0, 177, 130],    "2": [354, 0, 177, 130],
+             "3": [0, 130, 177, 130],  "4": [177, 130, 177, 130],  "5": [354, 130, 177, 130],
+             "6": [0, 260, 177, 130],  "7": [177, 260, 177, 130],  "8": [354, 260, 177, 130],
+             "9": [0, 390, 177, 130], "10": [177, 390, 177, 130], "11": [354, 390, 177, 130],
+            "12": [0, 520, 177, 130], "13": [177, 520, 177, 130], "14": [354, 520, 177, 130],
+            "15": [0, 650, 177, 130], "16": [177, 650, 177, 130], "17": [354, 650, 177, 130]
+        });
+
 
         return imageloader.loadImages().then(function (imagelist) {
             tokentray(gametile("starcluster", imagelist.starcluster));
@@ -94,6 +104,13 @@ define([
             tokentray(token(imagelist["token"]["008000"], 'token', "008000"));
             tokentray(token(imagelist["token"]["ffa500"], 'token', "ffa500"));
             tokentray(token(imagelist["token"]["ff0000"], 'token', "ff0000"));
+
+            tokentray(gametile("system-00", imagelist["planetarysystems"]["0"])); tokentray(gametile("system-06", imagelist["planetarysystems"]["6"])); tokentray(gametile("system-12", imagelist["planetarysystems"]["12"]));
+            tokentray(gametile("system-01", imagelist["planetarysystems"]["1"])); tokentray(gametile("system-07", imagelist["planetarysystems"]["7"])); tokentray(gametile("system-13", imagelist["planetarysystems"]["13"]));
+            tokentray(gametile("system-02", imagelist["planetarysystems"]["2"])); tokentray(gametile("system-08", imagelist["planetarysystems"]["8"])); tokentray(gametile("system-14", imagelist["planetarysystems"]["14"]));
+            tokentray(gametile("system-03", imagelist["planetarysystems"]["3"])); tokentray(gametile("system-09", imagelist["planetarysystems"]["9"])); tokentray(gametile("system-15", imagelist["planetarysystems"]["15"]));
+            tokentray(gametile("system-04", imagelist["planetarysystems"]["4"])); tokentray(gametile("system-10", imagelist["planetarysystems"]["10"])); tokentray(gametile("system-16", imagelist["planetarysystems"]["16"]));
+            tokentray(gametile("system-05", imagelist["planetarysystems"]["5"])); tokentray(gametile("system-11", imagelist["planetarysystems"]["11"])); tokentray(gametile("system-17", imagelist["planetarysystems"]["17"]));
             
         }).then(function () {
 
@@ -155,14 +172,22 @@ define([
                 [1187, 639], [1058, 682], [993, 534], [1039, 371], [891, 420], [878, 296], [844, 550], [870, 667], [753, 649], [626, 678],
                 [518, 656], [484, 744], [350, 768], [391, 628], [503, 450], [715, 325], [656, 450]             
             ];
-
             tokentray('starcluster').addClickAreas(nodes, 60, 50);
             tokentray('starcluster').createOverlay('ships').addInsertPositions(nodes);
             tokentray('starcluster').getOverlay('ships').makeTokensClickable();
+
             tokentray('starcluster').createOverlay('dice').addInsertPositions([
                 [753, 744], [898, 758], [867, 706], [751, 873], [818, 883], [900, 818], [874, 874], [800, 694], [800, 694]
             ]);
-            
+
+            const systems = tokentray('starcluster').createOverlay('planetarysystems');
+            systems.addInsertPosition(3, 246, 376); systems.addInsertPosition(6, 508, 219); systems.addInsertPosition(9, 743, 65);
+            systems.addInsertPosition(15, 1127, 262); systems.addInsertPosition(19, 1382, 461); systems.addInsertPosition(25, 1335, 870);
+            systems.addInsertPosition(30, 1214, 1313); systems.addInsertPosition(32, 981, 1468); systems.addInsertPosition(39, 310, 1325);
+            systems.addInsertPosition(44, 107, 918); systems.addInsertPosition(52, 520, 809); systems.addInsertPosition(54, 499, 1124);
+            systems.addInsertPosition(62, 899, 1028); systems.addInsertPosition(68, 1060, 739); systems.addInsertPosition(75, 848, 381);
+            systems.addInsertPosition(84, 338, 585); systems.addInsertPosition(3, 246, 376);
+
             return board;
         });
     }
