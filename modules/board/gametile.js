@@ -31,24 +31,45 @@ define([
 
         const slotTokenInPosition = function (posid, token) {
             tokens[posid] = { 
-                x: positions[posid].x,
-                y: positions[posid].y,
-                rotation: positions[posid].rotation,
                 token: token
             }; 
         };
                 
         const makeTokensClickable = function () {
             clickableTokens = true;
-        }
+        };
+
+        const getTokens = function () {
+            let list = [];
+            for (let key in tokens) {
+                token = {
+                    image: tokens[key].token.image,
+                    x: positions[key].x,
+                    y: positions[key].y,
+                    rotation: positions[key].rotation
+                }
+                if (clickableTokens) {
+                    token.clickarea = createClickArea(tokens[key].token);
+                }
+                list.push(token);
+            };
+            return list;
+        };
+
+        const createClickArea = function (token) {
+            return clickarea([0, 0, token.image.width, token.image.height], {
+                componentId: token.componentId,
+                variantId: token.variantId
+            });
+        };
 
         return {
-            tokens,
             addInsertPositions: addInsertPositions,
             addInsertPosition: addInsertPosition,
             removeAllTokens: removeAllTokens,
             slotTokenInPosition: slotTokenInPosition,
-            makeTokensClickable: makeTokensClickable
+            makeTokensClickable: makeTokensClickable,
+            getTokens: getTokens
         };
     };
 
@@ -58,7 +79,7 @@ define([
 
         const tiles = {};
 
-        const clickareas = {};
+        const clickareas = [];
 
         const createOverlay = function (overlayName) {
             overlays[overlayName] = overlay();
@@ -84,7 +105,7 @@ define([
                 componentId: componentId
             };
             info.clickAreaId = id;
-            clickareas[id] = clickarea(path, info);
+            clickareas.push(clickarea(path, info));
         };
 
         const addClickAreas = function (nodes, width, height, info) {
@@ -98,16 +119,45 @@ define([
             }
         };
 
+        const getChildren = function () {
+            let children = [];
+            for (let key in tiles) {
+                children.push({
+                    image: tiles[key].tile.image,
+                    x: tiles[key].x,
+                    y: tiles[key].y,
+                    getChildren: tiles[key].tile.getChildren,
+                    getTokens: tiles[key].tile.getTokens,
+                    getClickAreas: tiles[key].tile.getClickAreas
+                });
+            }
+            return children;
+        };
+
+        const getTokens = function () {
+            let tokens = [];
+            for (let key in overlays) {
+                tokens = tokens.concat(overlays[key].getTokens());
+            }
+            return tokens;
+        };
+
+        const getClickAreas = function () {
+            return clickareas;
+        };
+
         return {
-            componentId, image, tiles, overlays, clickareas,
+            componentId, image,
             addGameTile: addGameTile,
             getGameTile: getGameTile,
             createOverlay: createOverlay,
             getOverlay: getOverlay,
             addClickAreas: addClickAreas,
-            addClickArea: addClickArea
+            addClickArea: addClickArea,
+            getChildren: getChildren,
+            getTokens: getTokens,
+            getClickAreas: getClickAreas
         }    
-
     }
 
     return factory;

@@ -44,6 +44,7 @@ define([
         for (let key in info) {
             args[key] = String(info[key]);
         }
+        debugger;
         backend.call("click", args);
     });    
 

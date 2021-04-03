@@ -58,7 +58,6 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
             
             this.players = gamedatas.players;
             pulsarboard(gamedatas.players).then(lang.hitch(this, function (board) {
-                debugger;
                 this.board = board;
                 connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );

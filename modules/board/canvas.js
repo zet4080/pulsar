@@ -42,78 +42,82 @@ define([
 
     const createTable = function (element) {
         table = createCanvas(element);
-        clickarea = createCanvas(element, true);
+        clickarea = createCanvas(element);
         table.canvas.addEventListener('click', publishClick);        
     };
     
     const drawBoard = function (board) {
         drawGameElements(board);
-        drawClickCanvas(board);
     };
+
+    const clearTable = function () {
+        table.clearRect(0, 0, table.canvas.width, table.canvas.height);
+        clickarea.clearRect(0, 0, table.canvas.width, table.canvas.height);
+    }
+
+    const save = function () {
+        table.save();
+        clickarea.save();
+    }
+
+    const scale = function () {
+        table.scale(viewport.scale, viewport.scale);
+        clickarea.scale(viewport.scale, viewport.scale);
+    }
+
+    const restore = function () {
+        table.restore()
+        clickarea.restore();
+    }
+
+    const translate = function (x, y) {
+        table.translate(x, y);
+        clickarea.translate(x, y);
+    }
+
+    const rotate = function (rotation) {
+        table.rotate(rotation);
+        clickarea.rotate(rotation);
+    }
     
     const drawGameElements = function (board) {
-        table.clearRect(0, 0, table.canvas.width, table.canvas.height);
-        table.save();            
-        table.scale(viewport.scale, viewport.scale);
-        recurseGameElements(board.overlays, board.tiles, table);
-        table.restore();        
+        clearTable();
+        save();
+        scale();        
+        recurseGameElements(board, table);
+        restore();        
     };
 
-    const recurseGameElements = function (overlays, tiles, table) {
-        drawTokens(overlays, table);
-        for (let key in tiles) {
-            let tile = tiles[key];
-            table.drawImage(tile.tile.image, tile.x, tile.y);
-            table.save();
-            table.translate(tile.x, tile.y);
-            recurseGameElements(tile.tile.overlays, tile.tile.tiles, table);
-            table.restore();
+    const recurseGameElements = function (parent) {
+        drawTokens(parent.getTokens());
+        drawClickAreas(parent.getClickAreas());
+        let tiles = parent.getChildren();
+        for (let i = 0; i < tiles.length; i++) {
+            let tile = tiles[i];
+            table.drawImage(tile.image, tile.x, tile.y);
+            save();
+            translate(tile.x, tile.y);
+            recurseGameElements(tile);
+            restore();
         }
     };
 
-    const drawTokens = function (overlays, table) {
-        for (let key in overlays) {
-            let tokens = overlays[key].tokens
-            for (let pos in tokens) {
-                table.save();
-                table.translate(tokens[pos].x, tokens[pos].y);
-                table.rotate(tokens[pos].rotation);
-                table.drawImage(tokens[pos].token.image, 0, 0);
-                table.restore();
-            }
+    const drawTokens = function (tokens) {
+        for (let i = 0; i < tokens.length; i++) {
+            save();
+            translate(tokens[i].x, tokens[i].y);
+            rotate(tokens[i].rotation);
+            table.drawImage(tokens[i].image, 0, 0);
+            if (tokens[i].clickarea) { tokens[i].clickarea.draw(clickarea) }
+            restore();
         }
     };
-    
-    const drawClickCanvas = function (board) {
-        clickAreaInfos = {};
-        clickarea.clearRect(0, 0, table.canvas.width, table.canvas.height);
-        clickarea.save();            
-        clickarea.scale(viewport.scale, viewport.scale);
-        recurseClickElements(board.clickareas, board.overlays, board.tiles, clickarea);
-        clickarea.restore();
+
+    const drawClickAreas = function (clickareas) {
+        for (let i = 0; i < clickareas.length; i++) {
+            clickareas[i].draw(clickarea);
+        }
     };
-
-    const recurseClickElements = function (clickareas, overlays, tiles, table) {
-        for (let key in clickareas) { clickareas[key].draw(table); };
-        for (let key in tiles) {
-            let tile = tiles[key];
-            table.save();
-            table.translate(tile.x, tile.y);
-            recurseClickElements(tile.tile.clickareas, tile.tile.overlays, tile.tile.tiles, table);
-            table.restore();
-        }        
-    }
-
-    const drawClickAreas = function (overlays, table) {
-        for (let key in overlays) {
-            let tokens = overlays[key].clickareas;
-            for (let pos in tokens) {
-                table.save();
-
-                table.restore();
-            }
-        }        
-    }
 
     return {
         createTable: createTable,

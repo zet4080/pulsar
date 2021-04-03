@@ -2,9 +2,9 @@ define([
 
 ], function () {
 
-    const factory = function (image, componentId, variantId, posid) {
+    const factory = function (image, componentId, variantId) {
         return {
-            componentId, variantId, posid, image
+            componentId, variantId, image
         }
     };
 
