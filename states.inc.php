@@ -118,7 +118,7 @@ $machinestates = array(
         "description" => "",
         "type" => "game",
         "action" => "stStartActionPhase",
-        "transitions" => array( "actionPhaseStarted" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE )
+        "transitions" => array( "actionPhaseStarted" =>  STATE_PLAYER_CHOOSE_ACTION_DIE)
     ),    
 
     STATE_NEXT_PLAYER_DURING_ACTION_PHASE => array(

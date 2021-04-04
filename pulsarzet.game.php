@@ -741,11 +741,15 @@ class PulsarZet extends Table
 
     function stStartActionPhase() {
         self::calculatePlayerOrderActionPhase();
+        self::activateNextPlayer();
         $this->gamestate->nextState("actionPhaseStarted");
     }
 
     function stCalculateNextPlayerDuringActionPhase() {
-        if (self::activateNextPlayer() == true) {
+        $dice = DBUtil::get('dice', array('player' => self::getActivePlayerId(), 'location' => 'player'));
+        if (count($dice) > 0) {
+            $this->gamestate->nextState('nextPlayerCalculated');
+        } else if (self::activateNextPlayer() == true) {
             $this->gamestate->nextState("nextPlayerCalculated");
         } else {
             $this->gamestate->nextState("roundEnded");
