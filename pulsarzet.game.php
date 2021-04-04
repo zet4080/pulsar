@@ -280,7 +280,12 @@ class PulsarZet extends Table
         $flightpath = JSON::read('flightpath')['nodes'];
         for ($i = 0; $i < count($flightpath); $i++) {
             if (array_search($flightpath[$i], $this->planetarysystems) !== false) {
-               $systems [] = $this->systemcards->pickCardForLocation("deck", "starcluster", $flightpath[$i]);
+               $system = $this->systemcards->getCardsInLocation('starcluster', $flightpath[$i]);
+               if (count($system) === 0) {
+                   $systems [] = $this->systemcards->pickCardForLocation("deck", "starcluster", $flightpath[$i]);
+               } else {
+                   $systems[] = array_shift($system);
+               }
             }
         }
         return $systems;
@@ -302,6 +307,12 @@ class PulsarZet extends Table
     }
 
     function claimBluePlanet($system) {
+
+        $occupiedByPlayer = DBUtil::get('tokens', array('player' => self::getActivePlayerId(), 'element_type' => 'system', 'element_nr' => $system['type_arg']));
+        if (count($occupiedByPlayer) > 0) {
+            return;
+        }
+
         $occupied = DBUtil::get('tokens', array('element_type' => 'system', 'element_nr' => $system['type_arg'], 'type' => 'blue'));
         if (count($occupied) < $this->systems[$system['type_arg']]['blue']) {
             DBUtil::insertRow('tokens', array(
@@ -318,6 +329,11 @@ class PulsarZet extends Table
     }
 
     function claimStonePlanet($system) {
+        $occupiedByPlayer = DBUtil::get('tokens', array('player' => self::getActivePlayerId(), 'element_type' => 'system', 'element_nr' => $system['type_arg']));
+        if (count($occupiedByPlayer) > 0) {
+            return;
+        }
+
         $occupied = DBUtil::get('tokens', array('element_type' => 'system', 'element_nr' => $system['type_arg'], 'type' => 'stone'));
         if (count($occupied) < $this->systems[$system['type_arg']]['stone']) {
             DBUtil::insertRow('tokens', array(
@@ -377,7 +393,7 @@ class PulsarZet extends Table
 
     function movePlayerDieToBlackHole ($die) {
         $player = self::getActivePlayerId();
-        $id = DBUtil::get('dice', array('player' => $player, 'value' => $die), null, 'id')[0]['id'];
+        $id = DBUtil::get('dice', array('player' => $player, 'location' => 'player', 'value' => $die), null, 'id')[0]['id'];
         DBUtil::updateRow('dice', $id, array('location' => 'blackhole'));
     }
 

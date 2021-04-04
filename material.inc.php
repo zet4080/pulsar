@@ -51,7 +51,7 @@ $this->systems = array(
   11 => array("blue" =>1, "stone" => 2),
   12 => array("blue" =>1, "stone" => 1),
   13 => array("blue" =>1, "stone" => 2),
-  14 => array("blue" =>2, "stone" => 2),
+  14 => array("blue" =>2, "stone" => 0),
   15 => array("blue" =>2, "stone" => 2),
   16 => array("blue" =>2, "stone" => 1),
   17 => array("blue" =>2, "stone" => 0),
