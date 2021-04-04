@@ -93,6 +93,7 @@ class PulsarZet extends Table
             $systems[] = array('type' => 'system-' . sprintf("%02d", $value), 'type_arg' => $value, 'nbr' => 1);
         }
         $this->systemcards->createCards($systems);
+        $this->systemcards->shuffle('deck');
 
         /************ End of the game initialization *****/
     }

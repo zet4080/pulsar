@@ -274,11 +274,12 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
             });
 
             connect.subscribe("server/dice/player_choose_dice", this, function (args) {
+                debugger;
                 let diceboard = this.board.getGameTile('diceboard').getOverlay('dice');
                 let playerboard = this.board.getGameTile(args.player_id).getOverlay('dice');
                 diceboard.removeTokenFromPosition(args.posId);
                 
-                let pos = playerboard.isPositionOccupied('dice', 0) ? 1 : 0;
+                let pos = playerboard.isPositionOccupied(0) ? 1 : 0;
                 playerboard.slotTokenInPosition(pos, tokentray('dice', args.variantId));
                 canvas.drawBoard(this.board);
             });
