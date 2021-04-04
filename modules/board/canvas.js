@@ -2,6 +2,34 @@ define([
     "dojo/_base/connect"
 ], function (connect, when) {
     
+    const absoluteposition = (function () {
+
+        const tokens = [];
+
+        const registerToken = function (token, table) {
+            let save = Object.create(token);
+            let transform = table.getTransform();
+            tokens.push([save, transform]);
+        };
+
+        const draw = function (board, clickarea) {
+            for (let i = 0; i < tokens.length; i++) {
+                let t = tokens[i][0];
+                let transform = tokens[i][1];
+                board.setTransform(transform);
+                clickarea.setTransform(transform);
+                table.drawImage(t.image, 0, 0);
+                if (t.clickarea) { t.clickarea.draw(clickarea) }
+            }
+        };
+
+        return {
+            registerToken: registerToken,
+            draw: draw
+        }
+
+    })();   
+
     let table = null;
     let clickarea = null;
     
@@ -51,6 +79,8 @@ define([
     };
 
     const clearTable = function () {
+        table.setTransform(1, 0, 0, 1, 0, 0);
+        clickarea.setTransform(1, 0, 0, 1, 0, 0);
         table.clearRect(0, 0, table.canvas.width, table.canvas.height);
         clickarea.clearRect(0, 0, table.canvas.width, table.canvas.height);
     }
@@ -85,7 +115,8 @@ define([
         save();
         scale();        
         recurseGameElements(board, table);
-        restore();        
+        restore();       
+        absoluteposition.draw(table, clickarea); 
     };
 
     const recurseGameElements = function (parent) {
@@ -107,8 +138,7 @@ define([
             save();
             translate(tokens[i].x, tokens[i].y);
             rotate(tokens[i].rotation);
-            table.drawImage(tokens[i].image, 0, 0);
-            if (tokens[i].clickarea) { tokens[i].clickarea.draw(clickarea) }
+            absoluteposition.registerToken(tokens[i], table);
             restore();
         }
     };
