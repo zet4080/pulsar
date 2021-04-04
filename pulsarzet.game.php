@@ -90,9 +90,9 @@ class PulsarZet extends Table
 
         $systems = array();
         for ($value = 1; $value <= 17; $value++) {
-            $array[] = array('type' => $value, 'type_arg' => $value, 'nbr' => 1);
+            $systems[] = array('type' => 'system-' . sprintf("%02d", $value), 'type_arg' => $value, 'nbr' => 1);
         }
-        $this->systemcards->createCards($systems, 'deck');
+        $this->systemcards->createCards($systems);
 
         /************ End of the game initialization *****/
     }
@@ -116,10 +116,11 @@ class PulsarZet extends Table
         $result['markerposition'] = self::getGameStateValue('markerPosition');
         $result['engineeringTrack'] = Track::getTrackForClient('engineeringTrack');        
         $result['initiativeTrack'] = Track::getTrackForClient('initiativeTrack');
-        $result['techboardtokens'] = self::getAllTechboardTokens();
         $result['playerpoints'] = JSON::read('playerpoints');
         $result['shippositions'] = self::getShipPositions();
         $result['pulsars'] = self::getPulsars();
+        $result['systems'] = self::getSystems();
+        $result['tokens'] = self::getTokens();
         return $result;
     }
 
@@ -161,20 +162,6 @@ class PulsarZet extends Table
 //////////// Gamestate Functions
 ////////////    
 
-function getAllTechboardTokens () {
-    $patents = DBUtil::get('patents');
-    $techboardtokens = array();
-    foreach ($patents as $patent) {
-        if ($patent['player1'] != 0) {
-            $techboardtokens[$patent['patent']] [] = $patent['player1'];
-        }
-        if ($patent['player2'] != 0) {
-            $techboardtokens[$patent['patent']] [] = $patent['player2'];
-        }
-    }
-    return $techboardtokens;
-}    
-
 //////////////////////////////////////////////////////////////////////////////
 //////////// TechBoard Player Action
 ////////////    
@@ -188,14 +175,6 @@ function getAllTechboardTokens () {
 ////////////      
 
     function checkIfPatentIsAvailable($patentId) {
-        $check = DBUtil::get('patents', $patentId);
-        if (count($check) == 0) {
-            return true;
-        }
-
-        if (count($check) == 1 && $check[0]['locked'] == false && ($check[0]['player1'] == "" || $check[0]['player2'] == "")) {
-            return true;
-        }
         throw new BgaUserException( self::_("This patent is not available.") );     
     }
 
@@ -206,28 +185,7 @@ function getAllTechboardTokens () {
     }
 
     function assignPatentToPlayer($patent) {
-        $player = self::getActivePlayerId();
-        $patentRow = DBUtil::get('patents', $patent);
-        
-        if (count($patentRow) == 0) {
-            $patentRow = array(
-                'patent' => $patent,
-                'locked' => 0,
-                'player1' => 0,
-                'player2' => 0
-            );
-            DBUtil::insertRow('patents', $patentRow);
-        } else {
-            $patentRow = $patentRow[0];
-        }
 
-        if ($patentRow['player1'] == "") {
-            $patentRow['player1'] = $player;
-        } else {
-            $patentRow['player2'] = $player;
-        }
-
-        DBUtil::updateRow('patents', $patent, $patentRow);
     }
     
     function checkIfEntryPointIsValid($entryPoint) {
@@ -288,6 +246,7 @@ function getAllTechboardTokens () {
         DBUtil::updateRow('shipposition', self::getActivePlayerId(), array ('position' => $newPosition));
         $flightpath = JSON::read('flightpath');
         $flightpath["path"][] = $path;
+        $flightpath["nodes"][] = $newPosition;
         JSON::write('flightpath', $flightpath);
     }
 
@@ -299,7 +258,7 @@ function getAllTechboardTokens () {
         return false;
     }
 
-    function lookForAndCapturePulsar($node) {
+    function examineNodeForPulsar($node) {
         if (array_search($node, $this->pulsar) !== false) {
             $pulsar = DBUtil::get('pulsar', array ('node' => $node));
             if (count($pulsar) === 0) {
@@ -309,9 +268,67 @@ function getAllTechboardTokens () {
                     'gyrodyne' => 0,
                     'active' => 0
                 ));
-                return true;
+                return $node;
             }
         }
+        return null;
+    }
+
+    function inspectRouteForPlanetarySystems ($node) {
+        $systems = [];
+        $flightpath = JSON::read('flightpath')['nodes'];
+        for ($i = 0; $i < count($flightpath); $i++) {
+            if (array_search($flightpath[$i], $this->planetarysystems) !== false) {
+               $systems [] = $this->systemcards->pickCardForLocation("deck", "starcluster", $flightpath[$i]);
+            }
+        }
+        return $systems;
+    }
+
+    function claimPlanets ($systems, $node) {
+        for ($i = 0; $i < count($systems); $i++) {
+            $system = $systems[$i];
+            if ($system["location_arg"] == $node) {
+                if (!self::claimBluePlanet($system)) {
+                    self::claimStonePlanet($system);
+                };
+            } else {
+                if (!self::claimStonePlanet($system)) {
+                    self::claimBluePlanet($system);
+                };
+            }
+        }
+    }
+
+    function claimBluePlanet($system) {
+        $occupied = DBUtil::get('tokens', array('element_type' => 'system', 'element_nr' => $system['type_arg'], 'type' => 'blue'));
+        if (count($occupied) < $this->systems[$system['type_arg']]['blue']) {
+            DBUtil::insertRow('tokens', array(
+                'element_id' => $system['type'],
+                'element_type' => 'system',
+                'element_nr' => $system['type_arg'],
+                'type' => 'blue',
+                'position' => count($occupied),
+                'player' => self::getActivePlayerId()
+            ));
+            return true;
+        } 
+        return false;
+    }
+
+    function claimStonePlanet($system) {
+        $occupied = DBUtil::get('tokens', array('element_type' => 'system', 'element_nr' => $system['type_arg'], 'type' => 'stone'));
+        if (count($occupied) < $this->systems[$system['type_arg']]['stone']) {
+            DBUtil::insertRow('tokens', array(
+                'element_id' => $system['type'],
+                'element_type' => 'system',
+                'element_nr' => $system['type_arg'],
+                'type' => 'stone',
+                'position' => count($occupied),
+                'player' => self::getActivePlayerId()
+            ));
+            return true;
+        } 
         return false;
     }
 
@@ -431,6 +448,14 @@ function getAllTechboardTokens () {
         return DBUtil::get('pulsar');
     }
 
+    function getTokens () {
+        return DBUtil::get('tokens', null, null, 'element_id tileId, player player, position position, type overlay');
+    }    
+
+    function getSystems () {
+        return DBUtil::get('planetarysystems', array ('card_location' => 'starcluster'), null, 'card_location_arg node, card_type system');
+    }
+
     function moveDiceFromBoardToPlayer($value) {
         $dice = DBUtil::get('dice', array('location' => 'diceboard', 'value' => $value), null, 'id');
         $die = array_shift($dice);
@@ -546,9 +571,25 @@ function getAllTechboardTokens () {
         ));
     }
 
-    function sendPulsarInformation() {
-        self::notifyAllPlayers("setup/pulsars", '', array(
-            'pulsars' => self::getPulsars()
+    function sendPulsarInformation($node) {
+        if (!is_null($node) && !$node === false) {
+            self::notifyAllPlayers("setup/pulsars", '', array(
+                'pulsars' => self::getPulsars()
+            ));
+        }
+    }
+
+    function sendSystemInformation($systems) {
+        if (!is_null($systems) && count($systems) > 0) {
+            self::notifyAllPlayers("setup/systems", '', array(
+                'systems' => self::getSystems()
+            ));
+        }
+    }
+
+    function sendTokens() {
+        self::notifyAllPlayers("setup/tokens", '', array(
+            'tokens' => self::getTokens()
         ));
     }
 
@@ -599,9 +640,13 @@ function getAllTechboardTokens () {
         self::moveShip($clickAreaId, $path);
         self::sendShipPosition();
         if (self::isPathFinished()) {
-            if (self::lookForAndCapturePulsar($clickAreaId)) {
-                self::sendPulsarInformation();
-            };
+            $pulsar = self::examineNodeForPulsar($clickAreaId);
+            self::sendPulsarInformation($pulsar);
+
+            $systems = self::inspectRouteForPlanetarySystems($clickAreaId);
+            self::claimPlanets($systems, $clickAreaId); 
+            self::sendSystemInformation($systems);
+            self::sendTokens();
             $this->gamestate->nextState("routeEnded");
         }
     }        
@@ -609,7 +654,7 @@ function getAllTechboardTokens () {
     function click_ship_in_state_player_choose_action_or_modifier($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('flyShip');
         self::checkIfCorrectShipIsChoosen($variantId);
-        JSON::write('flightpath', array('path' => []));
+        JSON::write('flightpath', array('path' => [], 'nodes' => []));
         $this->gamestate->nextState("flyShip");
     }
 

@@ -22,6 +22,7 @@
 $this->entrypoints = array(1, 14, 24, 37);
 $this->pulsar = array(5, 11, 16, 22, 28, 35, 42, 47, 50, 61, 66, 87);
 $this->isolatedpulsar = array(70, 71, 76);
+$this->planetarysystems = array(3, 6, 9, 15, 19, 25, 30, 32, 39, 44, 52, 54, 62, 68, 75, 84);
 
 $this->segments = array (
   "1-2", "2-3", "2-48", "3-4", "4-5", "4-6", "5-6", "6-7", "7-8", "8-9", "9-10", "9-86", 

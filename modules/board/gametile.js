@@ -127,7 +127,11 @@ define([
         };
 
         const getOverlay = function (overlayName) {
-            return overlays[overlayName];
+            let overlay = overlays[overlayName];
+            if (!overlay) {
+                throw Error("Overlay with name " + overlayName + " does not exist!");
+            }
+            return overlay;
         };
 
         const addGameTile = function (tile, x, y) {
@@ -138,7 +142,11 @@ define([
 
         const getGameTile = function (id) {
             id = String(id);
-            return tiles[id].tile;
+            let tile = tiles[id].tile;
+            if (!tile) {
+                throw Error("Gametile with name " + id + " does not exist!");
+            }
+            return tile;
         };  
         
         const addClickArea = function (id, path, info) {

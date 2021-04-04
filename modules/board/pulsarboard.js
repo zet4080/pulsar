@@ -211,11 +211,6 @@ define([
             ];
             tokentray('starcluster').addClickAreas(nodes, 60, 50);
 
-            tokentray('starcluster')
-                .createOverlay('ships')
-                .addInsertPositions(nodes)
-                .makeTokensClickable();
-
             tokentray('starcluster').createOverlay('dice').addInsertPositions([
                 [753, 744], [898, 758], [867, 706], [751, 873], [818, 883], [900, 818], [874, 874], [800, 694], [800, 694]
             ]);
@@ -228,7 +223,7 @@ define([
             systems.addInsertPosition(30, 1214, 1313); systems.addInsertPosition(32, 981, 1468); systems.addInsertPosition(39, 310, 1325);
             systems.addInsertPosition(44, 107, 918); systems.addInsertPosition(52, 520, 809); systems.addInsertPosition(54, 499, 1124);
             systems.addInsertPosition(62, 899, 1028); systems.addInsertPosition(68, 1060, 739); systems.addInsertPosition(75, 848, 381);
-            systems.addInsertPosition(84, 338, 585); systems.addInsertPosition(3, 246, 376);
+            systems.addInsertPosition(84, 338, 585); 
 
             let rings = tokentray('starcluster').createOverlay('rings');
             rings.addInsertPosition(5, 416, 172); rings.addInsertPosition(11, 1011, 108); rings.addInsertPosition(16, 1170, 438);
@@ -237,6 +232,11 @@ define([
             rings.addInsertPosition(61, 1063, 1174); rings.addInsertPosition(66, 785, 1102); rings.addInsertPosition(70, 1207, 951); 
             rings.addInsertPosition(71, 1189, 626); rings.addInsertPosition(76, 870, 279); rings.addInsertPosition(78, 866, 654);
             rings.addInsertPosition(87, 652, 432);   
+
+            tokentray('starcluster')
+                .createOverlay('ships')
+                .addInsertPositions(nodes)
+                .makeTokensClickable();            
             
             // ================================================================
             // Planetary Systems

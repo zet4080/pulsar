@@ -62,15 +62,15 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });                
-                connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });                
                 connect.publish("setup/blackholedice", { dice: gamedatas.blackhole });                
                 connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
                 connect.publish("setup/playerdice", { players: gamedatas.players, dice: gamedatas.playerdice });
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
                 connect.publish("setup/pulsars", { pulsars: gamedatas.pulsars });
-                /*
-                connect.publish("setup/techboardtokens", { players: gamedatas.players, tokens: gamedatas.techboardtokens });
-                */
+                connect.publish("setup/systems", { systems: gamedatas.systems });
+                connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });                         
+                connect.publish("setup/tokens", { tokens: gamedatas.tokens });                         
+
             }));
             console.log( "Ending game setup" );
         },
@@ -151,19 +151,26 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
         {
             console.log( 'notifications subscriptions setup' );
 
-            connect.subscribe("setup/techboardtokens", this, function (args) {
-                let players = args.players;
-                let tokens = args.tokens;
-                let techboard = this.board.getGameTile('tech1');
-                techboard.removeAllTokens('token');
-                for (let tech in tokens) {
-                    for (let i = 0; i < tokens[tech].length; i++) {
-                        let variant = players[tokens[tech][i]].color;
-                        techboard.placeTokenAtPosition('token', tech + '-' + (2 - i), variant);
+            connect.subscribe("setup/tokens", this, function (args) {
+                let tokens = args.tokens || args.args.tokens;
+                for (let i = 0; i < tokens.length; i++) {
+                    let overlay = tokentray(tokens[i].tileId).getOverlay(tokens[i].overlay);
+                    if (!overlay.isPositionOccupied(tokens[i].position)) {
+                        overlay.slotTokenInPosition(tokens[i].position, tokentray('token', this.players[tokens[i].player].color));
                     }
                 }
                 canvas.drawBoard(this.board);
-            });     
+            });
+            
+            connect.subscribe("setup/systems", this, function (args) {
+                let systems = args.systems || args.args.systems;
+                let overlay = this.board.getGameTile('starcluster').getOverlay('planetarysystems');
+                overlay.removeAllTokens();
+                for (let system in systems) {
+                    overlay.slotTokenInPosition(systems[system].node, tokentray(systems[system].system));
+                }
+                canvas.drawBoard(this.board);
+            });
             
             connect.subscribe("setup/shippositions", this, function (args) {
                 let shippositions = args.shippositions || args.args.shippositions;

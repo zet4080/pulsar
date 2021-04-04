@@ -23,9 +23,14 @@ define([
             }
         };
 
+        const reset = function () {
+            tokens.length = 0;
+        }; 
+
         return {
             registerToken: registerToken,
-            draw: draw
+            draw: draw,
+            reset: reset
         }
 
     })();   
@@ -83,6 +88,7 @@ define([
         clickarea.setTransform(1, 0, 0, 1, 0, 0);
         table.clearRect(0, 0, table.canvas.width, table.canvas.height);
         clickarea.clearRect(0, 0, table.canvas.width, table.canvas.height);
+        absoluteposition.reset();
     }
 
     const save = function () {
