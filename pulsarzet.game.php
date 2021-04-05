@@ -176,8 +176,28 @@ class PulsarZet extends Table
 //////////// Rule Checks
 ////////////      
 
-    function checkIfPatentIsAvailable($patentId) {
-        throw new BgaUserException( self::_("This patent is not available.") );     
+    function checkIfPlayerHasDieToBuyGyrodyne ($variantId) {
+        $die = self::getGameStateValue('choosenDie');
+        if ($variantId == "1" && $die != "1") {
+            throw new BgaUserException( self::_("You don't have the correct die to buy this!") );  
+        }
+        if ($variantId == "2" && $die != "2") {
+            throw new BgaUserException( self::_("You don't have the correct die to buy this!") );  
+        }
+        if ($variantId == "3" && $die != "4") {
+            throw new BgaUserException( self::_("You don't have the correct die to buy this!") );  
+        }
+    }
+
+    function checkIfPlayerHasDieToBuyModifier ($variantId) {
+        $die = self::getGameStateValue('choosenDie');
+        if ($variantId == "1" && ($die != "1" && $die != "2")) {
+            throw new BgaUserException( self::_("You don't have the correct die to buy this!") );  
+        }
+        
+        if ($variantId == "2" && $die != "2") {
+            throw new BgaUserException( self::_("You don't have the correct die to buy this!") );  
+        }
     }
 
     function checkIfItIsPlayerDie($tileId) {
@@ -186,10 +206,6 @@ class PulsarZet extends Table
         }
     }
 
-    function assignPatentToPlayer($patent) {
-
-    }
-    
     function checkIfEntryPointIsValid($entryPoint) {
         if (array_search($entryPoint, $this->entrypoints) === false) {
             throw new BgaUserException(self::_("This is not a valid entry point!"));
@@ -291,6 +307,41 @@ class PulsarZet extends Table
         }
         return $systems;
     }
+
+//////////////////////////////////////////////////////////////////////////////
+//////////// Claiming, Buying, Building
+////////////        
+
+    function buyModifier($variantId) {
+        if ($variantId == "1") {
+            $value = DBUtil::get('playerinfo', self::getActivePlayerId(), null, 'modifierone')[0]['modifierone'];
+            $value = $value + 1;
+            DBUtil::updateRow('playerinfo', self::getActivePlayerId(), array ("modifierone" => $value));
+        }
+        if ($variantId == "2") {
+            $value = DBUtil::get('playerinfo', self::getActivePlayerId(), null, 'modifiertwo')[0]['modifiertwo'];
+            $value = $value + 1;
+            DBUtil::updateRow('playerinfo', self::getActivePlayerId(), array ("modifiertwo" => $value));
+        }
+    }
+
+    function buyGyrodyne($variantId) {
+        if ($variantId == "1") {
+            $value = DBUtil::get('playerinfo', self::getActivePlayerId(), null, 'gyrodyneone')[0]['gyrodyneone'];
+            $value = $value + 1;
+            DBUtil::updateRow('playerinfo', self::getActivePlayerId(), array ("gyrodyneone" => $value));
+        }
+        if ($variantId == "2") {
+            $value = DBUtil::get('playerinfo', self::getActivePlayerId(), null, 'gyrodynetwo')[0]['gyrodynetwo'];
+            $value = $value + 1;
+            DBUtil::updateRow('playerinfo', self::getActivePlayerId(), array ("gyrodynetwo" => $value));
+        }
+        if ($variantId == "3") {
+            $value = DBUtil::get('playerinfo', self::getActivePlayerId(), null, 'gyrodynethree')[0]['gyrodynethree'];
+            $value = $value + 1;
+            DBUtil::updateRow('playerinfo', self::getActivePlayerId(), array ("gyrodynethree" => $value));
+        }
+    }    
 
     function claimPlanets ($systems, $node) {
         for ($i = 0; $i < count($systems); $i++) {
@@ -574,13 +625,6 @@ class PulsarZet extends Table
         ));
     }
 
-    function sendTechboardToken($patent) {
-        self::notifyAllPlayers("server/settechboardtoken", '', array(
-            'player_id' => self::getActivePlayerId(),
-            'patent' => $patent
-        ));
-    }
-
     function sendDieUpdate() {
         self::notifyAllPlayers("server/updatedie", '', array(
             'player_id' => self::getActivePlayerId(),
@@ -614,6 +658,12 @@ class PulsarZet extends Table
     function sendTokens() {
         self::notifyAllPlayers("setup/tokens", '', array(
             'tokens' => self::getTokens()
+        ));
+    }
+
+    function sendPlayerboards() {
+        self::notifyAllPlayers("setup/playerboards", '', array(
+            'playerboards' => self::getPlayerboards()
         ));
     }
 
@@ -682,7 +732,7 @@ class PulsarZet extends Table
         $this->gamestate->nextState("flyShip");
     }
 
-    function click_dice_in_state_player_choose_action_die($tileId, $tokenId, $posId, $variantId) {
+    function click_bigdice_in_state_player_choose_action_die($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('chooseDie');
         self::checkIfItIsPlayerDie($tileId);
         self::movePlayerDieToBlackHole($variantId);
@@ -690,17 +740,22 @@ class PulsarZet extends Table
         self::setGameStateValue("choosenDie", $variantId);
         $this->gamestate->nextState("dieChoosen");
     }
-    
-    function click_A_1_1_in_state_player_choose_action($tileId) {
-        self::checkAction('patentTechnology');
-        self::checkIfPatentIsAvailable("A-1-1");
-        self::checkIfPlayerHasCorrectDice(1);
-        self::assignPatentToPlayer("A-1-1");
-        self::movePlayerDieToBlackHole(1);
-        self::sendTechboardToken("A-1-1");
-        self::sendDieUpdate(1);
-        $this->gamestate->nextState("actionChoosen");
+
+    function click_modifierboard_in_state_player_choose_action_or_modifier($tileId, $clickAreaId, $posId, $variantId) {
+        self::checkAction('buyModifier');
+        self::checkIfPlayerHasDieToBuyModifier($variantId);
+        self::buyModifier($variantId);
+        self::sendPlayerBoards();
+        $this->gamestate->nextState("modifierBought");
     }
+
+     function click_gyrodyneboard_in_state_player_choose_action_or_modifier ($tileId, $clickAreaId, $posId, $variantId) {
+        self::checkAction('buyGyrodyne');
+        self::checkIfPlayerHasDieToBuyGyrodyne($variantId);
+        self::buyGyrodyne($variantId);
+        self::sendPlayerBoards();
+        $this->gamestate->nextState("gyrodyneBought");
+     }   
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments

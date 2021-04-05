@@ -143,9 +143,11 @@ $machinestates = array(
         "description" => clienttranslate('${actplayer} must choose an action or a modifier'),
         "descriptionmyturn" => clienttranslate('${you} must choose an action or a modifier'),
         "type" => "activeplayer",
-        "possibleactions" => array( "click", "chooseModifier", "flyShip", "developPulsar", "buildArray", "patentTechnology", "workOnHQProject" ),
+        "possibleactions" => array( "click", "chooseModifier", "chooseGyrodyne", "buyModifier", "buyGyrodyne", "flyShip", "developPulsar", "buildArray", "patentTechnology", "workOnHQProject" ),
         "transitions" => array( 
             "modifierChoosen" => STATE_PLAYER_CHOOSE_ACTION_OR_MODIFIER, 
+            "modifierBought" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE,
+            "gyrodyneBought" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE,
             "flyShip" => STATE_SELECT_SHIP_ROUTE
         )
     ),   

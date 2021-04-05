@@ -280,7 +280,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 diceboard.removeTokenFromPosition(args.posId);
                 
                 let pos = playerboard.isPositionOccupied(0) ? 1 : 0;
-                playerboard.slotTokenInPosition(pos, tokentray('dice', args.variantId));
+                playerboard.slotTokenInPosition(pos, tokentray('bigdice', args.variantId));
                 canvas.drawBoard(this.board);
             });
 
@@ -295,7 +295,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
             });
 
             connect.subscribe("setup/playerboards", this, function (args) {
-                let playerboards = args.playerboards;
+                let playerboards = args.playerboards || args.args.playerboards;
                 for (let i = 0; i < playerboards.length; i++) {
                     let player = playerboards[i]["playerid"];
                     let playerboard = this.board.getGameTile(player);

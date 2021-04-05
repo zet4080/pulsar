@@ -44,6 +44,7 @@ define([
         for (let key in info) {
             args[key] = String(info[key]);
         }
+        args["all"] = info;
         console.log(args);
         backend.call("click", args);
     });    
