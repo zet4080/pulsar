@@ -35,9 +35,15 @@ CREATE TABLE IF NOT EXISTS `json` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `shipposition` (
+CREATE TABLE IF NOT EXISTS `playerinfo` (
   `playerid` int(11) NOT NULL,
-  `position` tinyint UNSIGNED NOT NULL,
+  `position` tinyint UNSIGNED NOT NULL DEFAULT 0,
+  `modifierone` tinyint UNSIGNED NOT NULL DEFAULT 1,
+  `modifiertwo` tinyint UNSIGNED NOT NULL DEFAULT 0,
+  `gyrodyneone` tinyint UNSIGNED NOT NULL DEFAULT 0,
+  `gyrodynetwo` tinyint UNSIGNED NOT NULL DEFAULT 0,
+  `gyrodynethree` tinyint UNSIGNED NOT NULL DEFAULT 0,
+  `pulsarrings` tinyint UNSIGNED NOT NULL DEFAULT 6,
   PRIMARY KEY (`playerid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

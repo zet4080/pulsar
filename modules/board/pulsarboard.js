@@ -56,33 +56,37 @@ define([
         imageloader.addImage('tech2', 'img/A2.webp');
         imageloader.addImage('tech1', 'img/A1.webp');
 
-        imageloader.addImage('marker', 'img/marker.webp');
-        imageloader.addImage('ships', 'img/shipsprites.webp', {
-            "0000ff": [0, 0, 60, 48],
-            "008000": [0, 48, 60, 48],
-            "ffa500": [0, 96, 60, 48],
-            "ff0000": [0, 144, 60, 48]
-        });
-        imageloader.addImage('dice', 'img/dice.webp', {
-            "1": [0, 0, 35, 35],
-            "2": [35, 0, 35, 35],
-            "3": [70, 0, 35, 35],
-            "4": [105, 0, 35, 35],
-            "5": [140, 0, 35, 35],
-            "6": [175, 0, 35, 35]
-        });
-        imageloader.addImage('token', 'img/token.webp', {
-            "0000ff": [35, 35, 35, 35],
-            "008000": [0, 0, 35, 35],
-            "ffa500": [35, 0, 35, 35],
-            "ff0000": [0, 35, 35, 35]
-        });
-
-        imageloader.addImage('rings', 'img/pulsarrings.webp', {
-            "0000ff": [170, 0, 85, 85],
-            "008000": [0, 0, 85, 85],
-            "ffa500": [85, 0, 85, 85],
-            "ff0000": [255, 0, 85, 85]
+        imageloader.addImage('alltokens', 'img/AllTokens.webp', {
+            "marker":      [61, 197, 34, 51],
+            "ship0000ff":  [0, 70, 60, 48],
+            "ship008000":  [0, 118, 60, 48],
+            "shipffa500":  [0, 166, 60, 48],
+            "shipff0000":  [0, 214, 60, 48],
+            "smalldice1":  [243, 73, 35, 35],
+            "smalldice2":  [278, 73, 35, 35],
+            "smalldice3":  [313, 73, 35, 35],
+            "smalldice4":  [348, 73, 35, 35],
+            "smalldice5":  [383, 73, 35, 35],
+            "smalldice6":  [418, 73, 35, 35],
+            "bigdice1":  [95, 195, 60, 60],
+            "bigdice2":  [155, 195, 60, 60],
+            "bigdice3":  [215, 195, 60, 60],
+            "bigdice4":  [275, 195, 60, 60],
+            "bigdice5":  [335, 195, 60, 60],
+            "bigdice6":  [395, 195, 60, 60],            
+            "token0000ff": [35, 35, 35, 35],
+            "token008000": [0, 0, 35, 35],
+            "tokenffa500": [35, 0, 35, 35],
+            "tokenff0000": [0, 35, 35, 35],
+            "ring0000ff": [230, 110, 85, 85],
+            "ring008000": [60, 110, 85, 85],
+            "ringffa500": [145, 110, 85, 85],
+            "ringff0000": [315, 110, 85, 85],
+            "modone": [304, 0, 60, 60],
+            "modtwo": [244, 0, 60, 60],
+            "gyrodyneone": [216, 260, 72, 72],
+            "gyrodynetwo": [288, 260, 72, 72],
+            "gyrodynethree": [360, 260, 72, 72]
         });
 
         imageloader.addImage('planetarysystems', 'img/planetarysystems.webp', {
@@ -109,29 +113,43 @@ define([
                 tokentray(gametile(key, imagelist.playerboard));
             }
 
-            tokentray(token(imagelist.marker, 'marker'));
+            tokentray(token(imagelist["alltokens"]['marker'], 'marker'));
 
-            tokentray(token(imagelist["ships"]["0000ff"], 'ship', '0000ff'));
-            tokentray(token(imagelist["ships"]["008000"], 'ship', "008000"));
-            tokentray(token(imagelist["ships"]["ffa500"], 'ship', "ffa500"));
-            tokentray(token(imagelist["ships"]["ff0000"], 'ship', "ff0000"));
+            tokentray(token(imagelist["alltokens"]["ship0000ff"], 'ship', '0000ff'));
+            tokentray(token(imagelist["alltokens"]["ship008000"], 'ship', "008000"));
+            tokentray(token(imagelist["alltokens"]["shipffa500"], 'ship', "ffa500"));
+            tokentray(token(imagelist["alltokens"]["shipff0000"], 'ship', "ff0000"));
 
-            tokentray(token(imagelist["dice"]["1"], 'dice', "1"));
-            tokentray(token(imagelist["dice"]["2"], 'dice', "2"));
-            tokentray(token(imagelist["dice"]["3"], 'dice', "3"));
-            tokentray(token(imagelist["dice"]["4"], 'dice', "4"));
-            tokentray(token(imagelist["dice"]["5"], 'dice', "5"));
-            tokentray(token(imagelist["dice"]["6"], 'dice', "6"));
+            tokentray(token(imagelist["alltokens"]["smalldice1"], 'dice', "1"));
+            tokentray(token(imagelist["alltokens"]["smalldice2"], 'dice', "2"));
+            tokentray(token(imagelist["alltokens"]["smalldice3"], 'dice', "3"));
+            tokentray(token(imagelist["alltokens"]["smalldice4"], 'dice', "4"));
+            tokentray(token(imagelist["alltokens"]["smalldice5"], 'dice', "5"));
+            tokentray(token(imagelist["alltokens"]["smalldice6"], 'dice', "6"));
+            
+            tokentray(token(imagelist["alltokens"]["bigdice1"], 'bigdice', "1"));
+            tokentray(token(imagelist["alltokens"]["bigdice2"], 'bigdice', "2"));
+            tokentray(token(imagelist["alltokens"]["bigdice3"], 'bigdice', "3"));
+            tokentray(token(imagelist["alltokens"]["bigdice4"], 'bigdice', "4"));
+            tokentray(token(imagelist["alltokens"]["bigdice5"], 'bigdice', "5"));
+            tokentray(token(imagelist["alltokens"]["bigdice6"], 'bigdice', "6"));            
 
-            tokentray(token(imagelist["token"]["0000ff"], 'token', "0000ff"));
-            tokentray(token(imagelist["token"]["008000"], 'token', "008000"));
-            tokentray(token(imagelist["token"]["ffa500"], 'token', "ffa500"));
-            tokentray(token(imagelist["token"]["ff0000"], 'token', "ff0000"));
+            tokentray(token(imagelist["alltokens"]["token0000ff"], 'token', "0000ff"));
+            tokentray(token(imagelist["alltokens"]["token008000"], 'token', "008000"));
+            tokentray(token(imagelist["alltokens"]["tokenffa500"], 'token', "ffa500"));
+            tokentray(token(imagelist["alltokens"]["tokenff0000"], 'token', "ff0000"));
 
-            tokentray(token(imagelist["rings"]["0000ff"], 'ring', "0000ff"));
-            tokentray(token(imagelist["rings"]["008000"], 'ring', "008000"));
-            tokentray(token(imagelist["rings"]["ffa500"], 'ring', "ffa500"));
-            tokentray(token(imagelist["rings"]["ff0000"], 'ring', "ff0000"));
+            tokentray(token(imagelist["alltokens"]["ring0000ff"], 'ring', "0000ff"));
+            tokentray(token(imagelist["alltokens"]["ring008000"], 'ring', "008000"));
+            tokentray(token(imagelist["alltokens"]["ringffa500"], 'ring', "ffa500"));
+            tokentray(token(imagelist["alltokens"]["ringff0000"], 'ring', "ff0000"));
+
+            tokentray(token(imagelist["alltokens"]["modone"], 'modifierone'));
+            tokentray(token(imagelist["alltokens"]["modtwo"], 'modifiertwo'));
+            
+            tokentray(token(imagelist["alltokens"]["gyrodyneone"], 'gyrodyne', "1"));
+            tokentray(token(imagelist["alltokens"]["gyrodynetwo"], 'gyrodyne', "2"));
+            tokentray(token(imagelist["alltokens"]["gyrodynethree"], 'gyrodyne', "3"));
 
             tokentray(gametile("system-00", imagelist["planetarysystems"]["0"])); tokentray(gametile("system-06", imagelist["planetarysystems"]["6"])); tokentray(gametile("system-12", imagelist["planetarysystems"]["12"]));
             tokentray(gametile("system-01", imagelist["planetarysystems"]["1"])); tokentray(gametile("system-07", imagelist["planetarysystems"]["7"])); tokentray(gametile("system-13", imagelist["planetarysystems"]["13"]));
@@ -158,10 +176,29 @@ define([
             let i = 0;
             for (let key in players) {
                 board.addGameTile(tokentray(key), plpos[i], 2183);
+                
                 let overlay = tokentray(key).createOverlay('dice');
-                overlay.addInsertPosition("0", 25, 20);
-                overlay.addInsertPosition("1", 70, 20);
+                overlay.addInsertPosition("0", 5, 5);
+                overlay.addInsertPosition("1", 70, 5);
                 overlay.makeTokensClickable();
+
+                overlay = tokentray(key).createOverlay('modifierone');
+                overlay.addInsertPosition("0", 5, 70);
+                overlay.makeTokensClickable();
+
+                overlay = tokentray(key).createOverlay('modifiertwo');
+                overlay.addInsertPosition("0", 5, 140);
+                overlay.makeTokensClickable();
+
+                overlay = tokentray(key).createOverlay("gyrodyne");
+                overlay.addInsertPosition("1", 580, 5);
+                overlay.addInsertPosition("2", 580, 87);
+                overlay.addInsertPosition("3", 580, 169);
+                overlay.makeTokensClickable();
+
+                overlay = tokentray(key).createOverlay("pulsarrings");
+                overlay.addInsertPosition("0", 445, 5);
+
                 i++;
             }
             

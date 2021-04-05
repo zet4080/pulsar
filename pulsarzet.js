@@ -69,7 +69,8 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 connect.publish("setup/pulsars", { pulsars: gamedatas.pulsars });
                 connect.publish("setup/systems", { systems: gamedatas.systems });
                 connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });                         
-                connect.publish("setup/tokens", { tokens: gamedatas.tokens });                         
+                connect.publish("setup/tokens", { tokens: gamedatas.tokens });   
+                connect.publish("setup/playerboards", { playerboards: gamedatas.playerboards});                      
 
             }));
             console.log( "Ending game setup" );
@@ -201,7 +202,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 for (var i = 0; i < dice.length; i++) {
                     let overlay = this.board.getGameTile(dice[i].player).getOverlay('dice');
                     let pos = overlay.isPositionOccupied("0") ? "1" : "0";
-                    overlay.slotTokenInPosition(pos, tokentray('dice', dice[i]['value']));
+                    overlay.slotTokenInPosition(pos, tokentray('bigdice', dice[i]['value']));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -274,7 +275,6 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
             });
 
             connect.subscribe("server/dice/player_choose_dice", this, function (args) {
-                debugger;
                 let diceboard = this.board.getGameTile('diceboard').getOverlay('dice');
                 let playerboard = this.board.getGameTile(args.player_id).getOverlay('dice');
                 diceboard.removeTokenFromPosition(args.posId);
@@ -292,6 +292,33 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                     starcluster.slotTokenInPosition(playerpoints[id], tokentray('token', this.players[id].color));
                 };
                 canvas.drawBoard(this.board);
+            });
+
+            connect.subscribe("setup/playerboards", this, function (args) {
+                let playerboards = args.playerboards;
+                for (let i = 0; i < playerboards.length; i++) {
+                    let player = playerboards[i]["playerid"];
+                    let playerboard = this.board.getGameTile(player);
+                    playerboards[i].modifierone !== "0"
+                        ? playerboard.getOverlay("modifierone").slotTokenInPosition("0", tokentray("modifierone")) 
+                        : playerboard.getOverlay("modifierone").removeTokenFromPosition("0"); 
+                    playerboards[i].modifiertwo !== "0"
+                        ? playerboard.getOverlay("modifiertwo").slotTokenInPosition("0", tokentray("modifiertwo")) 
+                        : playerboard.getOverlay("modifiertwo").removeTokenFromPosition("0"); 
+                    playerboards[i].pulsarrings !== "0"
+                        ? playerboard.getOverlay("pulsarrings").slotTokenInPosition("0", tokentray("ring", this.players[player].color)) 
+                        : playerboard.getOverlay("pulsarrings").removeTokenFromPosition("0"); 
+                    playerboards[i].gyrodyneone !== "0"
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("1", tokentray("gyrodyne", "1")) 
+                        : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("1"); 
+                    playerboards[i].gyrodynetwo !== "0"
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("2", tokentray("gyrodyne", "2")) 
+                        : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("2"); 
+                    playerboards[i].gyrodynethree !== "0"
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("3", tokentray("gyrodyne", "3")) 
+                        : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("3"); 
+                    canvas.drawBoard(this.board);
+                }
             });
         },  
    });             

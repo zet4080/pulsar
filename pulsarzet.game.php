@@ -122,6 +122,7 @@ class PulsarZet extends Table
         $result['pulsars'] = self::getPulsars();
         $result['systems'] = self::getSystems();
         $result['tokens'] = self::getTokens();
+        $result['playerboards'] = self::getPlayerboards();
         return $result;
     }
 
@@ -193,7 +194,7 @@ class PulsarZet extends Table
         if (array_search($entryPoint, $this->entrypoints) === false) {
             throw new BgaUserException(self::_("This is not a valid entry point!"));
         }
-        $occupied = DBUtil::get('shipposition', array(
+        $occupied = DBUtil::get('playerinfo', array(
             'position' => $entryPoint
         ));
         if (count($occupied) > 0) {
@@ -203,7 +204,7 @@ class PulsarZet extends Table
 
     function placeShipAtEntryPoint($entrypoint) {
         $player = self::getActivePlayerId();
-        DBUtil::insertRow('shipposition', array(
+        DBUtil::insertRow('playerinfo', array(
             'playerid' => $player,
             'position' => $entrypoint
         ));
@@ -217,7 +218,7 @@ class PulsarZet extends Table
     }
 
     function calculateFlightPath($nodeId) {
-        $currentPosition = DBUtil::get('shipposition', self::getActivePlayerId(), null, 'position')[0]['position'];
+        $currentPosition = DBUtil::get('playerinfo', self::getActivePlayerId(), null, 'position')[0]['position'];
         If ($nodeId > $currentPosition) {
             $path = $currentPosition . '-' . $nodeId;
         } else {
@@ -244,7 +245,7 @@ class PulsarZet extends Table
     }
 
     function moveShip($newPosition, $path) {
-        DBUtil::updateRow('shipposition', self::getActivePlayerId(), array ('position' => $newPosition));
+        DBUtil::updateRow('playerinfo', self::getActivePlayerId(), array ('position' => $newPosition));
         $flightpath = JSON::read('flightpath');
         $flightpath["path"][] = $path;
         $flightpath["nodes"][] = $newPosition;
@@ -429,10 +430,12 @@ class PulsarZet extends Table
     }
 
     function rollDice () {
+        $test = [1, 1, 1, 2, 2, 2, 4, 6, 6];
         $diceposition = new DicePosition();
         $nrOfDice = self::getGameStateValue('nrOfDice');
 		for ($i = 0; $i < $nrOfDice; $i++) {
             $value = bga_rand(1, 6);
+            // $value = $test[$i];
             $position = $diceposition->calculate($value);
 			$dice = array (
                 'id' => $i,
@@ -458,7 +461,11 @@ class PulsarZet extends Table
     }    
 
     function getShipPositions () {
-        return DBUtil::get('shipposition');
+        return DBUtil::get('playerinfo', null, null, 'playerid, position');
+    }
+
+    function getPlayerboards () {
+        return DBUtil::get('playerinfo', null, null, 'playerid, modifierone, modifiertwo, gyrodyneone, gyrodynetwo, gyrodynethree');
     }
 
     function getPulsars () {
