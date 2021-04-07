@@ -31,6 +31,7 @@ if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, sin
     define("STATE_SELECT_SHIP_ROUTE", 14);
     define("STATE_PLAYER_CHOOSE_MODIFIER", 15);
     define("STATE_PLAYER_CHOOSE_ACTION_DIE", 16);
+    define("STATE_PLAYER_CHOOSE_MODIFIER_VALUE", 17);
 
     define("STATE_END_GAME", 99);
  }
@@ -145,12 +146,24 @@ $machinestates = array(
         "type" => "activeplayer",
         "possibleactions" => array( "click", "chooseModifier", "chooseGyrodyne", "buyModifier", "buyGyrodyne", "flyShip", "developPulsar", "buildArray", "patentTechnology", "workOnHQProject" ),
         "transitions" => array( 
-            "modifierChoosen" => STATE_PLAYER_CHOOSE_ACTION_OR_MODIFIER, 
+            "modifierOneChoosen" => STATE_PLAYER_CHOOSE_MODIFIER_VALUE, 
+            "modifierTwoChoosen" => STATE_PLAYER_CHOOSE_ACTION_OR_MODIFIER, 
             "modifierBought" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE,
             "gyrodyneBought" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE,
             "flyShip" => STATE_SELECT_SHIP_ROUTE
         )
     ),   
+
+    STATE_PLAYER_CHOOSE_MODIFIER_VALUE => array(
+        "name" => "player_choose_modifier_value",
+        "description" => clienttranslate('${actplayer} must choose a modifier value'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a modifier value'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "click", "chooseModifierValue"),
+        "transitions" => array( 
+            "modifierValueChoosen" => STATE_PLAYER_CHOOSE_ACTION_OR_MODIFIER, 
+        )
+    ),      
     
     STATE_SELECT_SHIP_ROUTE => array (
         "name" => "player_select_ship_route",

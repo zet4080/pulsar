@@ -19,7 +19,7 @@
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 require_once 'modules/DBUtil.php';
-require_once 'modules/Track.php';
+require_once 'modules/Track.php'; 
 require_once 'modules/JSON.php';
 require_once 'modules/DicePosition.php';
 
@@ -38,7 +38,10 @@ class PulsarZet extends Table
         self::initGameStateLabels(array( 
             "markerPosition" => 10,
             "choosenDie" => 20,
-            "nrOfDice" => 30
+            "nrOfDice" => 30,
+            "modifiertoken" => 40,
+            "modifiervalue" => 50,
+            "dieTotal" => 60
         ));        
 
         $this->systemcards = self::getNew( "module.common.deck" );
@@ -83,6 +86,10 @@ class PulsarZet extends Table
         /************ Start the game initialization *****/
         
         self::setGameStateInitialValue('markerPosition', 6);
+        self::setGameStateInitialValue('choosenDie', 0);
+        self::setGameStateInitialValue('modifiertoken', 0);
+        self::setGameStateInitialValue('modifiervalue', 0);
+        self::setGameStateInitialValue('dieTotal', 0);
         JSON::create('playerorderround');
         JSON::create('playerorderphase');
         JSON::create('playerpoints');
@@ -113,7 +120,7 @@ class PulsarZet extends Table
         $result['shiporder'] = JSON::read('playerorderround');
         $result['diceboard'] = self::getDiceboard();
         $result['playerdice'] = self::getPlayerDice();
-        $result['blackhole'] = self::getBlackholeDice();
+        $result['blackhole'] = self::getBlackhole();
         $result['markerposition'] = self::getGameStateValue('markerPosition');
         $result['engineeringTrack'] = Track::getTrackForClient('engineeringTrack');        
         $result['initiativeTrack'] = Track::getTrackForClient('initiativeTrack');
@@ -177,7 +184,7 @@ class PulsarZet extends Table
 ////////////      
 
     function checkIfPlayerHasDieToBuyGyrodyne ($variantId) {
-        $die = self::getGameStateValue('choosenDie');
+        $die = self::getGameStateValue('dieTotal');
         if ($variantId == "1" && $die != "1") {
             throw new BgaUserException( self::_("You don't have the correct die to buy this!") );  
         }
@@ -190,7 +197,7 @@ class PulsarZet extends Table
     }
 
     function checkIfPlayerHasDieToBuyModifier ($variantId) {
-        $die = self::getGameStateValue('choosenDie');
+        $die = self::getGameStateValue('dieTotal');
         if ($variantId == "1" && ($die != "1" && $die != "2")) {
             throw new BgaUserException( self::_("You don't have the correct die to buy this!") );  
         }
@@ -270,7 +277,7 @@ class PulsarZet extends Table
 
     function isPathFinished() {
         $flightpath = JSON::read('flightpath');
-        if (count($flightpath["path"]) == self::getGameStateValue('choosenDie')) {
+        if (count($flightpath["path"]) == self::getGameStateValue('dieTotal')) {
             return true;
         }
         return false;
@@ -401,6 +408,43 @@ class PulsarZet extends Table
         return false;
     }
 
+    function useModifier($modifier) {
+        if ($modifier === "modifierone") {
+            self::setGameStateValue('modifiertoken', 1); 
+        } else if ($modifier === "modifiertwo") {
+            self::setGameStateValue('modifiertoken', 2);
+            self::setModifierValue('plus2');
+        }
+    }
+
+    function resetModifier() {
+        self::setGameStateValue('dieTotal', self::getGameStateValue('dieTotal') - self::getGameStateValue('modifiervalue'));
+        self::setGameStateValue('modifiertoken', 0);
+        self::setGameStateValue('modifiervalue', 0);
+    }
+
+    function setModifierValue($modifierString) {
+        $modifierValue = 0;
+        if ($modifierString == "plus1") {
+            $modifierValue = 1;
+        }
+        if ($modifierString == "minus1") {
+            $modifierValue = -1;
+        }
+        if ($modifierString == "plus2") {
+            $modifierValue = 2;
+        }
+        self::setGameStateValue('modifiervalue', $modifierValue);
+        self::setGameStateValue('dieTotal', self::getGameStateValue('choosenDie') + $modifierValue);
+    }
+
+    function resetPlayerAction() {
+        self::setGameStateValue('choosenDie', 0);
+        self::setGameStateValue('modifiertoken', 0);
+        self::setGameStateValue('modifiervalue', 0);
+        self::setGameStateValue('dieTotal', 0);        
+    }
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player Order
 ////////////     
@@ -507,8 +551,14 @@ class PulsarZet extends Table
         return DBUtil::get('dice', array('location' => 'player'), null, 'id, value, player');
     }
 
-    function getBlackholeDice () {
-        return DBUtil::get('dice', array('location' => 'blackhole'), null, 'id, value');
+    function getBlackhole () {
+        $result = array(
+            'dice' => DBUtil::get('dice', array('location' => 'blackhole'), null, 'id, value'),
+            'currentDie' => self::getGameStateValue('choosenDie'),
+            'modifiertoken' => self::getGameStateValue('modifiertoken'),
+            'modifiervalue' => self::getGameStateValue('modifiervalue')
+        );
+        return $result;
     }    
 
     function getShipPositions () {
@@ -629,7 +679,7 @@ class PulsarZet extends Table
         self::notifyAllPlayers("server/updatedie", '', array(
             'player_id' => self::getActivePlayerId(),
             'playerdice' => self::getPlayerDice(),
-            'blackholedice' => self::getBlackholeDice()
+            'blackholedice' => self::getBlackhole()
         ));
     }
 
@@ -664,6 +714,14 @@ class PulsarZet extends Table
     function sendPlayerboards() {
         self::notifyAllPlayers("setup/playerboards", '', array(
             'playerboards' => self::getPlayerboards()
+        ));
+    }
+
+    function sendPlayerAction() {
+        self::notifyAllPlayers("setup/playeraction", '', array(
+            'currentDie' => self::getGameStateValue('choosenDie'),
+            'modifiertoken' => self::getGameStateValue('modifiertoken'),
+            'modifiervalue' => self::getGameStateValue('modifiervalue')
         ));
     }
 
@@ -736,8 +794,10 @@ class PulsarZet extends Table
         self::checkAction('chooseDie');
         self::checkIfItIsPlayerDie($tileId);
         self::movePlayerDieToBlackHole($variantId);
-        self::sendDieUpdate($variantId);
         self::setGameStateValue("choosenDie", $variantId);
+        self::setGameStateValue("dieTotal", $variantId);
+        self::sendPlayerAction();
+        self::sendDieUpdate();
         $this->gamestate->nextState("dieChoosen");
     }
 
@@ -749,13 +809,36 @@ class PulsarZet extends Table
         $this->gamestate->nextState("modifierBought");
     }
 
-     function click_gyrodyneboard_in_state_player_choose_action_or_modifier ($tileId, $clickAreaId, $posId, $variantId) {
+    function click_gyrodyneboard_in_state_player_choose_action_or_modifier ($tileId, $clickAreaId, $posId, $variantId) {
         self::checkAction('buyGyrodyne');
         self::checkIfPlayerHasDieToBuyGyrodyne($variantId);
         self::buyGyrodyne($variantId);
         self::sendPlayerBoards();
         $this->gamestate->nextState("gyrodyneBought");
-     }   
+    }   
+
+    function click_modifierone_in_state_player_choose_action_or_modifier ($tileId, $clickAreaId, $posId, $variantId) { 
+        self::checkAction('chooseModifier');
+        if ($tileId == "starcluster") {
+            self::resetModifier();
+            self::sendPlayerAction();
+        } else {
+            self::useModifier($clickAreaId);
+            self::sendPlayerAction();
+            if (self::getGameStateValue('modifiertoken') == 1 && self::getGameStateValue('choosenDie') != 1) {
+                $this->gamestate->nextState("modifierOneChoosen");
+            } else {
+                $this->gamestate->nextState("modifierTwoChoosen");
+            }
+        }
+    }    
+
+    function click_modifier_in_state_player_choose_modifier_value ($tileId, $tokenId, $posId, $variantId) {
+        self::checkAction('chooseModifierValue');
+        self::setModifierValue($variantId);
+        self::sendPlayerAction();
+        $this->gamestate->nextState("modifierValueChoosen");
+    }    
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
@@ -780,7 +863,6 @@ class PulsarZet extends Table
         
         self::calculatePlayerOrderShipPlacement();
         self::initializeDiceboardTracks();
-
         $this->gamestate->nextState("roundStarted");
     }
 
@@ -819,11 +901,15 @@ class PulsarZet extends Table
 
     function stStartActionPhase() {
         self::calculatePlayerOrderActionPhase();
+        self::resetPlayerAction();
+        self::sendPlayerAction();
         self::activateNextPlayer();
         $this->gamestate->nextState("actionPhaseStarted");
     }
 
     function stCalculateNextPlayerDuringActionPhase() {
+        self::resetPlayerAction();
+        self::sendPlayerAction();
         $dice = DBUtil::get('dice', array('player' => self::getActivePlayerId(), 'location' => 'player'));
         if (count($dice) > 0) {
             $this->gamestate->nextState('nextPlayerCalculated');

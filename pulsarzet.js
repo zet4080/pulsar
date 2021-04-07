@@ -62,7 +62,8 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });                
-                connect.publish("setup/blackholedice", { dice: gamedatas.blackhole });                
+                connect.publish("setup/blackholedice", { dice: gamedatas.blackhole.dice });
+                connect.publish("setup/playeraction", { currentDie: gamedatas.blackhole.currentDie, modifiertoken: gamedatas.blackhole.modifiertoken, modifiervalue: gamedatas.blackhole.modifiervalue });                
                 connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
                 connect.publish("setup/playerdice", { players: gamedatas.players, dice: gamedatas.playerdice });
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
@@ -151,6 +152,45 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
         setupNotifications: function ()
         {
             console.log( 'notifications subscriptions setup' );
+
+            connect.subscribe('setup/playeraction', this, function (args) {
+                let die = args.args == undefined ? args.currentDie : args.args.currentDie;
+                let modifiertoken = args.args == undefined ? args.modifiertoken : args.args.modifiertoken;
+                let modifiervalue = args.args == undefined ? args.modifiervalue : args.args.modifiervalue;
+
+                let overlay = this.board.getGameTile('starcluster').getOverlay('blackhole');
+                (die == 0) ? overlay.removeTokenFromPosition('die') : overlay.slotTokenInPosition('die', tokentray('bigdice', die));
+
+                // can't use switch, because of type comparison (switch is strict!)
+                
+                if (modifiertoken == 0) {
+                    overlay.removeTokenFromPosition('modifier');
+                    overlay.removeTokenFromPosition("minus");
+                    overlay.removeTokenFromPosition("plus");
+                } else if (modifiertoken == 1) {
+                    overlay.slotTokenInPosition('modifier', tokentray('modifierone'));
+                } else if (modifiertoken == 2) {
+                    overlay.slotTokenInPosition('modifier', tokentray('modifiertwo'));
+                }
+
+                if (modifiervalue == 0 && modifiertoken == 1) {
+                    overlay.slotTokenInPosition("plus", tokentray('modifier', 'plus1'));
+                    if (die != 1) {
+                        overlay.slotTokenInPosition("minus", tokentray('modifier', 'minus1'));
+                    }
+                }
+
+                if (modifiervalue == 1) {
+                    overlay.slotTokenInPosition("plus", tokentray('modifier', 'plus1'));
+                    overlay.removeTokenFromPosition("minus");
+                }
+
+                if (modifiervalue == -1) {
+                    overlay.removeTokenFromPosition("plus");
+                    overlay.slotTokenInPosition("minus", tokentray('modifier', 'minus1'));
+                }
+                canvas.drawBoard(this.board);
+            });
 
             connect.subscribe("setup/tokens", this, function (args) {
                 let tokens = args.tokens || args.args.tokens;

@@ -86,7 +86,10 @@ define([
             "modtwo": [244, 0, 60, 60],
             "gyrodyneone": [216, 260, 72, 72],
             "gyrodynetwo": [288, 260, 72, 72],
-            "gyrodynethree": [360, 260, 72, 72]
+            "gyrodynethree": [360, 260, 72, 72],
+            "modifierMinus": [364, 0, 30, 30],
+            "modifierPlus2": [394, 0, 30, 30], 
+            "modifierPlus1": [364, 30, 30, 30]
         });
 
         imageloader.addImage('planetarysystems', 'img/planetarysystems.webp', {
@@ -150,6 +153,10 @@ define([
             tokentray(token(imagelist["alltokens"]["gyrodyneone"], 'gyrodyne', "1"));
             tokentray(token(imagelist["alltokens"]["gyrodynetwo"], 'gyrodyne', "2"));
             tokentray(token(imagelist["alltokens"]["gyrodynethree"], 'gyrodyne', "3"));
+
+            tokentray(token(imagelist["alltokens"]["modifierPlus1"], 'modifier', "plus1"));
+            tokentray(token(imagelist["alltokens"]["modifierMinus"], 'modifier', "minus1"));
+            tokentray(token(imagelist["alltokens"]["modifierPlus2"], 'modifier', "plus2"));
 
             tokentray(gametile("system-00", imagelist["planetarysystems"]["0"])); tokentray(gametile("system-06", imagelist["planetarysystems"]["6"])); tokentray(gametile("system-12", imagelist["planetarysystems"]["12"]));
             tokentray(gametile("system-01", imagelist["planetarysystems"]["1"])); tokentray(gametile("system-07", imagelist["planetarysystems"]["7"])); tokentray(gametile("system-13", imagelist["planetarysystems"]["13"]));
@@ -264,8 +271,15 @@ define([
             tokentray('starcluster').addClickAreas(nodes, 60, 50);
 
             tokentray('starcluster').createOverlay('dice').addInsertPositions([
-                [753, 744], [898, 758], [867, 706], [751, 873], [818, 883], [900, 818], [874, 874], [800, 694], [800, 694]
+                [746, 726], [719, 805], [750, 887], [837, 931], [923, 945], [1004, 912], [1008, 845], [995, 779], [971, 724]
             ]);
+
+            let blackhole = tokentray('starcluster').createOverlay('blackhole');
+            blackhole.addInsertPosition("die", 792, 800);
+            blackhole.addInsertPosition("modifier", 886, 800);
+            blackhole.addInsertPosition("plus", 835, 791);
+            blackhole.addInsertPosition("minus", 835, 837);
+            blackhole.makeTokensClickable();
 
             addStarclusterTokenPositions(tokentray('starcluster').createOverlay('tokens'), 820);
 
