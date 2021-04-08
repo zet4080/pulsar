@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `pulsar` (
   `node` tinyint UNSIGNED NOT NULL,
   `gyrodyne` tinyint UNSIGNED NOT NULL,
   `active` tinyint UNSIGNED NOT NULL,
-  PRIMARY KEY (`playerid`)
+  PRIMARY KEY (`node`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `planetarysystems` (
