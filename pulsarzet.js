@@ -54,11 +54,13 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
 
             this.setupNotifications();
             canvas.createTable('table');
-            canvas.setScale(0.5);
+            canvas.setScale(0.35);
             
             this.players = gamedatas.players;
             pulsarboard(gamedatas.players).then(lang.hitch(this, function (board) {
                 this.board = board;
+                connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
+                /*
                 connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });                
@@ -66,13 +68,13 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 connect.publish("setup/playeraction", { currentDie: gamedatas.blackhole.currentDie, modifiertoken: gamedatas.blackhole.modifiertoken, modifiervalue: gamedatas.blackhole.modifiervalue });                
                 connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
                 connect.publish("setup/playerdice", { players: gamedatas.players, dice: gamedatas.playerdice });
-                connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
                 connect.publish("setup/pulsars", { pulsars: gamedatas.pulsars });
                 connect.publish("setup/systems", { systems: gamedatas.systems });
                 connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });                         
                 connect.publish("setup/tokens", { tokens: gamedatas.tokens });   
                 connect.publish("setup/playerboards", { playerboards: gamedatas.playerboards});                      
-
+                */
+                canvas.drawBoard(this.board);
             }));
             console.log( "Ending game setup" );
         },

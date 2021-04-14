@@ -112,8 +112,12 @@ define([
     }
 
     const rotate = function (rotation) {
-        table.rotate(rotation);
-        clickarea.rotate(rotation);
+        table.translate(rotation.x, rotation.y);
+        clickarea.translate(rotation.x, rotation.y);
+        table.rotate(rotation.r);
+        clickarea.rotate(rotation.r);
+        table.translate(-rotation.x, -rotation.y);
+        clickarea.translate(-rotation.x, -rotation.y);
     }
     
     const drawGameElements = function (board) {
@@ -131,8 +135,9 @@ define([
         let tiles = parent.getChildren();
         for (let i = 0; i < tiles.length; i++) {
             let tile = tiles[i];
+            save()
+            rotate(tile.rotation);
             table.drawImage(tile.image, tile.x, tile.y);
-            save();
             translate(tile.x, tile.y);
             recurseGameElements(tile);
             restore();

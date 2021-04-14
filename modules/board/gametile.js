@@ -134,9 +134,11 @@ define([
             return overlay;
         };
 
-        const addGameTile = function (tile, x, y) {
+        const addGameTile = function (tile, x, y, rotation) {
+            rotation = rotation || { x: 0, y: 0, r: 0 };
+            rotation.r = rotation.r * Math.PI / 180;
             tiles[tile.componentId] = { 
-                tile, x, y
+                tile, x, y, rotation
             };
         };
 
@@ -176,6 +178,7 @@ define([
                     image: tiles[key].tile.image,
                     x: tiles[key].x,
                     y: tiles[key].y,
+                    rotation: tiles[key].rotation,
                     getChildren: tiles[key].tile.getChildren,
                     getTokens: tiles[key].tile.getTokens,
                     getClickAreas: tiles[key].tile.getClickAreas

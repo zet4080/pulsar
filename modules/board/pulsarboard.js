@@ -27,337 +27,248 @@ define([
     const addStarclusterTokenPositions = function (starcluster, radius) {
         let full = 2 * Math.PI;
         let step = (2 * Math.PI / 101);
-        let offset = Math.PI - 0.5 * step;
+        let offset = Math.PI - 0.63 * step;
         for (let i = 1; i < 100; i++) {
             let sin = Math.sin(full - (i * step) + offset);
             let cos = Math.cos(full - (i * step) + offset);
-            let x = Math.floor((radius  * sin) + 842 - 17);
-            let y = Math.floor((radius  * cos) + 842 - 17);
+            let x = Math.floor((radius  * sin) + 1123 - 30);
+            let y = Math.floor((radius  * cos) + 1123 - 30);
             starcluster.addInsertPosition(i, x, y);
         }
         let sin = Math.sin(full + offset + 0.03);
         let cos = Math.cos(full + offset + 0.03);
-        let x = Math.floor((radius  * sin) + 842 - 17);
-        let y = Math.floor((radius  * cos) + 842 - 17);
+        let x = Math.floor((radius  * sin) + 1123 - 30);
+        let y = Math.floor((radius  * cos) + 1123 - 30);
         starcluster.addInsertPosition(0, x, y);
     };
 
     const createPulsarBoard = function (players) {
         
-        imageloader.addImage('starcluster', 'img/starcluster-normal.webp');
-
-        imageloader.addImage('playerboard', 'img/playerboardA2.webp');
-
-        imageloader.addImage('diceboard', 'img/diceboard.webp');
-        imageloader.addImage('gyrodyneboard', 'img/gyrodyneboard.webp');
-        imageloader.addImage('modifierboard', 'img/modifierboard.webp');
-
-        imageloader.addImage('tech3', 'img/A3.webp');
-        imageloader.addImage('tech2', 'img/A2.webp');
-        imageloader.addImage('tech1', 'img/A1.webp');
-
-        imageloader.addImage('alltokens', 'img/AllTokens.webp', {
-            "marker":      [61, 197, 34, 51],
-            "ship0000ff":  [0, 70, 60, 48],
-            "ship008000":  [0, 118, 60, 48],
-            "shipffa500":  [0, 166, 60, 48],
-            "shipff0000":  [0, 214, 60, 48],
-            "smalldice1":  [243, 73, 35, 35],
-            "smalldice2":  [278, 73, 35, 35],
-            "smalldice3":  [313, 73, 35, 35],
-            "smalldice4":  [348, 73, 35, 35],
-            "smalldice5":  [383, 73, 35, 35],
-            "smalldice6":  [418, 73, 35, 35],
-            "bigdice1":  [95, 195, 60, 60],
-            "bigdice2":  [155, 195, 60, 60],
-            "bigdice3":  [215, 195, 60, 60],
-            "bigdice4":  [275, 195, 60, 60],
-            "bigdice5":  [335, 195, 60, 60],
-            "bigdice6":  [395, 195, 60, 60],            
-            "token0000ff": [35, 35, 35, 35],
-            "token008000": [0, 0, 35, 35],
-            "tokenffa500": [35, 0, 35, 35],
-            "tokenff0000": [0, 35, 35, 35],
-            "ring0000ff": [230, 110, 85, 85],
-            "ring008000": [60, 110, 85, 85],
-            "ringffa500": [145, 110, 85, 85],
-            "ringff0000": [315, 110, 85, 85],
-            "modone": [304, 0, 60, 60],
-            "modtwo": [244, 0, 60, 60],
-            "gyrodyneone": [216, 260, 72, 72],
-            "gyrodynetwo": [288, 260, 72, 72],
-            "gyrodynethree": [360, 260, 72, 72],
-            "modifierMinus": [364, 0, 30, 30],
-            "modifierPlus2": [394, 0, 30, 30], 
-            "modifierPlus1": [364, 30, 30, 30]
+        imageloader.addImage('alltokens', 'img/CompleteGraphics.webp', {
+            "starcluster1": [0, 0, 2246, 2246],
+            "starcluster2": [2247, 0, 2246, 2246],
+            "diceboard3Player": [4494, 0, 1785, 763],
+            "diceboard4Player": [4494, 764, 1785, 763],
+            "tech-AI": [6279, 0, 1080, 418],
+            "tech-BI": [6279, 418, 1080, 418],
+            "tech-CI": [6279, 836, 1080, 418],
+            "tech-DI": [6279, 1254, 1080, 418],
+            "tech-AII": [7360, 0, 873, 525],
+            "tech-BII": [7360, 525, 873, 525],
+            "tech-CII": [7360, 1050, 873, 525],
+            "tech-DII": [7360, 1575, 873, 525],
+            "tech-AIII": [8233, 0, 805, 507],
+            "tech-BIII": [8233, 505, 805, 507],
+            "tech-CIII": [8233, 1012, 805, 507],
+            "tech-DIII": [8233, 1520, 805, 507],
+            "modifierboard": [4494, 1527, 560, 236],
+            "gyrodyneboard": [5054, 1527, 1150, 570],
+            "HQ-A1": [0, 3097, 875, 453],
+            "HQ-A2": [875, 3097, 875, 453],
+            "HQ-B1": [1750, 3097, 875, 453],
+            "HQ-B2": [2625, 3097, 875, 453],
+            "HQ-C1": [3500, 3097, 875, 453],
+            "HQ-C2": [4375, 3097, 875, 453],
+            "HQ-D1": [5250, 3097, 875, 453],
+            "HQ-D2": [6125, 3097, 875, 453],
+            "dicemarker": [6043, 2247, 54, 79],
+            "constructionaward4": [4674, 1763, 190, 121],
+            "constructionaward7": [4864, 1763, 190, 121],
+            "engineeringcube": [5685, 2375, 30, 30],
+            "engineeringcubes4": [5054, 2550, 102, 107],
+            "reddie1": [5684, 2314, 60, 60],
+            "reddie2": [5744, 2314, 60, 60],
+            "reddie3": [5804, 2314, 60, 60],
+            "reddie4": [5864, 2314, 60, 60],
+            "reddie5": [5924, 2314, 60, 60],
+            "reddie6": [5984, 2314, 60, 60],
+            "silverdie1": [5684, 2254, 60, 60],
+            "silverdie2": [5744, 2254, 60, 60],
+            "silverdie3": [5804, 2254, 60, 60],
+            "silverdie4": [5864, 2254, 60, 60],
+            "silverdie5": [5924, 2254, 60, 60],
+            "silverdie6": [5984, 2254, 60, 60],
+            "tokengreen": [5484, 2412, 52, 52],
+            "tokenblue": [5484, 2464, 52, 52], 
+            "tokenred": [5484, 2516, 52, 52],
+            "tokenyellow": [5484, 2568, 52, 52],
+            "timemarker": [5156, 2550, 153, 96],
+            "shipblue": [5369, 2412, 115, 91],
+            "shipgreen": [5369, 2503, 115, 91],
+            "shipyellow": [5369, 2594, 115, 91],
+            "shipred": [5369, 2685, 115, 91],
+            "goaltile1a": [7000, 2101, 194, 611],
+            "goaltile1b": [7194, 2101, 194, 611],
+            "goaltile2a": [7388, 2101, 194, 611],
+            "goaltile2b": [7582, 2101, 194, 611],
+            "goaltile3a": [7776, 2101, 194, 611],
+            "goaltile3b": [7970, 2101, 194, 611],
+            "goaltile4a": [7000, 2712, 194, 611],
+            "goaltile4b": [7194, 2712, 194, 611],
+            "goaltile5a": [7388, 2712, 194, 611],
+            "goaltile5b": [7582, 2712, 194, 611],
+            "goaltile6a": [7776, 2712, 194, 611],
+            "goaltile6b": [7970, 2712, 194, 611],
+            "100pointsyellow": [5054, 2412, 79, 138],
+            "100pointsblue": [5133, 2412, 79, 138],
+            "100pointsgreen": [5212, 2412, 79, 138],
+            "100pointsred": [5291, 2412, 79, 138],
+            "ringred": [5054, 2254, 158, 158],
+            "ringgreen": [5212, 2254, 158, 158],
+            "ringyellow": [5370, 2254, 158, 158],
+            "ringblue": [5528, 2254, 158, 158],
+            "bonusback": [5211, 2097, 157, 157],
+            "bonuscubes": [5368, 2097, 157, 157],
+            "bonussystems": [5525, 2097, 157, 157],
+            "bonusmodifier": [5682, 2097, 157, 157],
+            "bonus4points": [5839, 2097, 157, 157],
+            "bonus5points": [5996, 2097, 157, 157],
+            "modifikator1": [4584, 1763, 90, 90],
+            "modifikator2": [4584, 1853, 90, 90],
+            "gyordyne1a": [4700, 1884, 118, 118],
+            "gyordyne2a": [4818, 1884, 118, 118],
+            "gyordyne3a": [4936, 1884, 118, 118],
+            "gyordyne1b": [4700, 2002, 118, 118],
+            "gyordyne2b": [4818, 2002, 118, 118],
+            "gyordyne3b": [4936, 2002, 118, 118],
+            "system0": [0, 2837, 354, 260],
+            "system1": [0, 3191, 354, 260],
+            "system2": [0, 3545, 354, 260],
+            "system3": [0, 3899, 354, 260],
+            "system4": [0, 4253, 354, 260],
+            "system5": [0, 4607, 354, 260],
+            "system6": [0, 4961, 354, 260],
+            "system7": [0, 5315, 354, 260],
+            "system8": [0, 5669, 354, 260],
+            "system9": [0, 6023, 354, 260],
+            "system10": [0, 6377, 354, 260],
+            "system11": [0, 6731, 354, 260],
+            "system12": [0, 7085, 354, 260],
+            "system13": [0, 7439, 354, 260],
+            "system14": [0, 7793, 354, 260],
+            "system15": [0, 8147, 354, 260],
+            "system16": [0, 8501, 354, 260],
+            "system17": [0, 8855, 354, 260],
+            "transmittera1a": [0, 2246, 420, 197],
+            "transmittera1b": [420, 2246, 420, 197],
+            "transmittera2a": [840, 2246, 420, 197],
+            "transmittera2b": [1260, 2246, 420, 197],
+            "transmittera3a": [1680, 2246, 420, 197],
+            "transmittera3b": [2100, 2246, 420, 197],
+            "transmittera4a": [2520, 2246, 420, 197],
+            "transmittera4b": [2940, 2246, 420, 197],
+            "transmittera5a": [3360, 2246, 420, 197],
+            "transmittera5b": [3780, 2246, 420, 197],
+            "transmittera6a": [4200, 2246, 420, 197],
+            "transmittera6b": [4620, 2246, 420, 197],
+            "transmitterb1a": [0, 2443, 420, 197],
+            "transmitterb1b": [420, 2443, 420, 197],
+            "transmitterb2a": [840, 2443, 420, 197],
+            "transmitterb2b": [1260, 2443, 420, 197],
+            "transmitterb3a": [1680, 2443, 420, 197],
+            "transmitterb3b": [2100, 2443, 420, 197],
+            "transmitterb4a": [2520, 2443, 420, 197],
+            "transmitterb4b": [2940, 2443, 420, 197],
+            "transmitterb5a": [3360, 2443, 420, 197],
+            "transmitterb5b": [3780, 2443, 420, 197],
+            "transmitterb6a": [4200, 2443, 420, 197],
+            "transmitterb6b": [4620, 2443, 420, 197],
+            "transmitterb1a": [0, 2640, 420, 197],
+            "transmitterc1b": [420, 2640, 420, 197],
+            "transmitterc2a": [840, 2640, 420, 197],
+            "transmitterc2b": [1260, 2640, 420, 197],
+            "transmitterc3a": [1680, 2640, 420, 197],
+            "transmitterc3b": [2100, 2640, 420, 197],
+            "transmitterc4a": [2520, 2640, 420, 197],
+            "transmitterc4b": [2940, 2640, 420, 197],
+            "transmitterc5a": [3360, 2640, 420, 197],
+            "transmitterc5b": [3780, 2640, 420, 197],
+            "transmitterc6a": [4200, 2640, 420, 197],
+            "transmitterc6b": [4620, 2640, 420, 197]            
         });
-
-        imageloader.addImage('planetarysystems', 'img/planetarysystems.webp', {
-             "0": [0, 0, 177, 130],    "1": [177, 0, 177, 130],    "2": [354, 0, 177, 130],
-             "3": [0, 130, 177, 130],  "4": [177, 130, 177, 130],  "5": [354, 130, 177, 130],
-             "6": [0, 260, 177, 130],  "7": [177, 260, 177, 130],  "8": [354, 260, 177, 130],
-             "9": [0, 390, 177, 130], "10": [177, 390, 177, 130], "11": [354, 390, 177, 130],
-            "12": [0, 520, 177, 130], "13": [177, 520, 177, 130], "14": [354, 520, 177, 130],
-            "15": [0, 650, 177, 130], "16": [177, 650, 177, 130], "17": [354, 650, 177, 130]
-        });
-
 
         return imageloader.loadImages().then(function (imagelist) {
-            tokentray(gametile("starcluster", imagelist.starcluster));
-            tokentray(gametile("diceboard", imagelist.diceboard));
-            tokentray(gametile("gyrodyneboard", imagelist.gyrodyneboard));
-            tokentray(gametile("modifierboard", imagelist.modifierboard));
+            const list = imagelist.alltokens;
+            const board = gametile();
+
+            // ================================================================
+            // Tokens
+            // ================================================================
             
-            tokentray(gametile("tech1", imagelist.tech1));
-            tokentray(gametile("tech2", imagelist.tech2));
-            tokentray(gametile("tech3", imagelist.tech3));
-
-            for (let key in players) {
-                tokentray(gametile(key, imagelist.playerboard));
-            }
-
-            tokentray(token(imagelist["alltokens"]['marker'], 'marker'));
-
-            tokentray(token(imagelist["alltokens"]["ship0000ff"], 'ship', '0000ff'));
-            tokentray(token(imagelist["alltokens"]["ship008000"], 'ship', "008000"));
-            tokentray(token(imagelist["alltokens"]["shipffa500"], 'ship', "ffa500"));
-            tokentray(token(imagelist["alltokens"]["shipff0000"], 'ship', "ff0000"));
-
-            tokentray(token(imagelist["alltokens"]["smalldice1"], 'dice', "1"));
-            tokentray(token(imagelist["alltokens"]["smalldice2"], 'dice', "2"));
-            tokentray(token(imagelist["alltokens"]["smalldice3"], 'dice', "3"));
-            tokentray(token(imagelist["alltokens"]["smalldice4"], 'dice', "4"));
-            tokentray(token(imagelist["alltokens"]["smalldice5"], 'dice', "5"));
-            tokentray(token(imagelist["alltokens"]["smalldice6"], 'dice', "6"));
+            tokentray(token(list["tokenblue"], 'token', "0000ff"));
+            tokentray(token(list["tokengreen"], 'token', "008000"));
+            tokentray(token(list["tokenyellow"], 'token', "ffa500"));
+            tokentray(token(list["tokenred"], 'token', "ff0000"));
             
-            tokentray(token(imagelist["alltokens"]["bigdice1"], 'bigdice', "1"));
-            tokentray(token(imagelist["alltokens"]["bigdice2"], 'bigdice', "2"));
-            tokentray(token(imagelist["alltokens"]["bigdice3"], 'bigdice', "3"));
-            tokentray(token(imagelist["alltokens"]["bigdice4"], 'bigdice', "4"));
-            tokentray(token(imagelist["alltokens"]["bigdice5"], 'bigdice', "5"));
-            tokentray(token(imagelist["alltokens"]["bigdice6"], 'bigdice', "6"));            
-
-            tokentray(token(imagelist["alltokens"]["token0000ff"], 'token', "0000ff"));
-            tokentray(token(imagelist["alltokens"]["token008000"], 'token', "008000"));
-            tokentray(token(imagelist["alltokens"]["tokenffa500"], 'token', "ffa500"));
-            tokentray(token(imagelist["alltokens"]["tokenff0000"], 'token', "ff0000"));
-
-            tokentray(token(imagelist["alltokens"]["ring0000ff"], 'ring', "0000ff"));
-            tokentray(token(imagelist["alltokens"]["ring008000"], 'ring', "008000"));
-            tokentray(token(imagelist["alltokens"]["ringffa500"], 'ring', "ffa500"));
-            tokentray(token(imagelist["alltokens"]["ringff0000"], 'ring', "ff0000"));
-
-            tokentray(token(imagelist["alltokens"]["modone"], 'modifierone'));
-            tokentray(token(imagelist["alltokens"]["modtwo"], 'modifiertwo'));
+            tokentray(token(list["shipblue"], 'ship', "0000ff"));
+            tokentray(token(list["shipgreen"], 'ship', "008000"));
+            tokentray(token(list["shipyellow"], 'ship', "ffa500"));
+            tokentray(token(list["shipred"], 'ship', "ff0000"));
             
-            tokentray(token(imagelist["alltokens"]["gyrodyneone"], 'gyrodyne', "1"));
-            tokentray(token(imagelist["alltokens"]["gyrodynetwo"], 'gyrodyne', "2"));
-            tokentray(token(imagelist["alltokens"]["gyrodynethree"], 'gyrodyne', "3"));
+            tokentray(token(list["ringblue"], 'ring', "0000ff"));
+            tokentray(token(list["ringgreen"], 'ring', "008000"));
+            tokentray(token(list["ringyellow"], 'ring', "ffa500"));
+            tokentray(token(list["ringred"], 'ring', "ff0000"));            
 
-            tokentray(token(imagelist["alltokens"]["modifierPlus1"], 'modifier', "plus1"));
-            tokentray(token(imagelist["alltokens"]["modifierMinus"], 'modifier', "minus1"));
-            tokentray(token(imagelist["alltokens"]["modifierPlus2"], 'modifier', "plus2"));
-
-            tokentray(gametile("system-00", imagelist["planetarysystems"]["0"])); tokentray(gametile("system-06", imagelist["planetarysystems"]["6"])); tokentray(gametile("system-12", imagelist["planetarysystems"]["12"]));
-            tokentray(gametile("system-01", imagelist["planetarysystems"]["1"])); tokentray(gametile("system-07", imagelist["planetarysystems"]["7"])); tokentray(gametile("system-13", imagelist["planetarysystems"]["13"]));
-            tokentray(gametile("system-02", imagelist["planetarysystems"]["2"])); tokentray(gametile("system-08", imagelist["planetarysystems"]["8"])); tokentray(gametile("system-14", imagelist["planetarysystems"]["14"]));
-            tokentray(gametile("system-03", imagelist["planetarysystems"]["3"])); tokentray(gametile("system-09", imagelist["planetarysystems"]["9"])); tokentray(gametile("system-15", imagelist["planetarysystems"]["15"]));
-            tokentray(gametile("system-04", imagelist["planetarysystems"]["4"])); tokentray(gametile("system-10", imagelist["planetarysystems"]["10"])); tokentray(gametile("system-16", imagelist["planetarysystems"]["16"]));
-            tokentray(gametile("system-05", imagelist["planetarysystems"]["5"])); tokentray(gametile("system-11", imagelist["planetarysystems"]["11"])); tokentray(gametile("system-17", imagelist["planetarysystems"]["17"]));
-            
-        }).then(function () {
-
-            const board = gametile()
-
-            board.addGameTile(tokentray('diceboard'), 483, 0);
-            board.addGameTile(tokentray('gyrodyneboard'), 0, 503);
-            board.addGameTile(tokentray('modifierboard'), 220, 1471);
-            
-            board.addGameTile(tokentray('starcluster'), 352, 408);
-
-            board.addGameTile(tokentray('tech1'), 1958, 852);
-            board.addGameTile(tokentray('tech2'),  2224, 924);
-            board.addGameTile(tokentray('tech3'),  2591, 956);
-
-            let plpos = [37, 742, 1447, 2152];
-            let i = 0;
-            for (let key in players) {
-                board.addGameTile(tokentray(key), plpos[i], 2183);
-                
-                let overlay = tokentray(key).createOverlay('dice');
-                overlay.addInsertPosition("0", 5, 5);
-                overlay.addInsertPosition("1", 70, 5);
-                overlay.makeTokensClickable();
-
-                overlay = tokentray(key).createOverlay('modifierone');
-                overlay.addInsertPosition("0", 5, 70);
-                overlay.makeTokensClickable();
-
-                overlay = tokentray(key).createOverlay('modifiertwo');
-                overlay.addInsertPosition("0", 5, 140);
-                overlay.makeTokensClickable();
-
-                overlay = tokentray(key).createOverlay("gyrodyne");
-                overlay.addInsertPosition("1", 580, 5);
-                overlay.addInsertPosition("2", 580, 87);
-                overlay.addInsertPosition("3", 580, 169);
-                overlay.makeTokensClickable();
-
-                overlay = tokentray(key).createOverlay("pulsarrings");
-                overlay.addInsertPosition("0", 445, 5);
-
-                i++;
-            }
-            
             // ================================================================
             // Diceboard
-            // ================================================================
+            // ================================================================            
 
-            tokentray('diceboard').createOverlay('marker').addInsertPositions([
-                [], [175, 484, -31], [268, 431, -25], [370, 389, -16], [471, 355, -11], [581, 336, -3], [684, 328],
-                [793, 332, 8], [898, 350, 21], [1003, 377, 26], [1107, 415, 36], [1201, 466, 40]
-            ]);            
+            tokentray(gametile('diceboard', list["diceboard4Player"]));
+            board.addGameTile(tokentray('diceboard'), 780, 229, { x: 1678, y: 1856, r: -90 });
 
             tokentray('diceboard').createOverlay('ships').addInsertPositions([
-                [], [240, 130, 120], [280, 116, 120], [327, 102, 120], [364, 88, 120]
-            ]);
-
-            tokentray('diceboard').createOverlay('dice').addInsertPositions([
-                [60, 420], [95, 378], [147, 367], [187, 332], [113, 437], [163, 421], [202, 383], [136, 484], [218, 435],
-                [421, 345], [416, 293], [407, 242], [366, 276], [369, 327], [307, 278], [314, 333], [308, 385], [262, 316],
-                [489, 222], [544, 232], [591, 203], [638, 228], [497, 272], [552, 288], [602, 270], [512, 329], [639, 314],
-                [728, 214], [786, 209], [876, 222], [723, 267], [777, 260], [829, 249], [755, 309], [827, 314], [869, 283],
-                [969, 245], [1016, 270], [1068, 274], [1117, 298], [961, 297], [1012, 322], [1071, 326], [964, 349], [1035, 371],
-                [1189, 334], [1173, 385], [1240, 368], [1163, 437], [1218, 422], [1272, 425], [1325, 418], [1227, 476], [1279, 478]
-            ]);
-            tokentray('diceboard').getOverlay('dice').makeTokensClickable();
-            
-            addEngineerTokenPositions(tokentray('diceboard').createOverlay('engineerTokens'));
-            addInitiativeTokenPositions(tokentray('diceboard').createOverlay('initiativeTokens'));
-
-            tokentray('diceboard').addClickArea('engineeringtrack', [[357, 171], [701, 62, 1000, 152, 1043, 177], [1041, 217], [1001, 212, 708, 110, 363, 214]]);
-            tokentray('diceboard').addClickArea('initiativetrack', [[348, 74], [578, 21, 759, 2, 1052, 74], [1045, 124], [701, 19, 379, 121, 364, 121]]);
+                [], [320, 173, 120], [373, 155, 120], [436, 136, 120], [485, 117, 120]
+            ]);            
 
             // ================================================================
-            // Gyrodyne Board
-            // ================================================================
-            
-            tokentray('gyrodyneboard').addClickArea('gyrodyneboard', [[200, 617], [177, 733, 198, 869, 198, 854], [347, 838], [347, 853, 330, 731, 350, 643]], { variantId: 1 });
-            tokentray('gyrodyneboard').addClickArea('gyrodyneboard', [[276, 349], [272, 335, 225, 450, 208, 575], [354, 597], [350, 611, 366, 508, 409, 409]], { variantId: 2 });
-            tokentray('gyrodyneboard').addClickArea('gyrodyneboard', [[425, 109], [417, 96, 357, 177, 294, 301], [431, 368], [423, 381, 454, 292, 536, 202]], { variantId: 3 });
+            // Gyrondyne Board
+            // ================================================================              
+
+            tokentray(gametile('gyrodyneboard', list["gyrodyneboard"]));
+            board.addGameTile(tokentray('gyrodyneboard'), 1103, 300, { x: 1678, y: 1856, r: -26.5 });            
 
             // ================================================================
             // Modifier Board
-            // ================================================================
+            // ================================================================              
+            
+            tokentray(gametile('modifierboard', list["modifierboard"]));
+            board.addGameTile(tokentray('modifierboard'), 1398, 540, { x: 1678, y: 1856, r: 12 });                
 
-            tokentray('modifierboard').addClickArea('modifierboard', [[220, 465], [121, 294], [285, 218], [377, 378]], { variantId: 1 });
-            tokentray('modifierboard').addClickArea('modifierboard', [[4, 94], [105, 266], [265, 183], [162, 4]], { variantId: 2 });
+            // ================================================================
+            // Goal Tiles
+            // ================================================================            
+
+            tokentray(gametile('goaltile-1', list["goaltile2b"]));
+            tokentray(gametile('goaltile-2', list["goaltile6a"]));
+            tokentray(gametile('goaltile-3', list["goaltile1a"]));
+
+            board.addGameTile(tokentray('goaltile-1'), 1532, 122, { x: 1678, y: 1856, r: 32 });
+            board.addGameTile(tokentray('goaltile-2'), 1532, 122, { x: 1678, y: 1856, r: 39 });
+            board.addGameTile(tokentray('goaltile-3'), 1532, 122, { x: 1678, y: 1856, r: 46 });
+
+            // ================================================================
+            // Tech Boards
+            // ================================================================            
+
+            tokentray(gametile('tech-1', list["tech-AI"]));
+            tokentray(gametile('tech-2', list["tech-AII"]));
+            tokentray(gametile('tech-3', list["tech-AIII"]));
+
+            board.addGameTile(tokentray('tech-1'), 1138, 420, { x: 1678, y: 1856, r: 90 });
+            board.addGameTile(tokentray('tech-2'), 1241, -50, { x: 1678, y: 1856, r: 90 });
+            board.addGameTile(tokentray('tech-3'), 1275, -350, { x: 1678, y: 1856, r: 90 });
 
             // ================================================================
             // Starcluster
             // ================================================================
             
-            const nodes = [
-                [0, 0], [91, 540], [161, 561], [298, 413], [405, 322], [422, 188], [559, 263], [577, 142], [635, 81], [796, 99], [916, 149],
-                [1019, 122], [1103, 163], [1050, 249], [1253, 213], [1178, 295], [1179, 453], [1261, 416], [1348, 440], [1434, 502], [1335, 606],
-                [1306, 717], [1439, 718], [1355, 813], [1524, 818], [1392, 909], [1388, 1025], [1374, 1126], [1263, 1152], [1347, 1240], [1267, 1351],
-                [1192, 1446], [1035, 1509], [757, 1539], [721, 1423], [634, 1378], [616, 1479], [463, 1482], [505, 1408], [362, 1362], [469, 1282],
-                [361, 1179], [262, 1204], [250, 1075], [159, 956], [176, 841], [117, 769], [108, 670], [231, 679], [303, 974], [404, 1032],
-                [458, 936], [581, 848], [567, 1052], [546, 1160], [629, 1234], [756, 1293], [805, 1368], [872, 1444], [934, 1294], [1059, 1282],
-                [1072, 1192], [949, 1065], [815, 979], [666, 942], [702, 1059], [794, 1116], [1056, 928], [1109, 778], [1238, 852], [1212, 969],
-                [1187, 639], [1058, 682], [993, 534], [1039, 371], [891, 420], [878, 296], [844, 550], [870, 667], [753, 649], [626, 678],
-                [518, 656], [484, 744], [350, 768], [391, 628], [503, 450], [715, 325], [656, 450]             
-            ];
-            tokentray('starcluster').addClickAreas(nodes, 60, 50);
-
-            tokentray('starcluster').createOverlay('dice').addInsertPositions([
-                [746, 726], [719, 805], [750, 887], [837, 931], [923, 945], [1004, 912], [1008, 845], [995, 779], [971, 724]
-            ]);
-
-            let blackhole = tokentray('starcluster').createOverlay('blackhole');
-            blackhole.addInsertPosition("die", 792, 800);
-            blackhole.addInsertPosition("modifier", 886, 800);
-            blackhole.addInsertPosition("plus", 835, 791);
-            blackhole.addInsertPosition("minus", 835, 837);
-            blackhole.makeTokensClickable();
-
-            addStarclusterTokenPositions(tokentray('starcluster').createOverlay('tokens'), 820);
-
-            const systems = tokentray('starcluster').createOverlay('planetarysystems');
-            systems.addInsertPosition(3, 246, 376); systems.addInsertPosition(6, 508, 219); systems.addInsertPosition(9, 743, 65);
-            systems.addInsertPosition(15, 1127, 262); systems.addInsertPosition(19, 1382, 461); systems.addInsertPosition(25, 1335, 870);
-            systems.addInsertPosition(30, 1214, 1313); systems.addInsertPosition(32, 981, 1468); systems.addInsertPosition(39, 310, 1325);
-            systems.addInsertPosition(44, 107, 918); systems.addInsertPosition(52, 520, 809); systems.addInsertPosition(54, 499, 1124);
-            systems.addInsertPosition(62, 899, 1028); systems.addInsertPosition(68, 1060, 739); systems.addInsertPosition(75, 848, 381);
-            systems.addInsertPosition(84, 338, 585); 
-
-            let rings = tokentray('starcluster').createOverlay('rings');
-            rings.addInsertPosition(5, 416, 172); rings.addInsertPosition(11, 1011, 108); rings.addInsertPosition(16, 1170, 438);
-            rings.addInsertPosition(22, 1429, 698); rings.addInsertPosition(28, 1256, 1134); rings.addInsertPosition(35, 630, 1366);
-            rings.addInsertPosition(42, 254, 1189); rings.addInsertPosition(47, 109, 653); rings.addInsertPosition(50, 401, 1018);            
-            rings.addInsertPosition(61, 1063, 1174); rings.addInsertPosition(66, 785, 1102); rings.addInsertPosition(70, 1207, 951); 
-            rings.addInsertPosition(71, 1189, 626); rings.addInsertPosition(76, 870, 279); rings.addInsertPosition(78, 866, 654);
-            rings.addInsertPosition(87, 652, 432);   
-
-            tokentray('starcluster')
-                .createOverlay('ships')
-                .addInsertPositions(nodes)
-                .makeTokensClickable();            
+            tokentray(gametile("starcluster", list["starcluster1"]));
+            board.addGameTile(tokentray('starcluster'), 555, 733);
             
-            // ================================================================
-            // Planetary Systems
-            // ================================================================
-            
-            tokentray('system-01').createOverlay('blue').addInsertPositions([[12, 48], [47, 13], [94, 13], [130, 48]]);
-            tokentray('system-01').createOverlay('stone').addInsertPositions([]);
+            addStarclusterTokenPositions(tokentray('starcluster').createOverlay('tokens'), 1093);
 
-            tokentray('system-02').createOverlay('blue').addInsertPositions([[12, 48], [47, 13], [130, 48]]);
-            tokentray('system-02').createOverlay('stone').addInsertPositions([]);
 
-            tokentray('system-03').createOverlay('blue').addInsertPositions([[47, 13], [130, 48]]);
-            tokentray('system-03').createOverlay('stone').addInsertPositions([[12, 48]]);
-
-            tokentray('system-04').createOverlay('blue').addInsertPositions([[94, 13]]);
-            tokentray('system-04').createOverlay('stone').addInsertPositions([[12, 48]]);
-
-            tokentray('system-05').createOverlay('blue').addInsertPositions([[47, 13]]);
-            tokentray('system-05').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
-
-            tokentray('system-06').createOverlay('blue').addInsertPositions([[47, 13]]);
-            tokentray('system-06').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
-
-            tokentray('system-07').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
-            tokentray('system-07').createOverlay('stone').addInsertPositions([[12, 48]]);
-
-            tokentray('system-08').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
-            tokentray('system-08').createOverlay('stone').addInsertPositions([[12, 48]]);
-
-            tokentray('system-09').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
-            tokentray('system-09').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
-
-            tokentray('system-10').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
-            tokentray('system-10').createOverlay('stone').addInsertPositions([[130, 48]]);
-
-            tokentray('system-11').createOverlay('blue').addInsertPositions([[47, 13]]);
-            tokentray('system-11').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
-
-            tokentray('system-12').createOverlay('blue').addInsertPositions([[94, 13]]);
-            tokentray('system-12').createOverlay('stone').addInsertPositions([[12, 48]]);
-
-            tokentray('system-13').createOverlay('blue').addInsertPositions([[47, 13]]);
-            tokentray('system-13').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
-
-            tokentray('system-14').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
-            tokentray('system-14').createOverlay('stone').addInsertPositions([]);
-
-            tokentray('system-15').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
-            tokentray('system-15').createOverlay('stone').addInsertPositions([[12, 48], [130, 48]]);
-
-            tokentray('system-16').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
-            tokentray('system-16').createOverlay('stone').addInsertPositions([[130, 48]]);
-
-            tokentray('system-17').createOverlay('blue').addInsertPositions([[47, 13], [94, 13]]);
-            tokentray('system-17').createOverlay('stone').addInsertPositions([]);            
 
             return board;
         });
