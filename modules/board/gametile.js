@@ -153,10 +153,9 @@ define([
         
         const addClickArea = function (id, path, info) {
             id = String(id);
-            info = info || {
-                tileId: componentId
-            };
+            info = info || {};
             info.clickAreaId = id;
+            info.tileId = componentId;
             clickareas.push(clickarea(path, info));
         };
 
