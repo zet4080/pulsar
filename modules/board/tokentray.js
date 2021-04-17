@@ -19,7 +19,11 @@ define([], function () {
     };
 
     const getToken = function (tokenId) {
-        return variants[tokenId];
+        let token = variants[tokenId];
+        if (!token) {
+            throw Error("Token with id '" + tokenId + "' does not exist!"); 
+        }
+        return token;
     }
 
     const tokentray = function (arg1, arg2) {

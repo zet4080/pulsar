@@ -21,7 +21,7 @@ define([
             posid = String(posid);
             positions[posid] = {
                 x, y, 
-                rotation: rotation * Math.PI / 180
+                rotation: { x: 0, y: 0, r: rotation * Math.PI / 180 }
             };
             return that;
         };

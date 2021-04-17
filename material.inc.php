@@ -56,3 +56,37 @@ $this->systems = array(
   16 => array("blue" =>2, "stone" => 1),
   17 => array("blue" =>2, "stone" => 0),
 );
+
+// Phases:
+// Action: happens every time player does certain things
+// Instant: happens instantly and only once
+// Production: happens every production phase
+// End Game: happens only at the end of the game
+
+if (!defined('PHASE_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
+    
+  define("PHASE_ACTION", 1);
+  define("PHASE_INSTANT", 2);
+  define("PHASE_PRODUCTION", 3);
+  define("PHASE_END_GAME", 4);
+}
+
+$this->actions = array (
+  1 => array ("phase" => PHASE_ACTION, "lockable" => FALSE, "costs" => 1, "method" => ""),
+  2 => array ("phase" => PHASE_ACTION, "lockable" => FALSE, "costs" => 3, "method" => ""),
+  3 => array ("phase" => PHASE_ACTION, "lockable" => FALSE, "costs" => 5, "method" => ""),
+  4 => array ("phase" => PHASE_ACTION, "lockable" => TRUE, "costs" => 2, "method" => ""),
+  5 => array ("phase" => PHASE_INSTANT, "lockable" => TRUE, "costs" => 5, "method" => ""),
+  6 => array ("phase" => PHASE_ACTION, "lockable" => TRUE, "costs" => 6, "method" => ""),
+  7 => array ("phase" => PHASE_INSTANT, "lockable" => TRUE, "costs" => 3, "method" => ""),
+  8 => array ("phase" => PHASE_PRODUCTION, "lockable" => TRUE, "costs" => 4, "method" => ""),
+  9 => array ("phase" => PHASE_INSTANT, "lockable" => TRUE, "costs" => 2, "method" => ""),
+  10 => array ("phase" => PHASE_INSTANT, "lockable" => TRUE, "costs" => 4, "method" => ""),
+  11 => array ("phase" => PHASE_INSTANT, "lockable" => TRUE, "costs" => 1, "method" => ""),
+  12 => array ("phase" => PHASE_INSTANT, "lockable" => TRUE, "costs" => 5, "method" => ""),
+  13 => array ("phase" => PHASE_INSTANT, "lockable" => TRUE, "costs" => 4, "method" => ""),
+  14 => array ("phase" => PHASE_END_GAME, "lockable" => TRUE, "costs" => 6, "method" => ""),
+  15 => array ("phase" => PHASE_END_GAME, "lockable" => TRUE, "costs" => 3, "method" => ""),
+  16 => array ("phase" => PHASE_END_GAME, "lockable" => TRUE, "costs" => 5, "method" => ""),
+  17 => array ("phase" => PHASE_END_GAME, "lockable" => FALSE, "costs" => 3, "method" => ""),
+);

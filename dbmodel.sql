@@ -9,6 +9,14 @@
 
 -- dbmodel.sql
 
+CREATE TABLE IF NOT EXISTS `actions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `action` TINYINT NOT NULL,
+  `locked` TINYINT(1) NOT NULL,
+  `phase` TINYINT(1) NOT NULL,
+  `player` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+
 CREATE TABLE IF NOT EXISTS `tokens` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `element_id` varchar(20) NOT NULL,

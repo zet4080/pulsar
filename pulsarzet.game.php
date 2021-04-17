@@ -408,12 +408,14 @@ class PulsarZet extends Table
         return false;
     }
 
-    function useModifier($modifier) {
-        if ($modifier === "modifierone") {
+    function useModifier($modifier, $type) {
+        if ($modifier == "modifier" && $type == "1") {
             self::setGameStateValue('modifiertoken', 1); 
-        } else if ($modifier === "modifiertwo") {
+        } else if ($modifier == "modifiertwo" && $type = "2") {
             self::setGameStateValue('modifiertoken', 2);
             self::setModifierValue('plus2');
+        } else {
+            self::error("Unexpected error: unknown modifier - " . $modifier . " " . $type);
         }
     }
 
@@ -423,19 +425,9 @@ class PulsarZet extends Table
         self::setGameStateValue('modifiervalue', 0);
     }
 
-    function setModifierValue($modifierString) {
-        $modifierValue = 0;
-        if ($modifierString == "plus1") {
-            $modifierValue = 1;
-        }
-        if ($modifierString == "minus1") {
-            $modifierValue = -1;
-        }
-        if ($modifierString == "plus2") {
-            $modifierValue = 2;
-        }
-        self::setGameStateValue('modifiervalue', $modifierValue);
-        self::setGameStateValue('dieTotal', self::getGameStateValue('choosenDie') + $modifierValue);
+    function setModifierValue($modifiervalue) {
+        self::setGameStateValue('modifiervalue', $modifiervalue);
+        self::setGameStateValue('dieTotal', self::getGameStateValue('choosenDie') + $modifiervalue);
     }
 
     function resetPlayerAction() {
@@ -729,7 +721,7 @@ class PulsarZet extends Table
 //////////// Player actions
 //////////// 
 
-    function click_dice_in_state_player_choose_dice($tileId, $tokenId, $posId, $variantId) {
+    function click_smalldice_in_state_player_choose_dice($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('chooseDie'); 
         self::moveDiceFromBoardToPlayer($variantId);
         self::setGameStateValue("choosenDie", $variantId);
@@ -790,7 +782,7 @@ class PulsarZet extends Table
         $this->gamestate->nextState("flyShip");
     }
 
-    function click_bigdice_in_state_player_choose_action_die($tileId, $tokenId, $posId, $variantId) {
+    function click_dice_in_state_player_choose_action_die($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('chooseDie');
         self::checkIfItIsPlayerDie($tileId);
         self::movePlayerDieToBlackHole($variantId);
@@ -817,13 +809,13 @@ class PulsarZet extends Table
         $this->gamestate->nextState("gyrodyneBought");
     }   
 
-    function click_modifierone_in_state_player_choose_action_or_modifier ($tileId, $clickAreaId, $posId, $variantId) { 
+    function click_modifier_in_state_player_choose_action_or_modifier ($tileId, $clickAreaId, $posId, $variantId) { 
         self::checkAction('chooseModifier');
         if ($tileId == "starcluster") {
             self::resetModifier();
             self::sendPlayerAction();
         } else {
-            self::useModifier($clickAreaId);
+            self::useModifier($clickAreaId, $variantId);
             self::sendPlayerAction();
             if (self::getGameStateValue('modifiertoken') == 1 && self::getGameStateValue('choosenDie') != 1) {
                 $this->gamestate->nextState("modifierOneChoosen");
@@ -833,12 +825,19 @@ class PulsarZet extends Table
         }
     }    
 
-    function click_modifier_in_state_player_choose_modifier_value ($tileId, $tokenId, $posId, $variantId) {
+    function click_plusone_in_state_player_choose_modifier_value ($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('chooseModifierValue');
-        self::setModifierValue($variantId);
+        self::setModifierValue(1);
         self::sendPlayerAction();
         $this->gamestate->nextState("modifierValueChoosen");
     }    
+    
+    function click_minusone_in_state_player_choose_modifier_value ($tileId, $tokenId, $posId, $variantId) {
+        self::checkAction('chooseModifierValue');
+        self::setModifierValue(-1);
+        self::sendPlayerAction();
+        $this->gamestate->nextState("modifierValueChoosen");
+    }     
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments

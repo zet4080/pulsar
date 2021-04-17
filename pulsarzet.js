@@ -60,20 +60,18 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
             pulsarboard(gamedatas.players).then(lang.hitch(this, function (board) {
                 this.board = board;
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
-                /*
-                connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
+                connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });                
-                connect.publish("setup/blackholedice", { dice: gamedatas.blackhole.dice });
-                connect.publish("setup/playeraction", { currentDie: gamedatas.blackhole.currentDie, modifiertoken: gamedatas.blackhole.modifiertoken, modifiervalue: gamedatas.blackhole.modifiervalue });                
                 connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
-                connect.publish("setup/playerdice", { players: gamedatas.players, dice: gamedatas.playerdice });
-                connect.publish("setup/pulsars", { pulsars: gamedatas.pulsars });
-                connect.publish("setup/systems", { systems: gamedatas.systems });
                 connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });                         
-                connect.publish("setup/tokens", { tokens: gamedatas.tokens });   
+                connect.publish("setup/pulsars", { pulsars: gamedatas.pulsars });
                 connect.publish("setup/playerboards", { playerboards: gamedatas.playerboards});                      
-                */
+                connect.publish("setup/playeraction", { currentDie: gamedatas.blackhole.currentDie, modifiertoken: gamedatas.blackhole.modifiertoken, modifiervalue: gamedatas.blackhole.modifiervalue });                
+                connect.publish("setup/playerdice", { players: gamedatas.players, dice: gamedatas.playerdice });
+                connect.publish("setup/blackholedice", { dice: gamedatas.blackhole.dice });
+                connect.publish("setup/systems", { systems: gamedatas.systems });
+                connect.publish("setup/tokens", { tokens: gamedatas.tokens });   
                 canvas.drawBoard(this.board);
             }));
             console.log( "Ending game setup" );
@@ -161,7 +159,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 let modifiervalue = args.args == undefined ? args.modifiervalue : args.args.modifiervalue;
 
                 let overlay = this.board.getGameTile('starcluster').getOverlay('blackhole');
-                (die == 0) ? overlay.removeTokenFromPosition('die') : overlay.slotTokenInPosition('die', tokentray('bigdice', die));
+                (die == 0) ? overlay.removeTokenFromPosition('die') : overlay.slotTokenInPosition('die', tokentray('dice', die));
 
                 // can't use switch, because of type comparison (switch is strict!)
                 
@@ -170,26 +168,26 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                     overlay.removeTokenFromPosition("minus");
                     overlay.removeTokenFromPosition("plus");
                 } else if (modifiertoken == 1) {
-                    overlay.slotTokenInPosition('modifier', tokentray('modifierone'));
+                    overlay.slotTokenInPosition('modifier', tokentray('modifier', 1));
                 } else if (modifiertoken == 2) {
-                    overlay.slotTokenInPosition('modifier', tokentray('modifiertwo'));
+                    overlay.slotTokenInPosition('modifier', tokentray('modifier', 2));
                 }
 
                 if (modifiervalue == 0 && modifiertoken == 1) {
-                    overlay.slotTokenInPosition("plus", tokentray('modifier', 'plus1'));
+                    overlay.slotTokenInPosition("plus", tokentray('plusone'));
                     if (die != 1) {
-                        overlay.slotTokenInPosition("minus", tokentray('modifier', 'minus1'));
+                        overlay.slotTokenInPosition("minus", tokentray('minusone'));
                     }
                 }
 
                 if (modifiervalue == 1) {
-                    overlay.slotTokenInPosition("plus", tokentray('modifier', 'plus1'));
+                    overlay.slotTokenInPosition("plus", tokentray('plusone'));
                     overlay.removeTokenFromPosition("minus");
                 }
 
                 if (modifiervalue == -1) {
+                    overlay.slotTokenInPosition("minus", tokentray('minusone'));
                     overlay.removeTokenFromPosition("plus");
-                    overlay.slotTokenInPosition("minus", tokentray('modifier', 'minus1'));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -231,7 +229,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 let overlay = this.board.getGameTile('diceboard').getOverlay('dice');
                 overlay.removeAllTokens('dice');
                 for (var i = 0; i < dice.length; i++) {
-                    overlay.slotTokenInPosition(dice[i].position, tokentray('dice', dice[i].value));
+                    overlay.slotTokenInPosition(dice[i].position, tokentray('smalldice', dice[i].value));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -244,7 +242,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 for (var i = 0; i < dice.length; i++) {
                     let overlay = this.board.getGameTile(dice[i].player).getOverlay('dice');
                     let pos = overlay.isPositionOccupied("0") ? "1" : "0";
-                    overlay.slotTokenInPosition(pos, tokentray('bigdice', dice[i]['value']));
+                    overlay.slotTokenInPosition(pos, tokentray('dice', dice[i]['value']));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -316,13 +314,13 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                 connect.publish("setup/playerdice", { dice: args.args.playerdice });
             });
 
-            connect.subscribe("server/dice/player_choose_dice", this, function (args) {
+            connect.subscribe("server/smalldice/player_choose_dice", this, function (args) {
                 let diceboard = this.board.getGameTile('diceboard').getOverlay('dice');
                 let playerboard = this.board.getGameTile(args.player_id).getOverlay('dice');
                 diceboard.removeTokenFromPosition(args.posId);
                 
                 let pos = playerboard.isPositionOccupied(0) ? 1 : 0;
-                playerboard.slotTokenInPosition(pos, tokentray('bigdice', args.variantId));
+                playerboard.slotTokenInPosition(pos, tokentray('dice', args.variantId));
                 canvas.drawBoard(this.board);
             });
 
@@ -342,22 +340,22 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicep
                     let player = playerboards[i]["playerid"];
                     let playerboard = this.board.getGameTile(player);
                     playerboards[i].modifierone !== "0"
-                        ? playerboard.getOverlay("modifierone").slotTokenInPosition("0", tokentray("modifierone")) 
+                        ? playerboard.getOverlay("modifierone").slotTokenInPosition("0", tokentray("modifier", 1)) 
                         : playerboard.getOverlay("modifierone").removeTokenFromPosition("0"); 
                     playerboards[i].modifiertwo !== "0"
-                        ? playerboard.getOverlay("modifiertwo").slotTokenInPosition("0", tokentray("modifiertwo")) 
+                        ? playerboard.getOverlay("modifiertwo").slotTokenInPosition("0", tokentray("modifier", 2)) 
                         : playerboard.getOverlay("modifiertwo").removeTokenFromPosition("0"); 
                     playerboards[i].pulsarrings !== "0"
                         ? playerboard.getOverlay("pulsarrings").slotTokenInPosition("0", tokentray("ring", this.players[player].color)) 
                         : playerboard.getOverlay("pulsarrings").removeTokenFromPosition("0"); 
                     playerboards[i].gyrodyneone !== "0"
-                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("1", tokentray("gyrodyne", "1")) 
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("1", tokentray("gyrodyne-inactive", "1")) 
                         : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("1"); 
                     playerboards[i].gyrodynetwo !== "0"
-                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("2", tokentray("gyrodyne", "2")) 
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("2", tokentray("gyrodyne-inactive", "2")) 
                         : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("2"); 
                     playerboards[i].gyrodynethree !== "0"
-                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("3", tokentray("gyrodyne", "3")) 
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("3", tokentray("gyrodyne-inactive", "3")) 
                         : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("3"); 
                     canvas.drawBoard(this.board);
                 }
