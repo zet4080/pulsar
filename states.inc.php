@@ -150,6 +150,7 @@ $machinestates = array(
             "modifierTwoChoosen" => STATE_PLAYER_CHOOSE_ACTION_OR_MODIFIER, 
             "modifierBought" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE,
             "gyrodyneBought" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE,
+            "technologyPatented" => STATE_NEXT_PLAYER_DURING_ACTION_PHASE,
             "flyShip" => STATE_SELECT_SHIP_ROUTE
         )
     ),   

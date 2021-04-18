@@ -11,20 +11,21 @@
 
 CREATE TABLE IF NOT EXISTS `actions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `action` TINYINT NOT NULL,
-  `locked` TINYINT(1) NOT NULL,
-  `phase` TINYINT(1) NOT NULL,
+  `action` tinyint UNSIGNED NOT NULL,
+  `locked` tinyint UNSIGNED NOT NULL,
+  `phase` tinyint UNSIGNED NOT NULL,
   `player` int(11) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tokens` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `element_id` varchar(20) NOT NULL,
-  `element_type` varchar(20) NOT NULL,
-  `element_nr` int UNSIGNED NOT NULL,
-  `type` varchar(10) NOT NULL,
-  `position` tinyint UNSIGNED NOT NULL,
   `player` int(11) NOT NULL,
+  `componentType` varchar(20) NOT NULL,
+  `tileId` varchar(20) NOT NULL,
+  `overlay` varchar(20) NOT NULL,
+  `position` tinyint UNSIGNED NOT NULL,
+  `info` varchar(20) NOT NULL DEFAULT "",
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

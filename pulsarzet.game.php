@@ -84,7 +84,14 @@ class PulsarZet extends Table
         self::reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
-        
+
+        foreach( $players as $player_id => $player )
+        {
+            DBUtil::insertRow('playerinfo', array(
+                'playerid' => $player_id
+            ));            
+        }
+
         self::setGameStateInitialValue('markerPosition', 6);
         self::setGameStateInitialValue('choosenDie', 0);
         self::setGameStateInitialValue('modifiertoken', 0);
@@ -227,8 +234,7 @@ class PulsarZet extends Table
 
     function placeShipAtEntryPoint($entrypoint) {
         $player = self::getActivePlayerId();
-        DBUtil::insertRow('playerinfo', array(
-            'playerid' => $player,
+        DBUtil::updateRow('playerinfo', $player, array(
             'position' => $entrypoint
         ));
     }
@@ -315,6 +321,48 @@ class PulsarZet extends Table
         return $systems;
     }
 
+    function checkIfActionIsAvailable ($id) {
+        $actions = DBUtil::get('actions', array (
+            'action' => $id
+        ));
+        if (count($actions) == 2) {
+            throw new BgaUserException(self::_("Can't buy this tech!"));
+        }
+        if (count($actions) == 1 && $actions[0]['locked'] != 0) {
+            throw new BgaUserException(self::_("This tech is locked for this round!"));
+        }
+        if (count($actions) == 1 && $actions[0]['player'] == self::getActivePlayerId()) {
+            throw new BgaUserException(self::_("You already own this technology!"));
+        }        
+    }
+
+    function checkIfPlayerHasDieToBuyAction ($tech) {
+        $die = self::getGameStateValue('dieTotal');
+        if ($this->actions[$tech]['costs'] != $die) {
+            throw new BgaUserException(self::_("You don't have the correct die to buy this!"));
+        }
+    }
+
+    function patentTechnology ($tileId, $tech) {
+        $actions = DBUtil::get('actions', array (
+            'action' => $tech
+        ));        
+        DBUtil::insertRow('actions', array (
+            'action' => $tech,
+            'locked' => $this->actions[$tech]['lockable'] ? 1 :0,
+            'phase' => $this->actions[$tech]['phase'],
+            'player' => self::getActivePlayerId()
+        ));
+        DBUtil::insertRow('tokens', array(
+            'player' => self::getActivePlayerId(),
+            'componentType' => 'tech',
+            'tileId' => $tileId,
+            'overlay' => $tech,
+            'position' => count($actions),
+            'info' => $this->actions[$tech]['lockable'] ? 'locked' : '',
+        ));
+    }
+    
 //////////////////////////////////////////////////////////////////////////////
 //////////// Claiming, Buying, Building
 ////////////        
@@ -367,20 +415,19 @@ class PulsarZet extends Table
 
     function claimBluePlanet($system) {
 
-        $occupiedByPlayer = DBUtil::get('tokens', array('player' => self::getActivePlayerId(), 'element_type' => 'system', 'element_nr' => $system['type_arg']));
+        $occupiedByPlayer = DBUtil::get('tokens', array('player' => self::getActivePlayerId(), 'componentType' => 'system', 'tileId' => $system['type']));
         if (count($occupiedByPlayer) > 0) {
             return;
         }
 
-        $occupied = DBUtil::get('tokens', array('element_type' => 'system', 'element_nr' => $system['type_arg'], 'type' => 'blue'));
+        $occupied = DBUtil::get('tokens', array('componentType' => 'system', 'tileId' => $system['type'], 'overlay' => 'blue'));
         if (count($occupied) < $this->systems[$system['type_arg']]['blue']) {
-            DBUtil::insertRow('tokens', array(
-                'element_id' => $system['type'],
-                'element_type' => 'system',
-                'element_nr' => $system['type_arg'],
-                'type' => 'blue',
-                'position' => count($occupied),
-                'player' => self::getActivePlayerId()
+            DBUtil::insertRow('tokens', array (
+                'player' => self::getActivePlayerId(),
+                'componentType' => 'system',
+                'tileId' => $system['type'],
+                'overlay' => 'blue',
+                'position' => count($occupied)
             ));
             return true;
         } 
@@ -388,20 +435,19 @@ class PulsarZet extends Table
     }
 
     function claimStonePlanet($system) {
-        $occupiedByPlayer = DBUtil::get('tokens', array('player' => self::getActivePlayerId(), 'element_type' => 'system', 'element_nr' => $system['type_arg']));
+        $occupiedByPlayer = DBUtil::get('tokens', array('player' => self::getActivePlayerId(), 'componentType' => 'system', 'tileId' => $system['type']));
         if (count($occupiedByPlayer) > 0) {
             return;
         }
 
-        $occupied = DBUtil::get('tokens', array('element_type' => 'system', 'element_nr' => $system['type_arg'], 'type' => 'stone'));
+        $occupied = DBUtil::get('tokens', array('componentType' => 'system', 'tileId' => $system['type'], 'overlay' => 'blue'));
         if (count($occupied) < $this->systems[$system['type_arg']]['stone']) {
-            DBUtil::insertRow('tokens', array(
-                'element_id' => $system['type'],
-                'element_type' => 'system',
-                'element_nr' => $system['type_arg'],
-                'type' => 'stone',
-                'position' => count($occupied),
-                'player' => self::getActivePlayerId()
+            DBUtil::insertRow('tokens', array (
+                'player' => self::getActivePlayerId(),
+                'componentType' => 'system',
+                'tileId' => $system['type'],
+                'overlay' => 'stone',
+                'position' => count($occupied)
             ));
             return true;
         } 
@@ -566,7 +612,7 @@ class PulsarZet extends Table
     }
 
     function getTokens () {
-        return DBUtil::get('tokens', null, null, 'element_id tileId, player player, position position, type overlay');
+        return DBUtil::get('tokens', null, null, 'tileId, player, position, overlay');
     }    
 
     function getSystems () {
@@ -720,6 +766,15 @@ class PulsarZet extends Table
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
+
+    function click_tech_in_state_player_choose_action_or_modifier($tileId, $tokenId, $posId, $variantId) {
+        self::checkAction('patentTechnology');
+        self::checkIfActionIsAvailable($variantId);
+        self::checkIfPlayerHasDieToBuyAction($variantId);
+        self::patentTechnology($tileId, $variantId);
+        self::sendTokens();
+        $this->gamestate->nextState("technologyPatented");
+    }
 
     function click_smalldice_in_state_player_choose_dice($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('chooseDie'); 

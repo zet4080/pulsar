@@ -449,25 +449,45 @@ define([
                 [], [2667, 1234], [2845, 1248], [3038, 1339], [3211, 1354], [3380, 1364], [3544, 1376], [3703, 1387], [3865, 1397] 
             ]);
 
-            board.getGameTile('tech1').addClickArea('1', [[168, 359], [151, 362, 296, 306, 431, 300], [418, 185], [283, 195, 142, 241, 129, 247]]);
-            board.getGameTile('tech1').addClickArea('2', [[455, 298], [537, 284, 655, 296, 719, 309], [739, 195], [716, 193, 603, 165, 445, 183]]);            
-            board.getGameTile('tech1').addClickArea('3', [[744, 313], [879, 333, 970, 377, 1005, 394], [1053, 287], [1001, 267, 971, 241, 764, 198]]); 
-            board.getGameTile('tech1').addClickArea('4', [[165, 193], [271, 155, 389, 142, 433, 141], [423, 26], [208, 44, 133, 79, 130, 81]]);                        
-            board.getGameTile('tech1').addClickArea('5', [[453, 141], [567, 129, 737, 152, 722, 151], [739, 36], [637, 7, 447, 19, 444, 23]]); 
-            board.getGameTile('tech1').addClickArea('6', [[746, 154], [731, 150, 837, 162, 1009, 223], [1053, 118], [1009, 91, 771, 33, 764, 41]]);              
+            board.getGameTile('tech1').addClickArea('tech', [[168, 359], [151, 362, 296, 306, 431, 300], [418, 185], [283, 195, 142, 241, 129, 247]], { variantId: 1 });
+            board.getGameTile('tech1').addClickArea('tech', [[455, 298], [537, 284, 655, 296, 719, 309], [739, 195], [716, 193, 603, 165, 445, 183]], { variantId: 2 });            
+            board.getGameTile('tech1').addClickArea('tech', [[744, 313], [879, 333, 970, 377, 1005, 394], [1053, 287], [1001, 267, 971, 241, 764, 198]], { variantId: 3 }); 
+            board.getGameTile('tech1').addClickArea('tech', [[165, 193], [271, 155, 389, 142, 433, 141], [423, 26], [208, 44, 133, 79, 130, 81]], { variantId: 4 });                        
+            board.getGameTile('tech1').addClickArea('tech', [[453, 141], [567, 129, 737, 152, 722, 151], [739, 36], [637, 7, 447, 19, 444, 23]], { variantId: 5 }); 
+            board.getGameTile('tech1').addClickArea('tech', [[746, 154], [731, 150, 837, 162, 1009, 223], [1053, 118], [1009, 91, 771, 33, 764, 41]], { variantId: 6 });              
 
-            board.getGameTile('tech2').addClickArea('7', [[154, 484], [301, 453, 439, 456, 424, 457], [424, 343], [297, 337, 151, 364, 129, 370]]);              
-            board.getGameTile('tech2').addClickArea('8', [[447, 456], [610, 456, 733, 487, 718, 485], [741, 373], [736, 368, 606, 342, 448, 340]]);              
-            board.getGameTile('tech2').addClickArea('9', [[161, 324], [299, 295, 447, 298, 432, 299], [436, 185], [384, 182, 246, 187, 141, 209]]);              
-            board.getGameTile('tech2').addClickArea('10', [[457, 301], [600, 296, 746, 328, 731, 327], [752, 214], [603, 183, 488, 185, 460, 184]]);              
-            board.getGameTile('tech2').addClickArea('11', [[169, 162], [355, 137, 436, 145, 446, 144], [448, 24], [242, 18, 148, 48, 150, 45]]);              
-            board.getGameTile('tech2').addClickArea('12', [[467, 144], [586, 136, 756, 170, 741, 169], [763, 56], [760, 53, 659, 31, 470, 27]]);              
+            board.getGameTile('tech2').addClickArea('tech', [[154, 484], [301, 453, 439, 456, 424, 457], [424, 343], [297, 337, 151, 364, 129, 370]], { variantId: 7 });              
+            board.getGameTile('tech2').addClickArea('tech', [[447, 456], [610, 456, 733, 487, 718, 485], [741, 373], [736, 368, 606, 342, 448, 340]], { variantId: 8 });              
+            board.getGameTile('tech2').addClickArea('tech', [[161, 324], [299, 295, 447, 298, 432, 299], [436, 185], [384, 182, 246, 187, 141, 209]], { variantId: 9 });              
+            board.getGameTile('tech2').addClickArea('tech', [[457, 301], [600, 296, 746, 328, 731, 327], [752, 214], [603, 183, 488, 185, 460, 184]], { variantId: 10 });              
+            board.getGameTile('tech2').addClickArea('tech', [[169, 162], [355, 137, 436, 145, 446, 144], [448, 24], [242, 18, 148, 48, 150, 45]], { variantId: 11 });              
+            board.getGameTile('tech2').addClickArea('tech', [[467, 144], [586, 136, 756, 170, 741, 169], [763, 56], [760, 53, 659, 31, 470, 27]], { variantId: 12 });              
 
-            board.getGameTile('tech3').addClickArea('13', [[145, 474], [130, 475, 234, 454, 421, 457], [423, 343], [238, 338, 145, 359, 130, 358]]);
-            board.getGameTile('tech3').addClickArea('14', [[444, 456], [429, 455, 599, 460, 719, 482], [736, 369], [633, 345, 462, 339, 447, 341]]);
-            board.getGameTile('tech3').addClickArea('15', [[154, 313], [139, 314, 343, 293, 432, 300], [434, 185], [420, 181, 281, 181, 140, 199]]);
-            board.getGameTile('tech3').addClickArea('16', [[453, 299], [634, 304, 745, 326, 730, 325], [749, 211], [682, 196, 473, 182, 458, 183]]);
-            board.getGameTile('tech3').addClickArea('17', [[164, 155], [310, 136, 458, 142, 443, 143], [444, 26], [250, 22, 168, 37, 151, 40]]);
+            board.getGameTile('tech3').addClickArea('tech', [[145, 474], [130, 475, 234, 454, 421, 457], [423, 343], [238, 338, 145, 359, 130, 358]], { variantId: 13 });
+            board.getGameTile('tech3').addClickArea('tech', [[444, 456], [429, 455, 599, 460, 719, 482], [736, 369], [633, 345, 462, 339, 447, 341]], { variantId: 14 });
+            board.getGameTile('tech3').addClickArea('tech', [[154, 313], [139, 314, 343, 293, 432, 300], [434, 185], [420, 181, 281, 181, 140, 199]], { variantId: 15 });
+            board.getGameTile('tech3').addClickArea('tech', [[453, 299], [634, 304, 745, 326, 730, 325], [749, 211], [682, 196, 473, 182, 458, 183]], { variantId: 16 });
+            board.getGameTile('tech3').addClickArea('tech', [[164, 155], [310, 136, 458, 142, 443, 143], [444, 26], [250, 22, 168, 37, 151, 40]], { variantId: 17 });
+
+            board.getGameTile('tech1').createOverlay("1").addInsertPositions([[144, 240], [160, 291]]);
+            board.getGameTile('tech1').createOverlay("2").addInsertPositions([[452, 185], [455, 239]]);
+            board.getGameTile('tech1').createOverlay("3").addInsertPositions([[762, 209], [751, 261]]);
+            board.getGameTile('tech1').createOverlay("4").addInsertPositions([[143, 76], [158, 128]]);
+            board.getGameTile('tech1').createOverlay("5").addInsertPositions([[453, 27], [454, 81]]);
+            board.getGameTile('tech1').createOverlay("6").addInsertPositions([[763, 47], [754, 101]]);
+
+            board.getGameTile('tech2').createOverlay("7").addInsertPositions([[143, 368], [152, 422]]);
+            board.getGameTile('tech2').createOverlay("8").addInsertPositions([[454, 345], [452, 400]]);
+            board.getGameTile('tech2').createOverlay("9").addInsertPositions([[152, 206], [161, 260]]);
+            board.getGameTile('tech2').createOverlay("10").addInsertPositions([[464, 188], [462, 243]]);
+            board.getGameTile('tech2').createOverlay("11").addInsertPositions([[163, 46], [170, 100]]);
+            board.getGameTile('tech2').createOverlay("12").addInsertPositions([[475, 31], [473, 85]]);
+
+            board.getGameTile('tech3').createOverlay("13").addInsertPositions([[138, 358], [145, 412]]);
+            board.getGameTile('tech3').createOverlay("14").addInsertPositions([[451, 345], [448, 399]]);
+            board.getGameTile('tech3').createOverlay("15").addInsertPositions([[149, 198], [155, 252]]);
+            board.getGameTile('tech3').createOverlay("16").addInsertPositions([[462, 189], [460, 243]]);
+            board.getGameTile('tech3').createOverlay("17").addInsertPositions([[160, 40], [165, 93]]);
 
             // ================================================================
             // Player Boards
