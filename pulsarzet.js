@@ -22,13 +22,10 @@ define([
     "bgagame/modules/board/pulsarboard",
     "bgagame/modules/board/canvas",
     "bgagame/modules/board/tokentray",
-    "bgagame/modules/stocks/calculatedicepositions",
-    "bgagame/modules/util/backend",
-    // "bgagame/modules/tests/boardtests",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, connect, lang, pulsarboard, canvas, tokentray, calculatedicepositions, backend, tests) {
+function (declare, connect, lang, pulsarboard, canvas, tokentray) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
         
         constructor: function() {
