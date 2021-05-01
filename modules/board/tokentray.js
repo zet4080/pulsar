@@ -1,25 +1,33 @@
-define([], function () {
-
-    variants = {};
+define([
+    "bgagame/modules/state/board"
+], function (board) {
 
     const addTokenVariant = function (tokenId, variantId, token) {
-        if (!variants[tokenId]) {
-            variants[tokenId] = {};
-        }
-        variants[tokenId][variantId] = token;
+        board.dispatch({
+            type: "token/addVariant",
+            payload: {
+                tokenId, variantId, token
+            }
+        });
     };
 
     const addToken = function (tokenId, token) {
-        variants[tokenId] = token;
+        board.dispatch({
+            type: "token/add",
+            payload: {
+                tokenId, token
+            }
+        });
     };
 
-
     const getTokenVariant = function (tokenId, variantId) {
-        return variants[tokenId][variantId];
+        let state = board.getState();
+        return state.tokens[tokenId][variantId];
     };
 
     const getToken = function (tokenId) {
-        let token = variants[tokenId];
+        let state = board.getState();
+        let token = state.tokens[tokenId];
         if (!token) {
             throw Error("Token with id '" + tokenId + "' does not exist!"); 
         }
