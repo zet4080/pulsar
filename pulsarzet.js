@@ -21,11 +21,11 @@ define([
     "dojo/_base/lang",
     "bgagame/modules/board/pulsarboard",
     "bgagame/modules/board/canvas",
-    "bgagame/modules/board/tokentray",
+    "bgagame/modules/board/tray",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, connect, lang, pulsarboard, canvas, tokentray) {
+function (declare, connect, lang, pulsarboard, canvas, tray) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
         
         constructor: function() {
@@ -56,6 +56,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
             this.players = gamedatas.players;
             pulsarboard(gamedatas.players).then(lang.hitch(this, function (board) {
                 this.board = board;
+                /*
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
                 connect.publish("setup/marker", gamedatas.markerposition);
@@ -69,6 +70,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 connect.publish("setup/blackholedice", { dice: gamedatas.blackhole.dice });
                 connect.publish("setup/systems", { systems: gamedatas.systems });
                 connect.publish("setup/tokens", { tokens: gamedatas.tokens });   
+                */
                 canvas.drawBoard(this.board);
             }));
             console.log( "Ending game setup" );
@@ -118,7 +120,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 let track = tracks[pos];
                 for (let i = 0; i < track.length; i++) {
                     let token = pos + '-' + (4 - i);
-                    overlay.slotTokenInPosition(token, tokentray('token', players[track[i]].color));
+                    overlay.slotTokenInPosition(token, tray('token', players[track[i]].color));
                 }
             }
         },
@@ -156,7 +158,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 let modifiervalue = args.args == undefined ? args.modifiervalue : args.args.modifiervalue;
 
                 let overlay = this.board.getGameTile('starcluster').getOverlay('blackhole');
-                (die == 0) ? overlay.removeTokenFromPosition('die') : overlay.slotTokenInPosition('die', tokentray('dice', die));
+                (die == 0) ? overlay.removeTokenFromPosition('die') : overlay.slotTokenInPosition('die', tray('dice', die));
 
                 // can't use switch, because of type comparison (switch is strict!)
                 
@@ -165,25 +167,25 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                     overlay.removeTokenFromPosition("minus");
                     overlay.removeTokenFromPosition("plus");
                 } else if (modifiertoken == 1) {
-                    overlay.slotTokenInPosition('modifier', tokentray('modifier', 1));
+                    overlay.slotTokenInPosition('modifier', tray('modifier', 1));
                 } else if (modifiertoken == 2) {
-                    overlay.slotTokenInPosition('modifier', tokentray('modifier', 2));
+                    overlay.slotTokenInPosition('modifier', tray('modifier', 2));
                 }
 
                 if (modifiervalue == 0 && modifiertoken == 1) {
-                    overlay.slotTokenInPosition("plus", tokentray('plusone'));
+                    overlay.slotTokenInPosition("plus", tray('plusone'));
                     if (die != 1) {
-                        overlay.slotTokenInPosition("minus", tokentray('minusone'));
+                        overlay.slotTokenInPosition("minus", tray('minusone'));
                     }
                 }
 
                 if (modifiervalue == 1) {
-                    overlay.slotTokenInPosition("plus", tokentray('plusone'));
+                    overlay.slotTokenInPosition("plus", tray('plusone'));
                     overlay.removeTokenFromPosition("minus");
                 }
 
                 if (modifiervalue == -1) {
-                    overlay.slotTokenInPosition("minus", tokentray('minusone'));
+                    overlay.slotTokenInPosition("minus", tray('minusone'));
                     overlay.removeTokenFromPosition("plus");
                 }
                 canvas.drawBoard(this.board);
@@ -192,9 +194,9 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
             connect.subscribe("setup/tokens", this, function (args) {
                 let tokens = args.tokens || args.args.tokens;
                 for (let i = 0; i < tokens.length; i++) {
-                    let overlay = tokentray(tokens[i].tileId).getOverlay(tokens[i].overlay);
+                    let overlay = tray(tokens[i].tileId).getOverlay(tokens[i].overlay);
                     if (!overlay.isPositionOccupied(tokens[i].position)) {
-                        overlay.slotTokenInPosition(tokens[i].position, tokentray('token', this.players[tokens[i].player].color));
+                        overlay.slotTokenInPosition(tokens[i].position, tray('token', this.players[tokens[i].player].color));
                     }
                 }
                 canvas.drawBoard(this.board);
@@ -205,7 +207,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 let overlay = this.board.getGameTile('starcluster').getOverlay('planetarysystems');
                 overlay.removeAllTokens();
                 for (let system in systems) {
-                    overlay.slotTokenInPosition(systems[system].node, tokentray(systems[system].system));
+                    overlay.slotTokenInPosition(systems[system].node, tray(systems[system].system));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -215,7 +217,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 let overlay = this.board.getGameTile('starcluster').getOverlay('ships');
                 overlay.removeAllTokens();
                 for (let i = 0; i < shippositions.length; i++) {
-                    overlay.slotTokenInPosition( shippositions[i].position, tokentray('ship', this.players[shippositions[i].playerid].color));
+                    overlay.slotTokenInPosition( shippositions[i].position, tray('ship', this.players[shippositions[i].playerid].color));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -226,7 +228,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 let overlay = this.board.getGameTile('diceboard').getOverlay('dice');
                 overlay.removeAllTokens('dice');
                 for (var i = 0; i < dice.length; i++) {
-                    overlay.slotTokenInPosition(dice[i].position, tokentray('smalldice', dice[i].value));
+                    overlay.slotTokenInPosition(dice[i].position, tray('smalldice', dice[i].value));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -239,7 +241,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 for (var i = 0; i < dice.length; i++) {
                     let overlay = this.board.getGameTile(dice[i].player).getOverlay('dice');
                     let pos = overlay.isPositionOccupied("0") ? "1" : "0";
-                    overlay.slotTokenInPosition(pos, tokentray('dice', dice[i]['value']));
+                    overlay.slotTokenInPosition(pos, tray('dice', dice[i]['value']));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -248,7 +250,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 let dice = args.dice;
                 let overlay = this.board.getGameTile('starcluster').getOverlay('dice');
                 for (var i = 0; i < dice.length; i++) {
-                    overlay.slotTokenInPosition(i, tokentray('dice', dice[i].value));
+                    overlay.slotTokenInPosition(i, tray('dice', dice[i].value));
                 }
                 canvas.drawBoard(this.board);
                 canvas.drawBoard(this.board);
@@ -258,7 +260,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 let markerposition = (args.args && args.args.markerposition) || args;
                 let overlay = this.board.getGameTile('diceboard').getOverlay('marker');
                 overlay.removeAllTokens();
-                overlay.slotTokenInPosition(markerposition, tokentray("marker"));
+                overlay.slotTokenInPosition(markerposition, tray("marker"));
                 canvas.drawBoard(this.board);
             });            
             
@@ -268,7 +270,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 let overlay = this.board.getGameTile('diceboard').getOverlay('ships');
                 overlay.removeAllTokens();
                 for (let i = 0; i < order.length; i++) {
-                    overlay.slotTokenInPosition(i + 1, tokentray('ship', players[order[i]].color));
+                    overlay.slotTokenInPosition(i + 1, tray('ship', players[order[i]].color));
                 }
                 canvas.drawBoard(this.board);
             });            
@@ -286,7 +288,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 let starcluster = this.board.getGameTile('starcluster').getOverlay('rings');
                 starcluster.removeAllTokens();
                 for (let i = 0; i < pulsars.length; i++) {
-                    starcluster.slotTokenInPosition(pulsars[i].node, tokentray('ring', this.players[pulsars[i].playerid].color));
+                    starcluster.slotTokenInPosition(pulsars[i].node, tray('ring', this.players[pulsars[i].playerid].color));
                 }
                 canvas.drawBoard(this.board);
             });
@@ -317,7 +319,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 diceboard.removeTokenFromPosition(args.posId);
                 
                 let pos = playerboard.isPositionOccupied(0) ? 1 : 0;
-                playerboard.slotTokenInPosition(pos, tokentray('dice', args.variantId));
+                playerboard.slotTokenInPosition(pos, tray('dice', args.variantId));
                 canvas.drawBoard(this.board);
             });
 
@@ -326,7 +328,7 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                 let starcluster = this.board.getGameTile('starcluster').getOverlay('tokens');
                 starcluster.removeAllTokens();
                 for (let id in playerpoints) {
-                    starcluster.slotTokenInPosition(playerpoints[id], tokentray('token', this.players[id].color));
+                    starcluster.slotTokenInPosition(playerpoints[id], tray('token', this.players[id].color));
                 };
                 canvas.drawBoard(this.board);
             });
@@ -337,22 +339,22 @@ function (declare, connect, lang, pulsarboard, canvas, tokentray) {
                     let player = playerboards[i]["playerid"];
                     let playerboard = this.board.getGameTile(player);
                     playerboards[i].modifierone !== "0"
-                        ? playerboard.getOverlay("modifierone").slotTokenInPosition("0", tokentray("modifier", 1)) 
+                        ? playerboard.getOverlay("modifierone").slotTokenInPosition("0", tray("modifier", 1)) 
                         : playerboard.getOverlay("modifierone").removeTokenFromPosition("0"); 
                     playerboards[i].modifiertwo !== "0"
-                        ? playerboard.getOverlay("modifiertwo").slotTokenInPosition("0", tokentray("modifier", 2)) 
+                        ? playerboard.getOverlay("modifiertwo").slotTokenInPosition("0", tray("modifier", 2)) 
                         : playerboard.getOverlay("modifiertwo").removeTokenFromPosition("0"); 
                     playerboards[i].pulsarrings !== "0"
-                        ? playerboard.getOverlay("pulsarrings").slotTokenInPosition("0", tokentray("ring", this.players[player].color)) 
+                        ? playerboard.getOverlay("pulsarrings").slotTokenInPosition("0", tray("ring", this.players[player].color)) 
                         : playerboard.getOverlay("pulsarrings").removeTokenFromPosition("0"); 
                     playerboards[i].gyrodyneone !== "0"
-                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("1", tokentray("gyrodyne-inactive", "1")) 
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("1", tray("gyrodyne-inactive", "1")) 
                         : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("1"); 
                     playerboards[i].gyrodynetwo !== "0"
-                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("2", tokentray("gyrodyne-inactive", "2")) 
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("2", tray("gyrodyne-inactive", "2")) 
                         : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("2"); 
                     playerboards[i].gyrodynethree !== "0"
-                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("3", tokentray("gyrodyne-inactive", "3")) 
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("3", tray("gyrodyne-inactive", "3")) 
                         : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("3"); 
                     canvas.drawBoard(this.board);
                 }
