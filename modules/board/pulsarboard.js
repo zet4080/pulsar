@@ -2,8 +2,9 @@ define([
     "bgagame/modules/board/imageloader",
     "bgagame/modules/board/gametile",
     "bgagame/modules/board/token",
-    "bgagame/modules/board/tray"
-], function (imageloader, gametile, token, tray) {
+    "bgagame/modules/board/tray",
+    "bgagame/modules/board/rotation"
+], function (imageloader, gametile, token, tray, rotation) {
 
     const addAllPos = function (overlay, column, x, y) {
         overlay.addInsertPosition(column +  '-1', x, y -33);
@@ -217,171 +218,172 @@ define([
 
         return imageloader.loadImages().then(function (imagelist) {
             const list = imagelist.alltokens;
-            const board = gametile();
+            
+            const board = gametile('board');
 
             // ================================================================
             // Tokens
             // ================================================================
             
-            tray(list.tokenblue, 'token', "0000ff");
-            tray(list.tokengreen, 'token', "008000");
-            tray(list.tokenyellow, 'token', "ffa500");
-            tray(list.tokenred, 'token', "ff0000");
+            tray(token(list.tokenblue, 'token', "0000ff"));
+            tray(token(list.tokengreen, 'token', "008000"));
+            tray(token(list.tokenyellow, 'token', "ffa500"));
+            tray(token(list.tokenred, 'token', "ff0000"));
             
-            tray(list.shipblue, 'ship', "0000ff");
-            tray(list.shipgreen, 'ship', "008000");
-            tray(list.shipyellow, 'ship', "ffa500");
-            tray(list.shipred, 'ship', "ff0000");
+            tray(token(list.shipblue, 'ship', "0000ff"));
+            tray(token(list.shipgreen, 'ship', "008000"));
+            tray(token(list.shipyellow, 'ship', "ffa500"));
+            tray(token(list.shipred, 'ship', "ff0000"));
             
-            tray(list.ringblue, 'ring', "0000ff");
-            tray(list.ringgreen, 'ring', "008000");
-            tray(list.ringyellow, 'ring', "ffa500");
-            tray(list.ringred, 'ring', "ff0000");    
+            tray(token(list.ringblue, 'ring', "0000ff"));
+            tray(token(list.ringgreen, 'ring', "008000"));
+            tray(token(list.ringyellow, 'ring', "ffa500"));
+            tray(token(list.ringred, 'ring', "ff0000"));    
  
-            tray(list["100pointsblue"], '100points', "0000ff");
-            tray(list["100pointsgreen"], '100points', "008000");
-            tray(list["100pointsyellow"], '100points', "ffa500");
-            tray(list["100pointsred"], '100points', "ff0000");    
+            tray(token(list["100pointsblue"], '100points', "0000ff"));
+            tray(token(list["100pointsgreen"], '100points', "008000"));
+            tray(token(list["100pointsyellow"], '100points', "ffa500"));
+            tray(token(list["100pointsred"], '100points', "ff0000"));    
             
-            tray(list.dicemarker, "marker");
+            tray(token(list.dicemarker, "marker"));
 
-            tray(list.smalldie1, "smalldice", 1);
-            tray(list.smalldie2, "smalldice", 2);
-            tray(list.smalldie3, "smalldice", 3);
-            tray(list.smalldie4, "smalldice", 4);
-            tray(list.smalldie5, "smalldice", 5);
-            tray(list.smalldie6, "smalldice", 6);
+            tray(token(list.smalldie1, "smalldice", 1));
+            tray(token(list.smalldie2, "smalldice", 2));
+            tray(token(list.smalldie3, "smalldice", 3));
+            tray(token(list.smalldie4, "smalldice", 4));
+            tray(token(list.smalldie5, "smalldice", 5));
+            tray(token(list.smalldie6, "smalldice", 6));
 
-            tray(list.silverdie1, "dice", 1);
-            tray(list.silverdie2, "dice", 2);
-            tray(list.silverdie3, "dice", 3);
-            tray(list.silverdie4, "dice", 4);
-            tray(list.silverdie5, "dice", 5);
-            tray(list.silverdie6, "dice", 6);    
+            tray(token(list.silverdie1, "dice", 1));
+            tray(token(list.silverdie2, "dice", 2));
+            tray(token(list.silverdie3, "dice", 3));
+            tray(token(list.silverdie4, "dice", 4));
+            tray(token(list.silverdie5, "dice", 5));
+            tray(token(list.silverdie6, "dice", 6));    
 
-            tray(list.reddie1, "reddice", 1);
-            tray(list.reddie2, "reddice", 2);
-            tray(list.reddie3, "reddice", 3);
-            tray(list.reddie4, "reddice", 4);
-            tray(list.reddie5, "reddice", 5);
-            tray(list.reddie6, "reddice", 6);    
+            tray(token(list.reddie1, "reddice", 1));
+            tray(token(list.reddie2, "reddice", 2));
+            tray(token(list.reddie3, "reddice", 3));
+            tray(token(list.reddie4, "reddice", 4));
+            tray(token(list.reddie5, "reddice", 5));
+            tray(token(list.reddie6, "reddice", 6));    
             
-            tray(list.constructionaward4, "constructionaward", 4);
-            tray(list.constructionaward7, "constructionaward", 7);
+            tray(token(list.constructionaward4, "constructionaward", 4));
+            tray(token(list.constructionaward7, "constructionaward", 7));
 
-            tray(list.engineeringcube, "engineeringcube", 1);
-            tray(list.engineeringcubes4, "engineeringcube", 4);
+            tray(token(list.engineeringcube, "engineeringcube", 1));
+            tray(token(list.engineeringcubes4, "engineeringcube", 4));
 
-            tray(list.plusone, "plusone");
-            tray(list.minusone, "minusone");
+            tray(token(list.plusone, "plusone"));
+            tray(token(list.minusone, "minusone"));
 
-            tray(list.number1, "number", 1);
-            tray(list.number2, "number", 2);
-            tray(list.number3, "number", 3);
-            tray(list.number4, "number", 4);
-            tray(list.number5, "number", 5);
-            tray(list.number6, "number", 6);
-            tray(list.number7, "number", 7);
-            tray(list.number8, "number", 8);
-            tray(list.number9, "number", 9);
-            tray(list.number10, "number", 10);
-            tray(list.number11, "number", 11);
-            tray(list.number12, "number", 12);
-            tray(list.number13, "number", 13);
-            tray(list.number14, "number", 14);
-            tray(list.number15, "number", 15);
-            tray(list.number16, "number", 16);
-            tray(list.number17, "number", 17);
-            tray(list.number18, "number", 18);
-            tray(list.number19, "number", 19);
-            tray(list.number20, "number", 20);
+            tray(token(list.number1, "number", 1));
+            tray(token(list.number2, "number", 2));
+            tray(token(list.number3, "number", 3));
+            tray(token(list.number4, "number", 4));
+            tray(token(list.number5, "number", 5));
+            tray(token(list.number6, "number", 6));
+            tray(token(list.number7, "number", 7));
+            tray(token(list.number8, "number", 8));
+            tray(token(list.number9, "number", 9));
+            tray(token(list.number10, "number", 10));
+            tray(token(list.number11, "number", 11));
+            tray(token(list.number12, "number", 12));
+            tray(token(list.number13, "number", 13));
+            tray(token(list.number14, "number", 14));
+            tray(token(list.number15, "number", 15));
+            tray(token(list.number16, "number", 16));
+            tray(token(list.number17, "number", 17));
+            tray(token(list.number18, "number", 18));
+            tray(token(list.number19, "number", 19));
+            tray(token(list.number20, "number", 20));
 
-            tray(list.timemarker, "timemarker");
+            tray(token(list.timemarker, "timemarker"));
 
-            tray(list.bonusback, "bonus", "back");
-            tray(list.bonuscubes, "bonus", "cubes");
-            tray(list.bonussystems, "bonus", "systems");
-            tray(list.bonusmodifier, "bonus", "modifier");
-            tray(list.bonus4points, "bonus", "4points");
-            tray(list.bonus5points, "bonus", "5points");
+            tray(token(list.bonusback, "bonus", "back"));
+            tray(token(list.bonuscubes, "bonus", "cubes"));
+            tray(token(list.bonussystems, "bonus", "systems"));
+            tray(token(list.bonusmodifier, "bonus", "modifier"));
+            tray(token(list.bonus4points, "bonus", "4points"));
+            tray(token(list.bonus5points, "bonus", "5points"));
 
-            tray(list.modifikator1, "modifier", "1");
-            tray(list.modifikator2, "modifier", "2");
+            tray(token(list.modifikator1, "modifier", "1"));
+            tray(token(list.modifikator2, "modifier", "2"));
 
-            tray(list.gyordyne1a, "gyrodyne", "active", "1");
-            tray(list.gyordyne2a, "gyrodyne", "active", "2");
-            tray(list.gyordyne3a, "gyrodyne", "active", "3");
-            tray(list.gyordyne1b, "gyrodyne", "inactive", "1");
-            tray(list.gyordyne2b, "gyrodyne", "inactive", "2");
-            tray(list.gyordyne3b, "gyrodyne", "inactive", "3");
+            tray(token(list.gyordyne1a, "gyrodyne", "active", "1"));
+            tray(token(list.gyordyne2a, "gyrodyne", "active", "2"));
+            tray(token(list.gyordyne3a, "gyrodyne", "active", "3"));
+            tray(token(list.gyordyne1b, "gyrodyne", "inactive", "1"));
+            tray(token(list.gyordyne2b, "gyrodyne", "inactive", "2"));
+            tray(token(list.gyordyne3b, "gyrodyne", "inactive", "3"));
 
-            tray(list.transmittera1a, "transmitter", "A1", "inactive");
-            tray(list.transmittera1b, "transmitter", "A1", "active");
-            tray(list.transmittera2a, "transmitter", "A2", "inactive");
-            tray(list.transmittera2b, "transmitter", "A2", "active");
-            tray(list.transmittera3a, "transmitter", "A3", "inactive");
-            tray(list.transmittera3b, "transmitter", "A3", "active");
-            tray(list.transmittera4a, "transmitter", "A4", "inactive");
-            tray(list.transmittera4b, "transmitter", "A4", "active");
-            tray(list.transmittera5a, "transmitter", "A5", "inactive");
-            tray(list.transmittera5b, "transmitter", "A5", "active");
-            tray(list.transmittera6a, "transmitter", "A6", "inactive");
-            tray(list.transmittera6b, "transmitter", "A6", "active");
+            tray(gametile(list.transmittera1a, "transmitter", "A1", "inactive"));
+            tray(gametile(list.transmittera1b, "transmitter", "A1", "active"));
+            tray(gametile(list.transmittera2a, "transmitter", "A2", "inactive"));
+            tray(gametile(list.transmittera2b, "transmitter", "A2", "active"));
+            tray(gametile(list.transmittera3a, "transmitter", "A3", "inactive"));
+            tray(gametile(list.transmittera3b, "transmitter", "A3", "active"));
+            tray(gametile(list.transmittera4a, "transmitter", "A4", "inactive"));
+            tray(gametile(list.transmittera4b, "transmitter", "A4", "active"));
+            tray(gametile(list.transmittera5a, "transmitter", "A5", "inactive"));
+            tray(gametile(list.transmittera5b, "transmitter", "A5", "active"));
+            tray(gametile(list.transmittera6a, "transmitter", "A6", "inactive"));
+            tray(gametile(list.transmittera6b, "transmitter", "A6", "active"));
 
-            tray(list.transmitterb1a, "transmitter", "B1", "inactive");
-            tray(list.transmitterb1b, "transmitter", "B1", "active");
-            tray(list.transmitterb2a, "transmitter", "B2", "inactive");
-            tray(list.transmitterb2b, "transmitter", "B2", "active");
-            tray(list.transmitterb3a, "transmitter", "B3", "inactive");
-            tray(list.transmitterb3b, "transmitter", "B3", "active");
-            tray(list.transmitterb4a, "transmitter", "B4", "inactive");
-            tray(list.transmitterb4b, "transmitter", "B4", "active");
-            tray(list.transmitterb5a, "transmitter", "B5", "inactive");
-            tray(list.transmitterb5b, "transmitter", "B5", "active");
-            tray(list.transmitterb6a, "transmitter", "B6", "inactive");
-            tray(list.transmitterb6b, "transmitter", "B6", "active");
+            tray(gametile(list.transmitterb1a, "transmitter", "B1", "inactive"));
+            tray(gametile(list.transmitterb1b, "transmitter", "B1", "active"));
+            tray(gametile(list.transmitterb2a, "transmitter", "B2", "inactive"));
+            tray(gametile(list.transmitterb2b, "transmitter", "B2", "active"));
+            tray(gametile(list.transmitterb3a, "transmitter", "B3", "inactive"));
+            tray(gametile(list.transmitterb3b, "transmitter", "B3", "active"));
+            tray(gametile(list.transmitterb4a, "transmitter", "B4", "inactive"));
+            tray(gametile(list.transmitterb4b, "transmitter", "B4", "active"));
+            tray(gametile(list.transmitterb5a, "transmitter", "B5", "inactive"));
+            tray(gametile(list.transmitterb5b, "transmitter", "B5", "active"));
+            tray(gametile(list.transmitterb6a, "transmitter", "B6", "inactive"));
+            tray(gametile(list.transmitterb6b, "transmitter", "B6", "active"));
 
-            tray(list.transmitterc1a, "transmitter", "C1", "inactive");
-            tray(list.transmitterc1b, "transmitter", "C1", "active");
-            tray(list.transmitterc2a, "transmitter", "C2", "inactive");
-            tray(list.transmitterc2b, "transmitter", "C2", "active");
-            tray(list.transmitterc3a, "transmitter", "C3", "inactive");
-            tray(list.transmitterc3b, "transmitter", "C3", "active");
-            tray(list.transmitterc4a, "transmitter", "C4", "inactive");
-            tray(list.transmitterc4b, "transmitter", "C4", "active");
-            tray(list.transmitterc5a, "transmitter", "C5", "inactive");
-            tray(list.transmitterc5b, "transmitter", "C5", "active");
-            tray(list.transmitterc6a, "transmitter", "C6", "inactive");
-            tray(list.transmitterc6b, "transmitter", "C6", "active");
+            tray(gametile(list.transmitterc1a, "transmitter", "C1", "inactive"));
+            tray(gametile(list.transmitterc1b, "transmitter", "C1", "active"));
+            tray(gametile(list.transmitterc2a, "transmitter", "C2", "inactive"));
+            tray(gametile(list.transmitterc2b, "transmitter", "C2", "active"));
+            tray(gametile(list.transmitterc3a, "transmitter", "C3", "inactive"));
+            tray(gametile(list.transmitterc3b, "transmitter", "C3", "active"));
+            tray(gametile(list.transmitterc4a, "transmitter", "C4", "inactive"));
+            tray(gametile(list.transmitterc4b, "transmitter", "C4", "active"));
+            tray(gametile(list.transmitterc5a, "transmitter", "C5", "inactive"));
+            tray(gametile(list.transmitterc5b, "transmitter", "C5", "active"));
+            tray(gametile(list.transmitterc6a, "transmitter", "C6", "inactive"));
+            tray(gametile(list.transmitterc6b, "transmitter", "C6", "active"));
             
             // ================================================================
             // Planetary Systems
             // ================================================================             
 
-            tray(list.system1, 'system', 1);
-            tray(list.system2, 'system', 2);
-            tray(list.system3, 'system', 3);
-            tray(list.system4, 'system', 4);
-            tray(list.system5, 'system', 5);
-            tray(list.system6, 'system', 6);
-            tray(list.system7, 'system', 7);
-            tray(list.system8, 'system', 8);
-            tray(list.system9, 'system', 9);
-            tray(list.system10, 'system', 10);
-            tray(list.system11, 'system', 11);
-            tray(list.system12, 'system', 12);
-            tray(list.system13, 'system', 13);
-            tray(list.system14, 'system', 14);
-            tray(list.system15, 'system', 15);
-            tray(list.system16, 'system', 16);
-            tray(list.system17, 'system', 17);
+            tray(gametile(list.system1, 'system', 1));
+            tray(gametile(list.system2, 'system', 2));
+            tray(gametile(list.system3, 'system', 3));
+            tray(gametile(list.system4, 'system', 4));
+            tray(gametile(list.system5, 'system', 5));
+            tray(gametile(list.system6, 'system', 6));
+            tray(gametile(list.system7, 'system', 7));
+            tray(gametile(list.system8, 'system', 8));
+            tray(gametile(list.system9, 'system', 9));
+            tray(gametile(list.system10, 'system', 10));
+            tray(gametile(list.system11, 'system', 11));
+            tray(gametile(list.system12, 'system', 12));
+            tray(gametile(list.system13, 'system', 13));
+            tray(gametile(list.system14, 'system', 14));
+            tray(gametile(list.system15, 'system', 15));
+            tray(gametile(list.system16, 'system', 16));
+            tray(gametile(list.system17, 'system', 17));
 
             // ================================================================
             // Diceboard
             // ================================================================            
 
-            tray(list.diceboard4Player, 'diceboard');
-            board.addGameTile(tray('diceboard'), 780, 229, { x: 1678, y: 1856, r: -90 });
+            tray(gametile(list.diceboard4Player, 'diceboard'));
+            board.addGameTile(tray('diceboard'), 780, 229, rotation(1678, 1856, -90));
 
             tray('diceboard').createOverlay('ships').addInsertPositions([
                 [], [320, 153, 120], [373, 135, 120], [436, 116, 120], [485, 97, 120]
@@ -411,83 +413,83 @@ define([
             // Gyrondyne Board
             // ================================================================              
 
-            tray(list.gyrodyneboard, 'gyrodyneboard');
-            board.addGameTile(tray('gyrodyneboard'), 1103, 300, { x: 1678, y: 1856, r: -26.5 });            
+            tray(gametile(list.gyrodyneboard, 'gyrodyneboard'));
+            board.addGameTile(tray('gyrodyneboard'), 1103, 300, rotation(1678, 1856, -26.5));            
 
             // ================================================================
             // Modifier Board
             // ================================================================              
             
-            tray(list.modifierboard, 'modifierboard');
-            board.addGameTile(tray('modifierboard'), 1398, 540, { x: 1678, y: 1856, r: 12 });                
+            tray(gametile(list.modifierboard, 'modifierboard'));
+            board.addGameTile(tray('modifierboard'), 1398, 540, rotation(1678, 1856, 12));                
 
             // ================================================================
             // Goal Tiles
             // ================================================================            
 
-            tray(list.goaltile2b, 'goaltile-1');
-            tray(list.goaltile6a, 'goaltile-2');
-            tray(list.goaltile1a, 'goaltile-3');
-
-            board.addGameTile(tray('goaltile-1'), 1532, 122, { x: 1678, y: 1856, r: 32 });
-            board.addGameTile(tray('goaltile-2'), 1532, 122, { x: 1678, y: 1856, r: 39 });
-            board.addGameTile(tray('goaltile-3'), 1532, 122, { x: 1678, y: 1856, r: 46 });
+            tray(gametile(list.goaltile2b, 'goaltile-1'));
+            tray(gametile(list.goaltile6a, 'goaltile-2'));
+            tray(gametile(list.goaltile1a, 'goaltile-3'));
+            
+            board.addGameTile(tray('goaltile-1'), 1532, 122, rotation(1678, 1856, 32));
+            board.addGameTile(tray('goaltile-2'), 1532, 122, rotation(1678, 1856, 39));
+            board.addGameTile(tray('goaltile-3'), 1532, 122, rotation(1678, 1856, 46));
 
             // ================================================================
             // Tech Boards
             // ================================================================            
 
-            tray(list["tech-AI"], 'tech1');
-            tray(list["tech-AII"], 'tech2');
-            tray(list["tech-AIII"], 'tech3');
+            tray(gametile(list["tech-AI"], 'tech1'));
+            tray(gametile(list["tech-AII"], 'tech2'));
+            tray(gametile(list["tech-AIII"], 'tech3'));
 
-            board.addGameTile(tray('tech1'), 1138, 420, { x: 1678, y: 1856, r: 90 });
-            board.addGameTile(tray('tech2'), 1241, -50, { x: 1678, y: 1856, r: 90 });
-            board.addGameTile(tray('tech3'), 1275, -350, { x: 1678, y: 1856, r: 90 });
+            board.addGameTile(tray('tech1'), 1138, 420, rotation(1678, 1856, 90));
+            board.addGameTile(tray('tech2'), 1241, -50, rotation(1678, 1856, 90));
+            board.addGameTile(tray('tech3'), 1275, -350, rotation(1678, 1856, 90));
 
             board.createOverlay('timemarker').addInsertPositions([
                 [], [2667, 1234], [2845, 1248], [3038, 1339], [3211, 1354], [3380, 1364], [3544, 1376], [3703, 1387], [3865, 1397] 
             ]);
 
-            board.getGameTile('tech1').addClickArea('tech', [[168, 359], [151, 362, 296, 306, 431, 300], [418, 185], [283, 195, 142, 241, 129, 247]], { variantId: 1 });
-            board.getGameTile('tech1').addClickArea('tech', [[455, 298], [537, 284, 655, 296, 719, 309], [739, 195], [716, 193, 603, 165, 445, 183]], { variantId: 2 });            
-            board.getGameTile('tech1').addClickArea('tech', [[744, 313], [879, 333, 970, 377, 1005, 394], [1053, 287], [1001, 267, 971, 241, 764, 198]], { variantId: 3 }); 
-            board.getGameTile('tech1').addClickArea('tech', [[165, 193], [271, 155, 389, 142, 433, 141], [423, 26], [208, 44, 133, 79, 130, 81]], { variantId: 4 });                        
-            board.getGameTile('tech1').addClickArea('tech', [[453, 141], [567, 129, 737, 152, 722, 151], [739, 36], [637, 7, 447, 19, 444, 23]], { variantId: 5 }); 
-            board.getGameTile('tech1').addClickArea('tech', [[746, 154], [731, 150, 837, 162, 1009, 223], [1053, 118], [1009, 91, 771, 33, 764, 41]], { variantId: 6 });              
+            tray('tech1').addClickArea('tech', [[168, 359], [151, 362, 296, 306, 431, 300], [418, 185], [283, 195, 142, 241, 129, 247]], { variantId: 1 });
+            tray('tech1').addClickArea('tech', [[455, 298], [537, 284, 655, 296, 719, 309], [739, 195], [716, 193, 603, 165, 445, 183]], { variantId: 2 });            
+            tray('tech1').addClickArea('tech', [[744, 313], [879, 333, 970, 377, 1005, 394], [1053, 287], [1001, 267, 971, 241, 764, 198]], { variantId: 3 }); 
+            tray('tech1').addClickArea('tech', [[165, 193], [271, 155, 389, 142, 433, 141], [423, 26], [208, 44, 133, 79, 130, 81]], { variantId: 4 });                        
+            tray('tech1').addClickArea('tech', [[453, 141], [567, 129, 737, 152, 722, 151], [739, 36], [637, 7, 447, 19, 444, 23]], { variantId: 5 }); 
+            tray('tech1').addClickArea('tech', [[746, 154], [731, 150, 837, 162, 1009, 223], [1053, 118], [1009, 91, 771, 33, 764, 41]], { variantId: 6 });              
 
-            board.getGameTile('tech2').addClickArea('tech', [[154, 484], [301, 453, 439, 456, 424, 457], [424, 343], [297, 337, 151, 364, 129, 370]], { variantId: 7 });              
-            board.getGameTile('tech2').addClickArea('tech', [[447, 456], [610, 456, 733, 487, 718, 485], [741, 373], [736, 368, 606, 342, 448, 340]], { variantId: 8 });              
-            board.getGameTile('tech2').addClickArea('tech', [[161, 324], [299, 295, 447, 298, 432, 299], [436, 185], [384, 182, 246, 187, 141, 209]], { variantId: 9 });              
-            board.getGameTile('tech2').addClickArea('tech', [[457, 301], [600, 296, 746, 328, 731, 327], [752, 214], [603, 183, 488, 185, 460, 184]], { variantId: 10 });              
-            board.getGameTile('tech2').addClickArea('tech', [[169, 162], [355, 137, 436, 145, 446, 144], [448, 24], [242, 18, 148, 48, 150, 45]], { variantId: 11 });              
-            board.getGameTile('tech2').addClickArea('tech', [[467, 144], [586, 136, 756, 170, 741, 169], [763, 56], [760, 53, 659, 31, 470, 27]], { variantId: 12 });              
+            tray('tech2').addClickArea('tech', [[154, 484], [301, 453, 439, 456, 424, 457], [424, 343], [297, 337, 151, 364, 129, 370]], { variantId: 7 });              
+            tray('tech2').addClickArea('tech', [[447, 456], [610, 456, 733, 487, 718, 485], [741, 373], [736, 368, 606, 342, 448, 340]], { variantId: 8 });              
+            tray('tech2').addClickArea('tech', [[161, 324], [299, 295, 447, 298, 432, 299], [436, 185], [384, 182, 246, 187, 141, 209]], { variantId: 9 });              
+            tray('tech2').addClickArea('tech', [[457, 301], [600, 296, 746, 328, 731, 327], [752, 214], [603, 183, 488, 185, 460, 184]], { variantId: 10 });              
+            tray('tech2').addClickArea('tech', [[169, 162], [355, 137, 436, 145, 446, 144], [448, 24], [242, 18, 148, 48, 150, 45]], { variantId: 11 });              
+            tray('tech2').addClickArea('tech', [[467, 144], [586, 136, 756, 170, 741, 169], [763, 56], [760, 53, 659, 31, 470, 27]], { variantId: 12 });              
 
-            board.getGameTile('tech3').addClickArea('tech', [[145, 474], [130, 475, 234, 454, 421, 457], [423, 343], [238, 338, 145, 359, 130, 358]], { variantId: 13 });
-            board.getGameTile('tech3').addClickArea('tech', [[444, 456], [429, 455, 599, 460, 719, 482], [736, 369], [633, 345, 462, 339, 447, 341]], { variantId: 14 });
-            board.getGameTile('tech3').addClickArea('tech', [[154, 313], [139, 314, 343, 293, 432, 300], [434, 185], [420, 181, 281, 181, 140, 199]], { variantId: 15 });
-            board.getGameTile('tech3').addClickArea('tech', [[453, 299], [634, 304, 745, 326, 730, 325], [749, 211], [682, 196, 473, 182, 458, 183]], { variantId: 16 });
-            board.getGameTile('tech3').addClickArea('tech', [[164, 155], [310, 136, 458, 142, 443, 143], [444, 26], [250, 22, 168, 37, 151, 40]], { variantId: 17 });
+            tray('tech3').addClickArea('tech', [[145, 474], [130, 475, 234, 454, 421, 457], [423, 343], [238, 338, 145, 359, 130, 358]], { variantId: 13 });
+            tray('tech3').addClickArea('tech', [[444, 456], [429, 455, 599, 460, 719, 482], [736, 369], [633, 345, 462, 339, 447, 341]], { variantId: 14 });
+            tray('tech3').addClickArea('tech', [[154, 313], [139, 314, 343, 293, 432, 300], [434, 185], [420, 181, 281, 181, 140, 199]], { variantId: 15 });
+            tray('tech3').addClickArea('tech', [[453, 299], [634, 304, 745, 326, 730, 325], [749, 211], [682, 196, 473, 182, 458, 183]], { variantId: 16 });
+            tray('tech3').addClickArea('tech', [[164, 155], [310, 136, 458, 142, 443, 143], [444, 26], [250, 22, 168, 37, 151, 40]], { variantId: 17 });
 
-            board.getGameTile('tech1').createOverlay("1").addInsertPositions([[144, 240], [160, 291]]);
-            board.getGameTile('tech1').createOverlay("2").addInsertPositions([[452, 185], [455, 239]]);
-            board.getGameTile('tech1').createOverlay("3").addInsertPositions([[762, 209], [751, 261]]);
-            board.getGameTile('tech1').createOverlay("4").addInsertPositions([[143, 76], [158, 128]]);
-            board.getGameTile('tech1').createOverlay("5").addInsertPositions([[453, 27], [454, 81]]);
-            board.getGameTile('tech1').createOverlay("6").addInsertPositions([[763, 47], [754, 101]]);
+            tray('tech1').createOverlay("1").addInsertPositions([[144, 240], [160, 291]]);
+            tray('tech1').createOverlay("2").addInsertPositions([[452, 185], [455, 239]]);
+            tray('tech1').createOverlay("3").addInsertPositions([[762, 209], [751, 261]]);
+            tray('tech1').createOverlay("4").addInsertPositions([[143, 76], [158, 128]]);
+            tray('tech1').createOverlay("5").addInsertPositions([[453, 27], [454, 81]]);
+            tray('tech1').createOverlay("6").addInsertPositions([[763, 47], [754, 101]]);
 
-            board.getGameTile('tech2').createOverlay("7").addInsertPositions([[143, 368], [152, 422]]);
-            board.getGameTile('tech2').createOverlay("8").addInsertPositions([[454, 345], [452, 400]]);
-            board.getGameTile('tech2').createOverlay("9").addInsertPositions([[152, 206], [161, 260]]);
-            board.getGameTile('tech2').createOverlay("10").addInsertPositions([[464, 188], [462, 243]]);
-            board.getGameTile('tech2').createOverlay("11").addInsertPositions([[163, 46], [170, 100]]);
-            board.getGameTile('tech2').createOverlay("12").addInsertPositions([[475, 31], [473, 85]]);
+            tray('tech2').createOverlay("7").addInsertPositions([[143, 368], [152, 422]]);
+            tray('tech2').createOverlay("8").addInsertPositions([[454, 345], [452, 400]]);
+            tray('tech2').createOverlay("9").addInsertPositions([[152, 206], [161, 260]]);
+            tray('tech2').createOverlay("10").addInsertPositions([[464, 188], [462, 243]]);
+            tray('tech2').createOverlay("11").addInsertPositions([[163, 46], [170, 100]]);
+            tray('tech2').createOverlay("12").addInsertPositions([[475, 31], [473, 85]]);
 
-            board.getGameTile('tech3').createOverlay("13").addInsertPositions([[138, 358], [145, 412]]);
-            board.getGameTile('tech3').createOverlay("14").addInsertPositions([[451, 345], [448, 399]]);
-            board.getGameTile('tech3').createOverlay("15").addInsertPositions([[149, 198], [155, 252]]);
-            board.getGameTile('tech3').createOverlay("16").addInsertPositions([[462, 189], [460, 243]]);
-            board.getGameTile('tech3').createOverlay("17").addInsertPositions([[160, 40], [165, 93]]);
+            tray('tech3').createOverlay("13").addInsertPositions([[138, 358], [145, 412]]);
+            tray('tech3').createOverlay("14").addInsertPositions([[451, 345], [448, 399]]);
+            tray('tech3').createOverlay("15").addInsertPositions([[149, 198], [155, 252]]);
+            tray('tech3').createOverlay("16").addInsertPositions([[462, 189], [460, 243]]);
+            tray('tech3').createOverlay("17").addInsertPositions([[160, 40], [165, 93]]);
 
             // ================================================================
             // Player Boards
@@ -497,7 +499,7 @@ define([
             let i = 0;
             for (let key in players) {
 
-                tray(list["HQ-A1"], key);
+                tray(gametile(list["HQ-A1"], key));
     
                 board.addGameTile(tray(key), plpos[i], 3167);
                 
@@ -530,7 +532,7 @@ define([
             // Starcluster
             // ================================================================
             
-            tray(list.starcluster1, "starcluster");
+            tray(gametile(list.starcluster1, "starcluster"));
             board.addGameTile(tray('starcluster'), 555, 733);
             
             addStarclusterTokenPositions(tray('starcluster').createOverlay('tokens'), 1093);
@@ -578,56 +580,56 @@ define([
             // Planetary Systems
             // ================================================================
             
-            tray('system-01').createOverlay('blue').addInsertPositions([[16, 64], [63, 17], [125, 17], [174, 64]]);
-            tray('system-01').createOverlay('stone').addInsertPositions([]);
+            tray('system', 1).createOverlay('blue').addInsertPositions([[16, 64], [63, 17], [125, 17], [174, 64]]);
+            tray('system', 1).createOverlay('stone').addInsertPositions([]);
 
-            tray('system-02').createOverlay('blue').addInsertPositions([[16, 64], [63, 17], [174, 64]]);
-            tray('system-02').createOverlay('stone').addInsertPositions([]);
+            tray('system', 2).createOverlay('blue').addInsertPositions([[16, 64], [63, 17], [174, 64]]);
+            tray('system', 2).createOverlay('stone').addInsertPositions([]);
 
-            tray('system-03').createOverlay('blue').addInsertPositions([[63, 17], [174, 64]]);
-            tray('system-03').createOverlay('stone').addInsertPositions([[16, 64]]);
+            tray('system', 3).createOverlay('blue').addInsertPositions([[63, 17], [174, 64]]);
+            tray('system', 3).createOverlay('stone').addInsertPositions([[16, 64]]);
 
-            tray('system-04').createOverlay('blue').addInsertPositions([[125, 17]]);
-            tray('system-04').createOverlay('stone').addInsertPositions([[16, 64]]);
+            tray('system', 4).createOverlay('blue').addInsertPositions([[125, 17]]);
+            tray('system', 4).createOverlay('stone').addInsertPositions([[16, 64]]);
 
-            tray('system-05').createOverlay('blue').addInsertPositions([[63, 17]]);
-            tray('system-05').createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
+            tray('system', 5).createOverlay('blue').addInsertPositions([[63, 17]]);
+            tray('system', 5).createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
 
-            tray('system-06').createOverlay('blue').addInsertPositions([[63, 17]]);
-            tray('system-06').createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
+            tray('system', 6).createOverlay('blue').addInsertPositions([[63, 17]]);
+            tray('system', 6).createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
 
-            tray('system-07').createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
-            tray('system-07').createOverlay('stone').addInsertPositions([[16, 64]]);
+            tray('system', 7).createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
+            tray('system', 7).createOverlay('stone').addInsertPositions([[16, 64]]);
 
-            tray('system-08').createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
-            tray('system-08').createOverlay('stone').addInsertPositions([[16, 64]]);
+            tray('system', 8).createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
+            tray('system', 8).createOverlay('stone').addInsertPositions([[16, 64]]);
 
-            tray('system-09').createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
-            tray('system-09').createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
+            tray('system', 9).createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
+            tray('system', 9).createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
 
-            tray('system-10').createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
-            tray('system-10').createOverlay('stone').addInsertPositions([[174, 64]]);
+            tray('system', 10).createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
+            tray('system', 10).createOverlay('stone').addInsertPositions([[174, 64]]);
 
-            tray('system-11').createOverlay('blue').addInsertPositions([[63, 17]]);
-            tray('system-11').createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
+            tray('system', 11).createOverlay('blue').addInsertPositions([[63, 17]]);
+            tray('system', 11).createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
 
-            tray('system-12').createOverlay('blue').addInsertPositions([[125, 17]]);
-            tray('system-12').createOverlay('stone').addInsertPositions([[16, 64]]);
+            tray('system', 12).createOverlay('blue').addInsertPositions([[125, 17]]);
+            tray('system', 12).createOverlay('stone').addInsertPositions([[16, 64]]);
 
-            tray('system-13').createOverlay('blue').addInsertPositions([[63, 17]]);
-            tray('system-13').createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
+            tray('system', 13).createOverlay('blue').addInsertPositions([[63, 17]]);
+            tray('system', 13).createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
 
-            tray('system-14').createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
-            tray('system-14').createOverlay('stone').addInsertPositions([]);
+            tray('system', 14).createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
+            tray('system', 14).createOverlay('stone').addInsertPositions([]);
 
-            tray('system-15').createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
-            tray('system-15').createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
+            tray('system', 15).createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
+            tray('system', 15).createOverlay('stone').addInsertPositions([[16, 64], [174, 64]]);
 
-            tray('system-16').createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
-            tray('system-16').createOverlay('stone').addInsertPositions([[174, 64]]);
+            tray('system', 16).createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
+            tray('system', 16).createOverlay('stone').addInsertPositions([[174, 64]]);
 
-            tray('system-17').createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
-            tray('system-17').createOverlay('stone').addInsertPositions([]);            
+            tray('system', 17).createOverlay('blue').addInsertPositions([[63, 17], [125, 17]]);
+            tray('system', 17).createOverlay('stone').addInsertPositions([]);            
 
             return board;
         });

@@ -1,32 +1,27 @@
 define([
-    "bgagame/modules/board/board"
-], function (board) {
+    "bgagame/modules/board/board",
+    "bgagame/modules/board/dispatch"
+], function (board, dispatch) {
 
-    const addToken = function (image, tokenId) {
-        board.dispatch({
-            type: "token/add",
-            payload: {
-                image, tokenId
-            }
-        });
+    const addComponent = function (component) {
+        dispatch("tray/add", { component });
     };
 
-    const getToken = function (tokenId) {
+    const getComponent = function (id) {
         let state = board.getState();
-        let token = state.images[tokenId];
-        if (!token) {
-            throw Error("Token with id '" + tokenId + "' does not exist!"); 
+        let component = state.tray[id];
+        if (!component) {
+            throw Error("Tray: component with id '" + id + "' does not exist!"); 
         }
-        return tokenId;
+        return component;
     }
 
     const tray = function () {
         let args = Array.from(arguments);
         if (typeof args[0] === 'object') {
-            let image = args.shift();
-            addToken(image, args.join("/"));
+            addComponent(args[0]);
         } else {
-            getToken(args.join("/"));
+            return getComponent(args.join("/"));
         }
     }
     

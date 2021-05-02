@@ -2,9 +2,12 @@ define([
 
 ], function () {
 
-    const factory = function (image, componentId, variantId) {
+    const factory = function () {
+        let args = Array.from(arguments);
+        let image = args.shift();
+        let id = args.join("/");
         return {
-            componentId, variantId, image
+            image, id
         }
     };
 

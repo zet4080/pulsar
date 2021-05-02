@@ -1,40 +1,8 @@
 define([
-    "dojo/_base/connect"
-], function (connect, when) {
+    "dojo/_base/connect",
+    "bgagame/modules/board/board"
+], function (connect, state) {
     
-    const absoluteposition = (function () {
-
-        const tokens = [];
-
-        const registerToken = function (token, table) {
-            let save = Object.create(token);
-            let transform = table.getTransform();
-            tokens.push([save, transform]);
-        };
-
-        const draw = function (board, clickarea) {
-            for (let i = 0; i < tokens.length; i++) {
-                let t = tokens[i][0];
-                let transform = tokens[i][1];
-                board.setTransform(transform);
-                clickarea.setTransform(transform);
-                table.drawImage(t.image, 0, 0);
-                if (t.clickarea) { t.clickarea.draw(clickarea) }
-            }
-        };
-
-        const reset = function () {
-            tokens.length = 0;
-        }; 
-
-        return {
-            registerToken: registerToken,
-            draw: draw,
-            reset: reset
-        }
-
-    })();   
-
     let table = null;
     let clickarea = null;
     
@@ -79,8 +47,12 @@ define([
         table.canvas.addEventListener('click', publishClick);        
     };
     
-    const drawBoard = function (board) {
-        drawGameElements(board);
+    const drawBoard = function () {
+        clearTable();
+        save();
+        scale();        
+        recurseGameElements('board');
+        restore();       
     };
 
     const clearTable = function () {
@@ -88,7 +60,6 @@ define([
         clickarea.setTransform(1, 0, 0, 1, 0, 0);
         table.clearRect(0, 0, table.canvas.width, table.canvas.height);
         clickarea.clearRect(0, 0, table.canvas.width, table.canvas.height);
-        absoluteposition.reset();
     }
 
     const save = function () {
@@ -119,28 +90,22 @@ define([
         table.translate(-rotation.x, -rotation.y);
         clickarea.translate(-rotation.x, -rotation.y);
     }
-    
-    const drawGameElements = function (board) {
-        clearTable();
-        save();
-        scale();        
-        recurseGameElements(board, table);
-        restore();       
-        absoluteposition.draw(table, clickarea); 
-    };
 
     const recurseGameElements = function (parent) {
-        drawClickAreas(parent.getClickAreas());
-        drawTokens(parent.getTokens());
-        let tiles = parent.getChildren();
-        for (let i = 0; i < tiles.length; i++) {
-            let tile = tiles[i];
-            save()
-            rotate(tile.rotation);
-            table.drawImage(tile.image, tile.x, tile.y);
-            translate(tile.x, tile.y);
-            recurseGameElements(tile);
-            restore();
+        // drawClickAreas(parent.getClickAreas());
+        // drawTokens(parent.getTokens());
+        let tiles = state.getState().board;
+        let tray = state.getState().tray;
+        for (let key in tiles) {
+            let tile = tiles[key];
+            if (tile.parent == parent) {
+                save()
+                rotate(tile.r);
+                table.drawImage(tray[key].image, tile.x, tile.y);
+                translate(tile.x, tile.y);
+                recurseGameElements(key);
+                restore();
+            }
         }
     };
 
