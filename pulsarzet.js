@@ -56,8 +56,8 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             this.players = gamedatas.players;
             pulsarboard(gamedatas.players).then(lang.hitch(this, function (board) {
                 this.board = board;
-                /*
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
+                /*
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
                 connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });                
@@ -325,10 +325,9 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
 
             connect.subscribe("setup/playerpoints", this, function (args) {
                 let playerpoints = args.playerpoints;
-                let starcluster = this.board.getGameTile('starcluster').getOverlay('tokens');
-                starcluster.removeAllTokens();
+                let overlay = tray('starcluster').getOverlay('tokens');
                 for (let id in playerpoints) {
-                    starcluster.slotTokenInPosition(playerpoints[id], tray('token', this.players[id].color));
+                    overlay.slotTokenInPosition(playerpoints[id], tray('token', this.players[id].color));
                 };
                 canvas.drawBoard(this.board);
             });

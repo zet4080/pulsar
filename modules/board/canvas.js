@@ -93,7 +93,7 @@ define([
 
     const recurseGameElements = function (parent) {
         // drawClickAreas(parent.getClickAreas());
-        // drawTokens(parent.getTokens());
+        drawTokens(parent);
         let tiles = state.getState().board;
         let tray = state.getState().tray;
         for (let key in tiles) {
@@ -109,13 +109,17 @@ define([
         }
     };
 
-    const drawTokens = function (tokens) {
-        for (let i = 0; i < tokens.length; i++) {
-            save();
-            translate(tokens[i].x, tokens[i].y);
-            rotate(tokens[i].rotation);
-            absoluteposition.registerToken(tokens[i], table);
-            restore();
+    const drawTokens = function (parent) {
+        let  overlays = state.getState().tokens[parent];
+        for (let key in overlays) {
+            let tokens = overlays[key];
+            for (let i = 0; i < tokens.length; i++) {
+                const { image, pos } = tokens[i];
+                save();
+                translate(pos.x, pos.y);
+                table.drawImage(image, 0, 0);
+                restore();
+            }
         }
     };
 

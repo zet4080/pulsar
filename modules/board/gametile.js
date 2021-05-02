@@ -1,7 +1,8 @@
 define([
     "bgagame/modules/board/dispatch",
+    "bgagame/modules/board/board",
     "bgagame/modules/board/rotation"
-], function (dispatch, rotation) {
+], function (dispatch, board, rotation) {
 
 
     const addInsertPositions = function (posarray) {
@@ -23,11 +24,20 @@ define([
     const makeTokensClickable = function () {
 
     };
+    
+    const slotTokenInPosition = function (posid, token) {
+        dispatch("overlay/slottokeninposition", {
+            tileId: this.tileId,
+            name: this.name,
+            posid, token
+        });        
+    };
 
     const overlay = {
         addInsertPositions: addInsertPositions,
         addInsertPosition: addInsertPosition,
-        makeTokensClickable: makeTokensClickable
+        makeTokensClickable: makeTokensClickable,
+        slotTokenInPosition: slotTokenInPosition
     };
 
     const overlayfactory = function (tileId, name) {
@@ -85,11 +95,16 @@ define([
         return overlayfactory(this.id, overlayName);
     };
 
+    const getOverlay = function (name) {
+        return overlayfactory(this.id, name);
+    };
+
     const gametile = {
         addClickArea: addClickArea,
         addClickAreas: addClickAreas,
         addGameTile: addGameTile,
-        createOverlay: createOverlay
+        createOverlay: createOverlay,
+        getOverlay: getOverlay
     }; 
 
     const factory = function () {

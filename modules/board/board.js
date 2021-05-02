@@ -6,7 +6,8 @@ define([
         tray: {},
         board: {},
         clickareas: {},
-        overlays: {}
+        overlays: {},
+        tokens: {}
     };
 
     const addComponent = function (state, payload) {
@@ -51,7 +52,20 @@ define([
         newState.overlays[tileId][name] = { ...state.overlays[tileId][name] };
         newState.overlays[tileId][name][posid] = { x, y, r};
         return newState;
-    };       
+    }; 
+    
+    const slotTokenInPosition = function (state, payload) {
+        const { tileId, name, posid, token } = payload;
+        token.pos = state.overlays[tileId][name][posid];
+
+        let newState = { ...state };
+        newState.tokens = { ...state.tokens };
+        newState.tokens[tileId] = newState.tokens[tileId] ? { ...state.tokens[tileId] } : {};
+        newState.tokens[tileId][name] = newState.tokens[tileId][name] ? [ ...state.tokens[tileId][name] ] : [];
+        newState.tokens[tileId][name].push(token);
+        
+        return newState;
+    };      
 
     const reducer = function (state = initialState, action) {
         switch (action.type) {
@@ -64,7 +78,9 @@ define([
             case "gametile/addoverlay":
                 return addOverlay(state, action.payload); 
             case "overlay/addinsertposition":
-                return addInsertPosition(state, action.payload);                 
+                return addInsertPosition(state, action.payload); 
+            case "overlay/slottokeninposition":
+                return slotTokenInPosition(state, action.payload);                                 
             default:
               return state
         }
