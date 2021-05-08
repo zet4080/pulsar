@@ -7,6 +7,7 @@ define([
         board: {},
         clickareas: {},
         overlays: {},
+        clickable: {},
         tokens: {}
     };
 
@@ -56,16 +57,38 @@ define([
     
     const slotTokenInPosition = function (state, payload) {
         const { tileId, name, posid, token } = payload;
-        token.pos = state.overlays[tileId][name][posid];
+
+        let newToken = { ...token };
+        newToken.pos = { ...state.overlays[tileId][name][posid] };
+        newToken.pos.posid = posid;
 
         let newState = { ...state };
         newState.tokens = { ...state.tokens };
         newState.tokens[tileId] = newState.tokens[tileId] ? { ...state.tokens[tileId] } : {};
         newState.tokens[tileId][name] = newState.tokens[tileId][name] ? [ ...state.tokens[tileId][name] ] : [];
-        newState.tokens[tileId][name].push(token);
+        newState.tokens[tileId][name].push(newToken);
         
         return newState;
-    };      
+    }; 
+    
+    const removeAllTokens = function (state, payload) {
+        const { tileId, overlay } = payload;
+        let newState = { ...state };
+        newState.tokens = { ...state.tokens };
+        newState.tokens[tileId] = newState.tokens[tileId] ? { ...state.tokens[tileId] } : {};
+        newState.tokens[tileId][overlay] = [];
+
+        return newState;
+    }
+
+    const makeTokensClickable = function (state, payload) {
+        const { tileId, overlay } = payload;
+        let newState = { ...state };
+        newState.clickable = { ...state.clickable };
+        newState.clickable[tileId] = newState.clickable[tileId] ? { ...state.clickable[tileId] } : {};
+        newState.clickable[tileId][overlay] = true;
+        return newState;
+    }    
 
     const reducer = function (state = initialState, action) {
         switch (action.type) {
@@ -81,6 +104,10 @@ define([
                 return addInsertPosition(state, action.payload); 
             case "overlay/slottokeninposition":
                 return slotTokenInPosition(state, action.payload);                                 
+            case "overlay/removealltokens":
+                return removeAllTokens(state, action.payload);   
+            case "overlay/maketokensclickable":
+                return makeTokensClickable(state, action.payload);
             default:
               return state
         }

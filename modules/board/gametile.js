@@ -16,13 +16,17 @@ define([
         dispatch("overlay/addinsertposition", {
             tileId: this.tileId,
             name: this.name,
-            posid, x, y, r
+            r: rotation(0, 0, r),
+            posid, x, y
         });
         return this;
     };       
 
     const makeTokensClickable = function () {
-
+        dispatch("overlay/maketokensclickable", {
+            tileId: this.tileId,
+            overlay: this.name
+        });
     };
     
     const slotTokenInPosition = function (posid, token) {
@@ -33,11 +37,28 @@ define([
         });        
     };
 
+    const removeAllTokens = function () {
+        dispatch("overlay/removealltokens", {
+            tileId: this.tileId,
+            overlay: this.name
+        });
+    };
+
+    const removeTokenFromPosition = function (position) {
+        dispatch("overlay/removetokenfromposition", {
+            tileId: this.tileId,
+            overlay: this.name,
+            position: position
+        });
+    };
+
     const overlay = {
         addInsertPositions: addInsertPositions,
         addInsertPosition: addInsertPosition,
         makeTokensClickable: makeTokensClickable,
-        slotTokenInPosition: slotTokenInPosition
+        slotTokenInPosition: slotTokenInPosition,
+        removeAllTokens: removeAllTokens,
+        removeTokenFromPosition: removeTokenFromPosition
     };
 
     const overlayfactory = function (tileId, name) {
@@ -113,7 +134,7 @@ define([
         if (typeof(args[0]) === 'object') {
             image = args.shift();
         }
-        let id = args.join("/");
+        let id = args.join("_");
 
         return Object.create(gametile, {
             id: {

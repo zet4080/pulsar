@@ -57,12 +57,11 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             pulsarboard(gamedatas.players).then(lang.hitch(this, function (board) {
                 this.board = board;
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
-                /*
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
                 connect.publish("setup/marker", gamedatas.markerposition);
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });                
+                connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });                  
                 connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
-                connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });                         
                 connect.publish("setup/pulsars", { pulsars: gamedatas.pulsars });
                 connect.publish("setup/playerboards", { playerboards: gamedatas.playerboards});                      
                 connect.publish("setup/playeraction", { currentDie: gamedatas.blackhole.currentDie, modifiertoken: gamedatas.blackhole.modifiertoken, modifiervalue: gamedatas.blackhole.modifiervalue });                
@@ -70,7 +69,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 connect.publish("setup/blackholedice", { dice: gamedatas.blackhole.dice });
                 connect.publish("setup/systems", { systems: gamedatas.systems });
                 connect.publish("setup/tokens", { tokens: gamedatas.tokens });   
-                */
                 canvas.drawBoard(this.board);
             }));
             console.log( "Ending game setup" );
@@ -114,8 +112,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
         //// Utility methods
 
         setColorstonesOnDiceboardTracks: function (tokenType, tracks, players) {
-            var overlay = this.board.getGameTile('diceboard').getOverlay(tokenType);
-            overlay.removeAllTokens();
+            var overlay = tray('diceboard').getOverlay(tokenType);
             for (let pos in tracks) {
                 let track = tracks[pos];
                 for (let i = 0; i < track.length; i++) {
@@ -126,7 +123,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
         },
 
         setTokenOnTechBoard: function (player, patent) {
-            let techboard = this.board.getGameTile('tech1');
+            let techboard = tray('tech1');
             let pos1 = patent + '-1';
             let pos2 = patent + '-2';
             let pos = techboard.isPositionOccupied('token', pos1) ? pos2 : pos1;
@@ -157,7 +154,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 let modifiertoken = args.args == undefined ? args.modifiertoken : args.args.modifiertoken;
                 let modifiervalue = args.args == undefined ? args.modifiervalue : args.args.modifiervalue;
 
-                let overlay = this.board.getGameTile('starcluster').getOverlay('blackhole');
+                let overlay = tray('starcluster').getOverlay('blackhole');
                 (die == 0) ? overlay.removeTokenFromPosition('die') : overlay.slotTokenInPosition('die', tray('dice', die));
 
                 // can't use switch, because of type comparison (switch is strict!)
@@ -204,7 +201,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             
             connect.subscribe("setup/systems", this, function (args) {
                 let systems = args.systems || args.args.systems;
-                let overlay = this.board.getGameTile('starcluster').getOverlay('planetarysystems');
+                let overlay = tray('starcluster').getOverlay('planetarysystems');
                 overlay.removeAllTokens();
                 for (let system in systems) {
                     overlay.slotTokenInPosition(systems[system].node, tray(systems[system].system));
@@ -214,7 +211,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             
             connect.subscribe("setup/shippositions", this, function (args) {
                 let shippositions = args.shippositions || args.args.shippositions;
-                let overlay = this.board.getGameTile('starcluster').getOverlay('ships');
+                let overlay = tray('starcluster').getOverlay('ships');
                 overlay.removeAllTokens();
                 for (let i = 0; i < shippositions.length; i++) {
                     overlay.slotTokenInPosition( shippositions[i].position, tray('ship', this.players[shippositions[i].playerid].color));
@@ -224,8 +221,8 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
 
             connect.subscribe("setup/diceboard", this, function (args) {
                 let dice = args.dice || args.args.dice;
-                this.board.getGameTile('starcluster').getOverlay('dice').removeAllTokens();
-                let overlay = this.board.getGameTile('diceboard').getOverlay('dice');
+                tray('starcluster').getOverlay('dice').removeAllTokens();
+                let overlay = tray('diceboard').getOverlay('dice');
                 overlay.removeAllTokens('dice');
                 for (var i = 0; i < dice.length; i++) {
                     overlay.slotTokenInPosition(dice[i].position, tray('smalldice', dice[i].value));
@@ -236,10 +233,10 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             connect.subscribe("setup/playerdice", this, function (args) {
                 var dice = args.dice;
                 for (let player in this.players) {
-                    this.board.getGameTile(player).getOverlay('dice').removeAllTokens();
+                    tray(player).getOverlay('dice').removeAllTokens();
                 }
                 for (var i = 0; i < dice.length; i++) {
-                    let overlay = this.board.getGameTile(dice[i].player).getOverlay('dice');
+                    let overlay = tray(dice[i].player).getOverlay('dice');
                     let pos = overlay.isPositionOccupied("0") ? "1" : "0";
                     overlay.slotTokenInPosition(pos, tray('dice', dice[i]['value']));
                 }
@@ -248,7 +245,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
 
             connect.subscribe("setup/blackholedice", this, function (args) {
                 let dice = args.dice;
-                let overlay = this.board.getGameTile('starcluster').getOverlay('dice');
+                let overlay = tray('starcluster').getOverlay('dice');
                 for (var i = 0; i < dice.length; i++) {
                     overlay.slotTokenInPosition(i, tray('dice', dice[i].value));
                 }
@@ -258,8 +255,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
 
             connect.subscribe("setup/marker", this, function (args) {
                 let markerposition = (args.args && args.args.markerposition) || args;
-                let overlay = this.board.getGameTile('diceboard').getOverlay('marker');
-                overlay.removeAllTokens();
+                let overlay = tray('diceboard').getOverlay('marker');
                 overlay.slotTokenInPosition(markerposition, tray("marker"));
                 canvas.drawBoard(this.board);
             });            
@@ -267,8 +263,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             connect.subscribe("setup/playerorder", this, function (args) {
                 let players = args.players || args.args.players;
                 let order = args.playerorder || args.args.playerorder;
-                let overlay = this.board.getGameTile('diceboard').getOverlay('ships');
-                overlay.removeAllTokens();
+                let overlay = tray('diceboard').getOverlay('ships');
                 for (let i = 0; i < order.length; i++) {
                     overlay.slotTokenInPosition(i + 1, tray('ship', players[order[i]].color));
                 }
@@ -285,7 +280,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
 
             connect.subscribe("setup/pulsars", this, function (args) {
                 let pulsars = args.pulsars || args.args.pulsars;
-                let starcluster = this.board.getGameTile('starcluster').getOverlay('rings');
+                let starcluster = tray('starcluster').getOverlay('rings');
                 starcluster.removeAllTokens();
                 for (let i = 0; i < pulsars.length; i++) {
                     starcluster.slotTokenInPosition(pulsars[i].node, tray('ring', this.players[pulsars[i].playerid].color));
@@ -314,8 +309,8 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             });
 
             connect.subscribe("server/smalldice/player_choose_dice", this, function (args) {
-                let diceboard = this.board.getGameTile('diceboard').getOverlay('dice');
-                let playerboard = this.board.getGameTile(args.player_id).getOverlay('dice');
+                let diceboard = tray('diceboard').getOverlay('dice');
+                let playerboard = tray(args.player_id).getOverlay('dice');
                 diceboard.removeTokenFromPosition(args.posId);
                 
                 let pos = playerboard.isPositionOccupied(0) ? 1 : 0;
@@ -336,7 +331,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 let playerboards = args.playerboards || args.args.playerboards;
                 for (let i = 0; i < playerboards.length; i++) {
                     let player = playerboards[i]["playerid"];
-                    let playerboard = this.board.getGameTile(player);
+                    let playerboard = tray(player);
                     playerboards[i].modifierone !== "0"
                         ? playerboard.getOverlay("modifierone").slotTokenInPosition("0", tray("modifier", 1)) 
                         : playerboard.getOverlay("modifierone").removeTokenFromPosition("0"); 

@@ -21,7 +21,7 @@ define([
         if (typeof args[0] === 'object') {
             addComponent(args[0]);
         } else {
-            return getComponent(args.join("/"));
+            return getComponent(args.join("_"));
         }
     }
     

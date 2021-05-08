@@ -1,10 +1,40 @@
 define([
-    "dojo/_base/connect",
-    "bgagame/modules/board/board"
-], function (connect, state) {
+    "bgagame/modules/board/board",
+    "bgagame/modules/util/backend"
+], function (state, backend) {
+
+    const color = (function () {
+
+        let fillColor = 16777215;
+
+        const getColorString = function () {
+            return '#' + Number(fillColor).toString(16).padStart(6, '0');
+        };
+
+        const getColor = function () {
+            return Number(fillColor).toString(16).padStart(6, '0');
+        };
+
+        const nextColor = function () {
+            fillColor = fillColor - 1;
+        };
+
+        const resetColor = function () {
+            fillColor = 16777215;
+        }
+
+        return {
+            getColorString: getColorString,
+            getColor: getColor,
+            nextColor: nextColor,
+            resetColor: resetColor
+        };
+
+    })();    
     
     let table = null;
     let clickarea = null;
+    let infos = {};
     
     const viewport = {
         scale: 1.0,
@@ -38,7 +68,7 @@ define([
     const publishClick = function (e) {
         const pixel = clickarea.getImageData(e.offsetX, e.offsetY, 1, 1).data;
         const color = getColorFromPixel(pixel);
-        connect.publish('click', color);
+        catchClick(color);
     };
 
     const createTable = function (element) {
@@ -92,7 +122,7 @@ define([
     }
 
     const recurseGameElements = function (parent) {
-        // drawClickAreas(parent.getClickAreas());
+        drawClickAreas(parent);
         drawTokens(parent);
         let tiles = state.getState().board;
         let tray = state.getState().tray;
@@ -109,25 +139,95 @@ define([
         }
     };
 
+    const drawImage = function(tileId, overlay, tokenId, posId, image) {
+        table.drawImage(image, 0, 0);
+        if (state.getState().clickable[tileId] && state.getState().clickable[tileId][overlay]) {
+            drawClickArea([0, 0, image.width, image.height], {
+                tileId: tileId,
+                posId: posId,
+                tokenId: tokenId
+            }); 
+        }
+    }
+
     const drawTokens = function (parent) {
         let  overlays = state.getState().tokens[parent];
         for (let key in overlays) {
             let tokens = overlays[key];
             for (let i = 0; i < tokens.length; i++) {
-                const { image, pos } = tokens[i];
+                const { image, pos, id } = tokens[i];
                 save();
                 translate(pos.x, pos.y);
-                table.drawImage(image, 0, 0);
+                rotate(pos.r);
+                drawImage(parent, key, id, pos.posid, image);
                 restore();
             }
         }
     };
 
-    const drawClickAreas = function (clickareas) {
-        for (let i = 0; i < clickareas.length; i++) {
-            clickareas[i].draw(clickarea);
+    const drawClickAreas = function (parent) {
+        let clickareas = state.getState().clickareas[parent];
+        for (let key in clickareas) {
+            let area = clickareas[key];
+            drawClickArea(area.path, area.info);
         }
     };
+
+    const drawClickArea = function (path, info) {
+        if (Array.isArray(path[0])) {
+            drawClickPath(path, info);
+        } else if (path.length == 3) {
+            drawClickCircle(path);
+        } else if (path.length == 4) {
+            drawClickRectangle(path);
+        }
+        infos[color.getColor()] = info;
+        color.nextColor();
+    }
+    
+    const drawClickRectangle = function (path) {
+        clickarea.fillStyle = color.getColorString();
+        clickarea.beginPath();
+        clickarea.fillRect(path[0],path[1],path[2], path[3]);
+    };
+
+    var drawClickCircle = function (path) {
+        clickarea.fillStyle = color.getColorString();
+        clickarea.beginPath();
+        clickarea.moveTo(path[0][0], path[0][1]);
+        clickarea.arc(path[0],path[1],path[2], 0, 2 * Math.PI);
+        clickarea.fill();
+    };
+
+    var drawClickPath = function (path) {
+        clickarea.fillStyle = color.getColorString();
+        clickarea.beginPath();
+        clickarea.moveTo(path[0][0], path[0][1]);
+        for (var i = 1; i < path.length; i++) {
+            if (path[i].length == 2) {
+                clickarea.lineTo(path[i][0], path[i][1]);
+            } else {
+                let p = path[i];
+                clickarea.bezierCurveTo(p[0],p[1],p[2],p[3],p[4],p[5]);
+            }
+        }
+        clickarea.fill();
+    };     
+    
+    const catchClick =  function (color) {
+        let info = infos[color];
+        if (info == undefined) {
+            return;
+        }
+
+        let args = {};
+        for (let key in info) {
+            args[key] = String(info[key]);
+        }
+        args["all"] = info;
+        console.log(args);
+        backend.call("click", args);
+    };     
 
     return {
         createTable: createTable,
