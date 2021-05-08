@@ -81,7 +81,7 @@ define([
         clearTable();
         save();
         scale();        
-        recurseGameElements('board');
+        recurseGameElements('000');
         restore();       
     };
 

@@ -1,13 +1,11 @@
 define([
+    "bgagame/modules/board/nextid"
+], function (nextid) {
 
-], function () {
-
-    const factory = function () {
-        let args = Array.from(arguments);
-        let image = args.shift();
-        let id = args.join("_");
+    const factory = function (image, value) {
+        let id = nextid();
         return {
-            image, id
+            id, image, value
         }
     };
 

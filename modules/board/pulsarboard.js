@@ -225,164 +225,164 @@ define([
             // Tokens
             // ================================================================
             
-            tray(token(list.tokenblue, 'token', "0000ff"));
-            tray(token(list.tokengreen, 'token', "008000"));
-            tray(token(list.tokenyellow, 'token', "ffa500"));
-            tray(token(list.tokenred, 'token', "ff0000"));
+            tray(token(list.tokenblue), 'token', "0000ff");
+            tray(token(list.tokengreen), 'token', "008000");
+            tray(token(list.tokenyellow), 'token', "ffa500");
+            tray(token(list.tokenred), 'token', "ff0000");
             
-            tray(token(list.shipblue, 'ship', "0000ff"));
-            tray(token(list.shipgreen, 'ship', "008000"));
-            tray(token(list.shipyellow, 'ship', "ffa500"));
-            tray(token(list.shipred, 'ship', "ff0000"));
+            tray(token(list.shipblue), 'ship', "0000ff");
+            tray(token(list.shipgreen), 'ship', "008000");
+            tray(token(list.shipyellow), 'ship', "ffa500");
+            tray(token(list.shipred), 'ship', "ff0000");
             
-            tray(token(list.ringblue, 'ring', "0000ff"));
-            tray(token(list.ringgreen, 'ring', "008000"));
-            tray(token(list.ringyellow, 'ring', "ffa500"));
-            tray(token(list.ringred, 'ring', "ff0000"));    
+            tray(token(list.ringblue), 'ring', "0000ff");
+            tray(token(list.ringgreen), 'ring', "008000");
+            tray(token(list.ringyellow), 'ring', "ffa500");
+            tray(token(list.ringred), 'ring', "ff0000");    
  
-            tray(token(list["100pointsblue"], '100points', "0000ff"));
-            tray(token(list["100pointsgreen"], '100points', "008000"));
-            tray(token(list["100pointsyellow"], '100points', "ffa500"));
-            tray(token(list["100pointsred"], '100points', "ff0000"));    
+            tray(token(list["100pointsblue"]), '100points', "0000ff");
+            tray(token(list["100pointsgreen"]), '100points', "008000");
+            tray(token(list["100pointsyellow"]), '100points', "ffa500");
+            tray(token(list["100pointsred"]), '100points', "ff0000");    
             
-            tray(token(list.dicemarker, "marker"));
+            tray(token(list.dicemarker), "marker");
 
-            tray(token(list.smalldie1, "smalldice", 1));
-            tray(token(list.smalldie2, "smalldice", 2));
-            tray(token(list.smalldie3, "smalldice", 3));
-            tray(token(list.smalldie4, "smalldice", 4));
-            tray(token(list.smalldie5, "smalldice", 5));
-            tray(token(list.smalldie6, "smalldice", 6));
+            tray(token(list.smalldie1, 1), "smalldice", 1);
+            tray(token(list.smalldie2, 2), "smalldice", 2);
+            tray(token(list.smalldie3, 3), "smalldice", 3);
+            tray(token(list.smalldie4, 4), "smalldice", 4);
+            tray(token(list.smalldie5, 5), "smalldice", 5);
+            tray(token(list.smalldie6, 6), "smalldice", 6);
 
-            tray(token(list.silverdie1, "dice", 1));
-            tray(token(list.silverdie2, "dice", 2));
-            tray(token(list.silverdie3, "dice", 3));
-            tray(token(list.silverdie4, "dice", 4));
-            tray(token(list.silverdie5, "dice", 5));
-            tray(token(list.silverdie6, "dice", 6));    
+            tray(token(list.silverdie1, 1), "dice", 1);
+            tray(token(list.silverdie2, 2),"dice", 2);
+            tray(token(list.silverdie3, 3),"dice", 3);
+            tray(token(list.silverdie4, 4), "dice", 4);
+            tray(token(list.silverdie5, 5), "dice", 5);
+            tray(token(list.silverdie6, 6), "dice", 6);    
 
-            tray(token(list.reddie1, "reddice", 1));
-            tray(token(list.reddie2, "reddice", 2));
-            tray(token(list.reddie3, "reddice", 3));
-            tray(token(list.reddie4, "reddice", 4));
-            tray(token(list.reddie5, "reddice", 5));
-            tray(token(list.reddie6, "reddice", 6));    
+            tray(token(list.reddie1, 1), "reddice", 1);
+            tray(token(list.reddie2, 2), "reddice", 2);
+            tray(token(list.reddie3, 3), "reddice", 3);
+            tray(token(list.reddie4, 4), "reddice", 4);
+            tray(token(list.reddie5, 5), "reddice", 5);
+            tray(token(list.reddie6, 6), "reddice", 6);    
             
-            tray(token(list.constructionaward4, "constructionaward", 4));
-            tray(token(list.constructionaward7, "constructionaward", 7));
+            tray(token(list.constructionaward4, 4), "constructionaward", 4);
+            tray(token(list.constructionaward7, 7), "constructionaward", 7);
 
-            tray(token(list.engineeringcube, "engineeringcube", 1));
-            tray(token(list.engineeringcubes4, "engineeringcube", 4));
+            tray(token(list.engineeringcube, 1), "engineeringcube", 1);
+            tray(token(list.engineeringcubes4, 4), "engineeringcube", 4);
 
-            tray(token(list.plusone, "plusone"));
-            tray(token(list.minusone, "minusone"));
+            tray(token(list.plusone, 1), "plusone");
+            tray(token(list.minusone, -1), "minusone");
 
-            tray(token(list.number1, "number", 1));
-            tray(token(list.number2, "number", 2));
-            tray(token(list.number3, "number", 3));
-            tray(token(list.number4, "number", 4));
-            tray(token(list.number5, "number", 5));
-            tray(token(list.number6, "number", 6));
-            tray(token(list.number7, "number", 7));
-            tray(token(list.number8, "number", 8));
-            tray(token(list.number9, "number", 9));
-            tray(token(list.number10, "number", 10));
-            tray(token(list.number11, "number", 11));
-            tray(token(list.number12, "number", 12));
-            tray(token(list.number13, "number", 13));
-            tray(token(list.number14, "number", 14));
-            tray(token(list.number15, "number", 15));
-            tray(token(list.number16, "number", 16));
-            tray(token(list.number17, "number", 17));
-            tray(token(list.number18, "number", 18));
-            tray(token(list.number19, "number", 19));
-            tray(token(list.number20, "number", 20));
+            tray(token(list.number1), "number", 1);
+            tray(token(list.number2), "number", 2);
+            tray(token(list.number3), "number", 3);
+            tray(token(list.number4), "number", 4);
+            tray(token(list.number5), "number", 5);
+            tray(token(list.number6), "number", 6);
+            tray(token(list.number7), "number", 7);
+            tray(token(list.number8), "number", 8);
+            tray(token(list.number9), "number", 9);
+            tray(token(list.number10), "number", 10);
+            tray(token(list.number11), "number", 11);
+            tray(token(list.number12), "number", 12);
+            tray(token(list.number13), "number", 13);
+            tray(token(list.number14), "number", 14);
+            tray(token(list.number15), "number", 15);
+            tray(token(list.number16), "number", 16);
+            tray(token(list.number17), "number", 17);
+            tray(token(list.number18), "number", 18);
+            tray(token(list.number19), "number", 19);
+            tray(token(list.number20), "number", 20);
 
             tray(token(list.timemarker, "timemarker"));
 
-            tray(token(list.bonusback, "bonus", "back"));
-            tray(token(list.bonuscubes, "bonus", "cubes"));
-            tray(token(list.bonussystems, "bonus", "systems"));
-            tray(token(list.bonusmodifier, "bonus", "modifier"));
-            tray(token(list.bonus4points, "bonus", "4points"));
-            tray(token(list.bonus5points, "bonus", "5points"));
+            tray(token(list.bonusback), "bonus", "back");
+            tray(token(list.bonuscubes), "bonus", "cubes");
+            tray(token(list.bonussystems), "bonus", "systems");
+            tray(token(list.bonusmodifier), "bonus", "modifier");
+            tray(token(list.bonus4points), "bonus", "4points");
+            tray(token(list.bonus5points), "bonus", "5points");
 
-            tray(token(list.modifikator1, "modifier", "1"));
-            tray(token(list.modifikator2, "modifier", "2"));
+            tray(token(list.modifikator1), "modifier", "1");
+            tray(token(list.modifikator2), "modifier", "2");
 
-            tray(token(list.gyordyne1a, "gyrodyne", "active", "1"));
-            tray(token(list.gyordyne2a, "gyrodyne", "active", "2"));
-            tray(token(list.gyordyne3a, "gyrodyne", "active", "3"));
-            tray(token(list.gyordyne1b, "gyrodyne", "inactive", "1"));
-            tray(token(list.gyordyne2b, "gyrodyne", "inactive", "2"));
-            tray(token(list.gyordyne3b, "gyrodyne", "inactive", "3"));
+            tray(token(list.gyordyne1a), "gyrodyne", "active", "1");
+            tray(token(list.gyordyne2a), "gyrodyne", "active", "2");
+            tray(token(list.gyordyne3a), "gyrodyne", "active", "3");
+            tray(token(list.gyordyne1b), "gyrodyne", "inactive", "1");
+            tray(token(list.gyordyne2b), "gyrodyne", "inactive", "2");
+            tray(token(list.gyordyne3b), "gyrodyne", "inactive", "3");
 
-            tray(gametile(list.transmittera1a, "transmitter", "A1", "inactive"));
-            tray(gametile(list.transmittera1b, "transmitter", "A1", "active"));
-            tray(gametile(list.transmittera2a, "transmitter", "A2", "inactive"));
-            tray(gametile(list.transmittera2b, "transmitter", "A2", "active"));
-            tray(gametile(list.transmittera3a, "transmitter", "A3", "inactive"));
-            tray(gametile(list.transmittera3b, "transmitter", "A3", "active"));
-            tray(gametile(list.transmittera4a, "transmitter", "A4", "inactive"));
-            tray(gametile(list.transmittera4b, "transmitter", "A4", "active"));
-            tray(gametile(list.transmittera5a, "transmitter", "A5", "inactive"));
-            tray(gametile(list.transmittera5b, "transmitter", "A5", "active"));
-            tray(gametile(list.transmittera6a, "transmitter", "A6", "inactive"));
-            tray(gametile(list.transmittera6b, "transmitter", "A6", "active"));
+            tray(gametile(list.transmittera1a), "transmitter", "A1", "inactive");
+            tray(gametile(list.transmittera1b), "transmitter", "A1", "active");
+            tray(gametile(list.transmittera2a), "transmitter", "A2", "inactive");
+            tray(gametile(list.transmittera2b), "transmitter", "A2", "active");
+            tray(gametile(list.transmittera3a), "transmitter", "A3", "inactive");
+            tray(gametile(list.transmittera3b), "transmitter", "A3", "active");
+            tray(gametile(list.transmittera4a), "transmitter", "A4", "inactive");
+            tray(gametile(list.transmittera4b), "transmitter", "A4", "active");
+            tray(gametile(list.transmittera5a), "transmitter", "A5", "inactive");
+            tray(gametile(list.transmittera5b), "transmitter", "A5", "active");
+            tray(gametile(list.transmittera6a), "transmitter", "A6", "inactive");
+            tray(gametile(list.transmittera6b), "transmitter", "A6", "active");
 
-            tray(gametile(list.transmitterb1a, "transmitter", "B1", "inactive"));
-            tray(gametile(list.transmitterb1b, "transmitter", "B1", "active"));
-            tray(gametile(list.transmitterb2a, "transmitter", "B2", "inactive"));
-            tray(gametile(list.transmitterb2b, "transmitter", "B2", "active"));
-            tray(gametile(list.transmitterb3a, "transmitter", "B3", "inactive"));
-            tray(gametile(list.transmitterb3b, "transmitter", "B3", "active"));
-            tray(gametile(list.transmitterb4a, "transmitter", "B4", "inactive"));
-            tray(gametile(list.transmitterb4b, "transmitter", "B4", "active"));
-            tray(gametile(list.transmitterb5a, "transmitter", "B5", "inactive"));
-            tray(gametile(list.transmitterb5b, "transmitter", "B5", "active"));
-            tray(gametile(list.transmitterb6a, "transmitter", "B6", "inactive"));
-            tray(gametile(list.transmitterb6b, "transmitter", "B6", "active"));
+            tray(gametile(list.transmitterb1a), "transmitter", "B1", "inactive");
+            tray(gametile(list.transmitterb1b), "transmitter", "B1", "active");
+            tray(gametile(list.transmitterb2a), "transmitter", "B2", "inactive");
+            tray(gametile(list.transmitterb2b), "transmitter", "B2", "active");
+            tray(gametile(list.transmitterb3a), "transmitter", "B3", "inactive");
+            tray(gametile(list.transmitterb3b), "transmitter", "B3", "active");
+            tray(gametile(list.transmitterb4a), "transmitter", "B4", "inactive");
+            tray(gametile(list.transmitterb4b), "transmitter", "B4", "active");
+            tray(gametile(list.transmitterb5a), "transmitter", "B5", "inactive");
+            tray(gametile(list.transmitterb5b), "transmitter", "B5", "active");
+            tray(gametile(list.transmitterb6a), "transmitter", "B6", "inactive");
+            tray(gametile(list.transmitterb6b), "transmitter", "B6", "active");
 
-            tray(gametile(list.transmitterc1a, "transmitter", "C1", "inactive"));
-            tray(gametile(list.transmitterc1b, "transmitter", "C1", "active"));
-            tray(gametile(list.transmitterc2a, "transmitter", "C2", "inactive"));
-            tray(gametile(list.transmitterc2b, "transmitter", "C2", "active"));
-            tray(gametile(list.transmitterc3a, "transmitter", "C3", "inactive"));
-            tray(gametile(list.transmitterc3b, "transmitter", "C3", "active"));
-            tray(gametile(list.transmitterc4a, "transmitter", "C4", "inactive"));
-            tray(gametile(list.transmitterc4b, "transmitter", "C4", "active"));
-            tray(gametile(list.transmitterc5a, "transmitter", "C5", "inactive"));
-            tray(gametile(list.transmitterc5b, "transmitter", "C5", "active"));
-            tray(gametile(list.transmitterc6a, "transmitter", "C6", "inactive"));
-            tray(gametile(list.transmitterc6b, "transmitter", "C6", "active"));
+            tray(gametile(list.transmitterc1a), "transmitter", "C1", "inactive");
+            tray(gametile(list.transmitterc1b), "transmitter", "C1", "active");
+            tray(gametile(list.transmitterc2a), "transmitter", "C2", "inactive");
+            tray(gametile(list.transmitterc2b), "transmitter", "C2", "active");
+            tray(gametile(list.transmitterc3a), "transmitter", "C3", "inactive");
+            tray(gametile(list.transmitterc3b), "transmitter", "C3", "active");
+            tray(gametile(list.transmitterc4a), "transmitter", "C4", "inactive");
+            tray(gametile(list.transmitterc4b), "transmitter", "C4", "active");
+            tray(gametile(list.transmitterc5a), "transmitter", "C5", "inactive");
+            tray(gametile(list.transmitterc5b), "transmitter", "C5", "active");
+            tray(gametile(list.transmitterc6a), "transmitter", "C6", "inactive");
+            tray(gametile(list.transmitterc6b), "transmitter", "C6", "active");
             
             // ================================================================
             // Planetary Systems
             // ================================================================             
 
-            tray(gametile(list.system1, 'system', 1));
-            tray(gametile(list.system2, 'system', 2));
-            tray(gametile(list.system3, 'system', 3));
-            tray(gametile(list.system4, 'system', 4));
-            tray(gametile(list.system5, 'system', 5));
-            tray(gametile(list.system6, 'system', 6));
-            tray(gametile(list.system7, 'system', 7));
-            tray(gametile(list.system8, 'system', 8));
-            tray(gametile(list.system9, 'system', 9));
-            tray(gametile(list.system10, 'system', 10));
-            tray(gametile(list.system11, 'system', 11));
-            tray(gametile(list.system12, 'system', 12));
-            tray(gametile(list.system13, 'system', 13));
-            tray(gametile(list.system14, 'system', 14));
-            tray(gametile(list.system15, 'system', 15));
-            tray(gametile(list.system16, 'system', 16));
-            tray(gametile(list.system17, 'system', 17));
+            tray(gametile(list.system1), 'system', 1);
+            tray(gametile(list.system2), 'system', 2);
+            tray(gametile(list.system3), 'system', 3);
+            tray(gametile(list.system4), 'system', 4);
+            tray(gametile(list.system5), 'system', 5);
+            tray(gametile(list.system6), 'system', 6);
+            tray(gametile(list.system7), 'system', 7);
+            tray(gametile(list.system8), 'system', 8);
+            tray(gametile(list.system9), 'system', 9);
+            tray(gametile(list.system10), 'system', 10);
+            tray(gametile(list.system11), 'system', 11);
+            tray(gametile(list.system12), 'system', 12);
+            tray(gametile(list.system13), 'system', 13);
+            tray(gametile(list.system14), 'system', 14);
+            tray(gametile(list.system15), 'system', 15);
+            tray(gametile(list.system16), 'system', 16);
+            tray(gametile(list.system17), 'system', 17);
 
             // ================================================================
             // Diceboard
             // ================================================================            
 
-            tray(gametile(list.diceboard4Player, 'diceboard'));
+            tray(gametile(list.diceboard4Player), 'diceboard');
             board.addGameTile(tray('diceboard'), 780, 229, rotation(1678, 1856, -90));
 
             tray('diceboard').createOverlay('ships').addInsertPositions([
@@ -413,23 +413,23 @@ define([
             // Gyrondyne Board
             // ================================================================              
 
-            tray(gametile(list.gyrodyneboard, 'gyrodyneboard'));
+            tray(gametile(list.gyrodyneboard), 'gyrodyneboard');
             board.addGameTile(tray('gyrodyneboard'), 1103, 300, rotation(1678, 1856, -26.5));            
 
             // ================================================================
             // Modifier Board
             // ================================================================              
             
-            tray(gametile(list.modifierboard, 'modifierboard'));
+            tray(gametile(list.modifierboard), 'modifierboard');
             board.addGameTile(tray('modifierboard'), 1398, 540, rotation(1678, 1856, 12));                
 
             // ================================================================
             // Goal Tiles
             // ================================================================            
 
-            tray(gametile(list.goaltile2b, 'goaltile-1'));
-            tray(gametile(list.goaltile6a, 'goaltile-2'));
-            tray(gametile(list.goaltile1a, 'goaltile-3'));
+            tray(gametile(list.goaltile2b), 'goaltile-1');
+            tray(gametile(list.goaltile6a), 'goaltile-2');
+            tray(gametile(list.goaltile1a), 'goaltile-3');
             
             board.addGameTile(tray('goaltile-1'), 1532, 122, rotation(1678, 1856, 32));
             board.addGameTile(tray('goaltile-2'), 1532, 122, rotation(1678, 1856, 39));
@@ -439,9 +439,9 @@ define([
             // Tech Boards
             // ================================================================            
 
-            tray(gametile(list["tech-AI"], 'tech1'));
-            tray(gametile(list["tech-AII"], 'tech2'));
-            tray(gametile(list["tech-AIII"], 'tech3'));
+            tray(gametile(list["tech-AI"]), 'tech1');
+            tray(gametile(list["tech-AII"]), 'tech2');
+            tray(gametile(list["tech-AIII"]), 'tech3');
 
             board.addGameTile(tray('tech1'), 1138, 420, rotation(1678, 1856, 90));
             board.addGameTile(tray('tech2'), 1241, -50, rotation(1678, 1856, 90));
@@ -499,7 +499,7 @@ define([
             let i = 0;
             for (let key in players) {
 
-                tray(gametile(list["HQ-A1"], key));
+                tray(gametile(list["HQ-A1"]), key);
     
                 board.addGameTile(tray(key), plpos[i], 3167);
                 
@@ -532,7 +532,7 @@ define([
             // Starcluster
             // ================================================================
             
-            tray(gametile(list.starcluster1, "starcluster"));
+            tray(gametile(list.starcluster1), "starcluster");
             board.addGameTile(tray('starcluster'), 555, 733);
             
             addStarclusterTokenPositions(tray('starcluster').createOverlay('tokens'), 1093);

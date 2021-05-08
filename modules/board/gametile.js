@@ -1,8 +1,8 @@
 define([
     "bgagame/modules/board/dispatch",
-    "bgagame/modules/board/board",
+    "bgagame/modules/board/nextid",
     "bgagame/modules/board/rotation"
-], function (dispatch, board, rotation) {
+], function (dispatch, nextid, rotation) {
 
 
     const addInsertPositions = function (posarray) {
@@ -128,17 +128,10 @@ define([
         getOverlay: getOverlay
     }; 
 
-    const factory = function () {
-        let args = Array.from(arguments);
-        let image;
-        if (typeof(args[0]) === 'object') {
-            image = args.shift();
-        }
-        let id = args.join("_");
-
+    const factory = function (image) {
         return Object.create(gametile, {
             id: {
-                value: id,
+                value: nextid(),
                 writable: true,
                 enumerable: true 
             },

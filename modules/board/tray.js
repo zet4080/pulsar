@@ -3,8 +3,11 @@ define([
     "bgagame/modules/board/dispatch"
 ], function (board, dispatch) {
 
-    const addComponent = function (component) {
-        dispatch("tray/add", { component });
+    const addComponent = function (id, component) {
+        component.id = id; // should be removed for production
+        dispatch("tray/add", { 
+            id, component
+        });
     };
 
     const getComponent = function (id) {
@@ -19,9 +22,11 @@ define([
     const tray = function () {
         let args = Array.from(arguments);
         if (typeof args[0] === 'object') {
-            addComponent(args[0]);
+            let component = args.shift();
+            let id = args.join("/");             
+            addComponent(id, component);
         } else {
-            return getComponent(args.join("_"));
+            return getComponent(args.join("/"));
         }
     }
     

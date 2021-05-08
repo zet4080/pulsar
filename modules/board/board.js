@@ -12,10 +12,10 @@ define([
     };
 
     const addComponent = function (state, payload) {
-        const { component } = payload;
+        const { id, component } = payload;
         let newState = { ...state };
         newState.tray = { ...state.tray };
-        newState.tray[component.id] = component;
+        newState.tray[id] = component;
         return newState;
     };    
 
