@@ -60,13 +60,12 @@ define([
 
         let newToken = { ...token };
         newToken.pos = { ...state.overlays[tileId][name][posid] };
-        newToken.pos.posid = posid;
 
         let newState = { ...state };
         newState.tokens = { ...state.tokens };
         newState.tokens[tileId] = newState.tokens[tileId] ? { ...state.tokens[tileId] } : {};
-        newState.tokens[tileId][name] = newState.tokens[tileId][name] ? [ ...state.tokens[tileId][name] ] : [];
-        newState.tokens[tileId][name].push(newToken);
+        newState.tokens[tileId][name] = newState.tokens[tileId][name] ? { ...state.tokens[tileId][name] } : {};
+        newState.tokens[tileId][name][posid] = newToken;
         
         return newState;
     }; 
@@ -76,8 +75,18 @@ define([
         let newState = { ...state };
         newState.tokens = { ...state.tokens };
         newState.tokens[tileId] = newState.tokens[tileId] ? { ...state.tokens[tileId] } : {};
-        newState.tokens[tileId][overlay] = [];
+        newState.tokens[tileId][overlay] = {};
 
+        return newState;
+    }
+
+    const removeTokenFromPosition = function (state, payload) {
+        const { tileId, overlay, position } = payload;
+        let newState = { ...state };
+        newState.tokens = { ...state.tokens };
+        newState.tokens[tileId] = { ...state.tokens[tileId] };
+        newState.tokens[tileId][overlay] = { ...state.tokens[tileId][overlay] };
+        delete newState.tokens[tileId][overlay][position];
         return newState;
     }
 
@@ -106,6 +115,8 @@ define([
                 return slotTokenInPosition(state, action.payload);                                 
             case "overlay/removealltokens":
                 return removeAllTokens(state, action.payload);   
+            case "overlay/removetokenfromposition":
+                return removeTokenFromPosition(state, action.payload);
             case "overlay/maketokensclickable":
                 return makeTokensClickable(state, action.payload);
             default:

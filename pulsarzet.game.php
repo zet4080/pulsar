@@ -776,7 +776,7 @@ class PulsarZet extends Table
         $this->gamestate->nextState("technologyPatented");
     }
 
-    function click_smalldice_in_state_player_choose_dice($tileId, $tokenId, $posId, $variantId) {
+    function click_die_in_state_player_choose_dice($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('chooseDie'); 
         self::moveDiceFromBoardToPlayer($variantId);
         self::setGameStateValue("choosenDie", $variantId);

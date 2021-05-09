@@ -140,12 +140,14 @@ define([
     };
 
     const drawImage = function(tileId, overlay, tokenId, posId, image) {
+        let token = state.getState().tray[tokenId];
         table.drawImage(image, 0, 0);
         if (state.getState().clickable[tileId] && state.getState().clickable[tileId][overlay]) {
             drawClickArea([0, 0, image.width, image.height], {
                 tileId: tileId,
                 posId: posId,
-                tokenId: tokenId
+                tokenId: token.type,
+                variantId: token.value
             }); 
         }
     }
@@ -154,12 +156,13 @@ define([
         let  overlays = state.getState().tokens[parent];
         for (let key in overlays) {
             let tokens = overlays[key];
-            for (let i = 0; i < tokens.length; i++) {
-                const { image, pos, id } = tokens[i];
+            for (let posid in tokens) {
+                const { image, id } = tokens[posid];
+                const {x, y, r} = tokens[posid].pos;
                 save();
-                translate(pos.x, pos.y);
-                rotate(pos.r);
-                drawImage(parent, key, id, pos.posid, image);
+                translate(x, y);
+                rotate(r);
+                drawImage(parent, key, id, posid, image);
                 restore();
             }
         }

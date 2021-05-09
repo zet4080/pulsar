@@ -113,6 +113,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
 
         setColorstonesOnDiceboardTracks: function (tokenType, tracks, players) {
             var overlay = tray('diceboard').getOverlay(tokenType);
+            overlay.removeAllTokens();
             for (let pos in tracks) {
                 let track = tracks[pos];
                 for (let i = 0; i < track.length; i++) {
@@ -256,6 +257,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             connect.subscribe("setup/marker", this, function (args) {
                 let markerposition = (args.args && args.args.markerposition) || args;
                 let overlay = tray('diceboard').getOverlay('marker');
+                overlay.removeAllTokens();
                 overlay.slotTokenInPosition(markerposition, tray("marker"));
                 canvas.drawBoard(this.board);
             });            
@@ -308,7 +310,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 connect.publish("setup/playerdice", { dice: args.args.playerdice });
             });
 
-            connect.subscribe("server/smalldice/player_choose_dice", this, function (args) {
+            connect.subscribe("server/die/player_choose_dice", this, function (args) {
                 let diceboard = tray('diceboard').getOverlay('dice');
                 let playerboard = tray(args.player_id).getOverlay('dice');
                 diceboard.removeTokenFromPosition(args.posId);

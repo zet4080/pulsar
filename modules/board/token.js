@@ -2,10 +2,10 @@ define([
     "bgagame/modules/board/nextid"
 ], function (nextid) {
 
-    const factory = function (image, value) {
+    const factory = function (image, type, value) {
         let id = nextid();
         return {
-            id, image, value
+            id, image, type, value
         }
     };
 

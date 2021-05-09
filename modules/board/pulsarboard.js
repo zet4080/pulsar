@@ -247,26 +247,26 @@ define([
             
             tray(token(list.dicemarker), "marker");
 
-            tray(token(list.smalldie1, 1), "smalldice", 1);
-            tray(token(list.smalldie2, 2), "smalldice", 2);
-            tray(token(list.smalldie3, 3), "smalldice", 3);
-            tray(token(list.smalldie4, 4), "smalldice", 4);
-            tray(token(list.smalldie5, 5), "smalldice", 5);
-            tray(token(list.smalldie6, 6), "smalldice", 6);
+            tray(token(list.smalldie1, "die", 1), "smalldice", 1);
+            tray(token(list.smalldie2, "die", 2), "smalldice", 2);
+            tray(token(list.smalldie3, "die", 3), "smalldice", 3);
+            tray(token(list.smalldie4, "die", 4), "smalldice", 4);
+            tray(token(list.smalldie5, "die", 5), "smalldice", 5);
+            tray(token(list.smalldie6, "die", 6), "smalldice", 6);
 
-            tray(token(list.silverdie1, 1), "dice", 1);
-            tray(token(list.silverdie2, 2),"dice", 2);
-            tray(token(list.silverdie3, 3),"dice", 3);
-            tray(token(list.silverdie4, 4), "dice", 4);
-            tray(token(list.silverdie5, 5), "dice", 5);
-            tray(token(list.silverdie6, 6), "dice", 6);    
+            tray(token(list.silverdie1, "die", 1), "dice", 1);
+            tray(token(list.silverdie2, "die", 2),"dice", 2);
+            tray(token(list.silverdie3, "die", 3),"dice", 3);
+            tray(token(list.silverdie4, "die", 4), "dice", 4);
+            tray(token(list.silverdie5, "die", 5), "dice", 5);
+            tray(token(list.silverdie6, "die", 6), "dice", 6);    
 
-            tray(token(list.reddie1, 1), "reddice", 1);
-            tray(token(list.reddie2, 2), "reddice", 2);
-            tray(token(list.reddie3, 3), "reddice", 3);
-            tray(token(list.reddie4, 4), "reddice", 4);
-            tray(token(list.reddie5, 5), "reddice", 5);
-            tray(token(list.reddie6, 6), "reddice", 6);    
+            tray(token(list.reddie1, "die", 1), "reddice", 1);
+            tray(token(list.reddie2, "die", 2), "reddice", 2);
+            tray(token(list.reddie3, "die", 3), "reddice", 3);
+            tray(token(list.reddie4, "die", 4), "reddice", 4);
+            tray(token(list.reddie5, "die", 5), "reddice", 5);
+            tray(token(list.reddie6, "die", 6), "reddice", 6);    
             
             tray(token(list.constructionaward4, 4), "constructionaward", 4);
             tray(token(list.constructionaward7, 7), "constructionaward", 7);

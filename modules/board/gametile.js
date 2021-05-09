@@ -1,8 +1,9 @@
 define([
     "bgagame/modules/board/dispatch",
     "bgagame/modules/board/nextid",
-    "bgagame/modules/board/rotation"
-], function (dispatch, nextid, rotation) {
+    "bgagame/modules/board/rotation",
+    "bgagame/modules/board/board"
+], function (dispatch, nextid, rotation, board) {
 
 
     const addInsertPositions = function (posarray) {
@@ -52,13 +53,18 @@ define([
         });
     };
 
+    const isPositionOccupied = function isPositionOccupied (pos) {
+        return board.getState().tokens[this.tileId][this.name][pos] ? true : false;
+    };
+
     const overlay = {
         addInsertPositions: addInsertPositions,
         addInsertPosition: addInsertPosition,
         makeTokensClickable: makeTokensClickable,
         slotTokenInPosition: slotTokenInPosition,
         removeAllTokens: removeAllTokens,
-        removeTokenFromPosition: removeTokenFromPosition
+        removeTokenFromPosition: removeTokenFromPosition,
+        isPositionOccupied: isPositionOccupied
     };
 
     const overlayfactory = function (tileId, name) {
