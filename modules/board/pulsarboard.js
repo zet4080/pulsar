@@ -230,10 +230,10 @@ define([
             tray(token(list.tokenyellow), 'token', "ffa500");
             tray(token(list.tokenred), 'token', "ff0000");
             
-            tray(token(list.shipblue), 'ship', "0000ff");
-            tray(token(list.shipgreen), 'ship', "008000");
-            tray(token(list.shipyellow), 'ship', "ffa500");
-            tray(token(list.shipred), 'ship', "ff0000");
+            tray(token(list.shipblue, "ship", "0000ff"), 'ship', "0000ff");
+            tray(token(list.shipgreen, "ship", "008000"), 'ship', "008000");
+            tray(token(list.shipyellow, "ship", "ffa500"), 'ship', "ffa500");
+            tray(token(list.shipred, "ship", "ff0000"), 'ship', "ff0000");
             
             tray(token(list.ringblue), 'ring', "0000ff");
             tray(token(list.ringgreen), 'ring', "008000");

@@ -54,7 +54,10 @@ define([
     };
 
     const isPositionOccupied = function isPositionOccupied (pos) {
-        return board.getState().tokens[this.tileId][this.name][pos] ? true : false;
+        let tile = board.getState().tokens[this.tileId];
+        let overlay = tile && tile[this.name];
+        let position = overlay && overlay[pos];
+        return position ? true : false;
     };
 
     const overlay = {

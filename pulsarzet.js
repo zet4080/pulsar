@@ -190,9 +190,10 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             });
 
             connect.subscribe("setup/tokens", this, function (args) {
+                debugger;
                 let tokens = args.tokens || args.args.tokens;
                 for (let i = 0; i < tokens.length; i++) {
-                    let overlay = tray(tokens[i].tileId).getOverlay(tokens[i].overlay);
+                    let overlay = tray('system', tokens[i].tileId).getOverlay(tokens[i].overlay);
                     if (!overlay.isPositionOccupied(tokens[i].position)) {
                         overlay.slotTokenInPosition(tokens[i].position, tray('token', this.players[tokens[i].player].color));
                     }
@@ -205,7 +206,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 let overlay = tray('starcluster').getOverlay('planetarysystems');
                 overlay.removeAllTokens();
                 for (let system in systems) {
-                    overlay.slotTokenInPosition(systems[system].node, tray(systems[system].system));
+                    overlay.slotTokenInPosition(systems[system].node, tray('system', systems[system].system));
                 }
                 canvas.drawBoard(this.board);
             });

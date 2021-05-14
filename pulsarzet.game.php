@@ -425,7 +425,7 @@ class PulsarZet extends Table
             DBUtil::insertRow('tokens', array (
                 'player' => self::getActivePlayerId(),
                 'componentType' => 'system',
-                'tileId' => $system['type'],
+                'tileId' => $system['type_arg'],
                 'overlay' => 'blue',
                 'position' => count($occupied)
             ));
@@ -445,7 +445,7 @@ class PulsarZet extends Table
             DBUtil::insertRow('tokens', array (
                 'player' => self::getActivePlayerId(),
                 'componentType' => 'system',
-                'tileId' => $system['type'],
+                'tileId' => $system['type_arg'],
                 'overlay' => 'stone',
                 'position' => count($occupied)
             ));
@@ -616,7 +616,7 @@ class PulsarZet extends Table
     }    
 
     function getSystems () {
-        return DBUtil::get('planetarysystems', array ('card_location' => 'starcluster'), null, 'card_location_arg node, card_type system');
+        return DBUtil::get('planetarysystems', array ('card_location' => 'starcluster'), null, 'card_location_arg node, card_type_arg system');
     }
 
     function moveDiceFromBoardToPlayer($value) {
@@ -837,7 +837,7 @@ class PulsarZet extends Table
         $this->gamestate->nextState("flyShip");
     }
 
-    function click_dice_in_state_player_choose_action_die($tileId, $tokenId, $posId, $variantId) {
+    function click_die_in_state_player_choose_action_die($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('chooseDie');
         self::checkIfItIsPlayerDie($tileId);
         self::movePlayerDieToBlackHole($variantId);
