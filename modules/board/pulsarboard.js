@@ -274,8 +274,8 @@ define([
             tray(token(list.engineeringcube, 1), "engineeringcube", 1);
             tray(token(list.engineeringcubes4, 4), "engineeringcube", 4);
 
-            tray(token(list.plusone, 1), "plusone");
-            tray(token(list.minusone, -1), "minusone");
+            tray(token(list.plusone, "plusone"), "plusone");
+            tray(token(list.minusone, "minusone"), "minusone");
 
             tray(token(list.number1), "number", 1);
             tray(token(list.number2), "number", 2);
@@ -307,8 +307,8 @@ define([
             tray(token(list.bonus4points), "bonus", "4points");
             tray(token(list.bonus5points), "bonus", "5points");
 
-            tray(token(list.modifikator1), "modifier", "1");
-            tray(token(list.modifikator2), "modifier", "2");
+            tray(token(list.modifikator1, "modifier", 1), "modifier", "1");
+            tray(token(list.modifikator2, "modifier", 2), "modifier", "2");
 
             tray(token(list.gyordyne1a), "gyrodyne", "active", "1");
             tray(token(list.gyordyne2a), "gyrodyne", "active", "2");
