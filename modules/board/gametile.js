@@ -38,6 +38,14 @@ define([
         });        
     };
 
+    const slotGameTileInPosition = function (posid, gametile) {
+        dispatch("overlay/slotgametileinposition", {
+            tileId: this.tileId,
+            name: this.name,
+            posid, gametile
+        });        
+    };    
+
     const removeAllTokens = function () {
         dispatch("overlay/removealltokens", {
             tileId: this.tileId,
@@ -65,6 +73,7 @@ define([
         addInsertPosition: addInsertPosition,
         makeTokensClickable: makeTokensClickable,
         slotTokenInPosition: slotTokenInPosition,
+        slotGameTileInPosition: slotGameTileInPosition,
         removeAllTokens: removeAllTokens,
         removeTokenFromPosition: removeTokenFromPosition,
         isPositionOccupied: isPositionOccupied

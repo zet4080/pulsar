@@ -203,9 +203,8 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             connect.subscribe("setup/systems", this, function (args) {
                 let systems = args.systems || args.args.systems;
                 let overlay = tray('starcluster').getOverlay('planetarysystems');
-                overlay.removeAllTokens();
                 for (let system in systems) {
-                    overlay.slotTokenInPosition(systems[system].node, tray('system', systems[system].system));
+                    overlay.slotGameTileInPosition(systems[system].node, tray('system', systems[system].system));
                 }
                 canvas.drawBoard(this.board);
             });

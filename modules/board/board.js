@@ -69,6 +69,24 @@ define([
         
         return newState;
     }; 
+
+    const slotGameTileInPosition = function (state, payload) {
+        const { tileId, name, posid, gametile } = payload;
+
+        let pos = state.overlays[tileId][name][posid];
+
+        let newGameTile = { ...gametile };
+        newGameTile.parent = tileId;
+        newGameTile.x = pos.x;
+        newGameTile.y = pos.y;
+        newGameTile.r = pos.r;
+
+        let newState = { ...state };
+        newState.board = { ...state.board };
+        newState.board[gametile.id] = newGameTile;
+
+        return newState;
+    };     
     
     const removeAllTokens = function (state, payload) {
         const { tileId, overlay } = payload;
@@ -112,7 +130,9 @@ define([
             case "overlay/addinsertposition":
                 return addInsertPosition(state, action.payload); 
             case "overlay/slottokeninposition":
-                return slotTokenInPosition(state, action.payload);                                 
+                return slotTokenInPosition(state, action.payload);    
+            case "overlay/slotgametileinposition":
+                return slotGameTileInPosition(state, action.payload);                                              
             case "overlay/removealltokens":
                 return removeAllTokens(state, action.payload);   
             case "overlay/removetokenfromposition":
