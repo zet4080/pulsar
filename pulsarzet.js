@@ -190,7 +190,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             });
 
             connect.subscribe("setup/tokens", this, function (args) {
-                debugger;
                 let tokens = args.tokens || args.args.tokens;
                 for (let i = 0; i < tokens.length; i++) {
                     let overlay = tray('system', tokens[i].tileId).getOverlay(tokens[i].overlay);

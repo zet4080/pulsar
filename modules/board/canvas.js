@@ -35,6 +35,7 @@ define([
     let table = null;
     let clickarea = null;
     let infos = {};
+    let transformations = {};
     
     const viewport = {
         scale: 1.0,
@@ -43,6 +44,17 @@ define([
             y: 0
         }
     };
+
+    const traverse = function* (o, level, path = []) {
+        for (let i of Object.keys(o)) {
+            const itemPath = path.concat(i);
+            if (level > 0) {
+                yield* traverse(o[i], level - 1, itemPath);
+            } else {
+                yield [i, o[i], itemPath]; 
+            }
+        }
+    };    
     
     const getColorFromPixel = function (pixel) {
         return Number(pixel[0]).toString(16).padStart(2, '0') + Number(pixel[1]).toString(16).padStart(2, '0') + Number(pixel[2]).toString(16).padStart(2, '0');
@@ -57,6 +69,8 @@ define([
         var canvas = document.createElement("canvas");
         if (nodisplay) {
             canvas.style = "display: none;";
+        } else {
+            canvas.style = "position: absolute";
         }
         parent.appendChild(canvas);
         canvas.width = parent.clientWidth;
@@ -79,10 +93,15 @@ define([
     
     const drawBoard = function () {
         clearTable();
-        save();
         scale();        
+        
         recurseGameElements('000');
-        restore();       
+        
+        drawTiles();
+        iterateTokens(table, drawPlainToken);
+
+        drawClickAreas();
+        iterateTokens(clickarea, drawClickableTokens);
     };
 
     const clearTable = function () {
@@ -90,89 +109,84 @@ define([
         clickarea.setTransform(1, 0, 0, 1, 0, 0);
         table.clearRect(0, 0, table.canvas.width, table.canvas.height);
         clickarea.clearRect(0, 0, table.canvas.width, table.canvas.height);
-    }
-
-    const save = function () {
-        table.save();
-        clickarea.save();
-    }
+        transformations = {};
+    };
 
     const scale = function () {
         table.scale(viewport.scale, viewport.scale);
         clickarea.scale(viewport.scale, viewport.scale);
-    }
-
-    const restore = function () {
-        table.restore()
-        clickarea.restore();
-    }
-
-    const translate = function (x, y) {
-        table.translate(x, y);
-        clickarea.translate(x, y);
-    }
+    };
 
     const rotate = function (rotation) {
         table.translate(rotation.x, rotation.y);
-        clickarea.translate(rotation.x, rotation.y);
         table.rotate(rotation.r);
-        clickarea.rotate(rotation.r);
         table.translate(-rotation.x, -rotation.y);
-        clickarea.translate(-rotation.x, -rotation.y);
-    }
+    };
 
     const recurseGameElements = function (parent) {
-        drawClickAreas(parent);
-        drawTokens(parent);
         let tiles = state.getState().board;
-        let tray = state.getState().tray;
         for (let key in tiles) {
             let tile = tiles[key];
             if (tile.parent == parent) {
-                save()
+                table.save();
                 rotate(tile.r);
-                table.drawImage(tray[key].image, tile.x, tile.y);
-                translate(tile.x, tile.y);
+                table.translate(tile.x, tile.y);
+                transformations[key] = table.getTransform();
                 recurseGameElements(key);
-                restore();
+                table.restore();
             }
         }
     };
 
-    const drawImage = function(tileId, overlay, tokenId, posId, image) {
-        let token = state.getState().tray[tokenId];
-        table.drawImage(image, 0, 0);
-        if (state.getState().clickable[tileId] && state.getState().clickable[tileId][overlay]) {
+    const drawTiles = function () {
+        let tiles = state.getState().board;
+        let tray = state.getState().tray;
+        for (let key in tiles) {
+            table.setTransform(transformations[key]);
+            table.drawImage(tray[key].image, 0, 0);
+        }
+    };
+
+    const iterateTokens = function (context, callback) {
+        const tokens = traverse(state.getState().tokens, 2);
+        for (const token of tokens) {
+            const tileId = token[2][0];
+            const { x, y, r } = token[1].pos;
+            context.setTransform(transformations[tileId]);
+            context.translate(x, y);
+            if (r.r) {
+                context.translate(r.x, r.y);
+                context.rotate(r.r);
+            }
+            callback(token);
+        }
+    };
+
+    const drawPlainToken = function (token) {
+        table.drawImage(token[1].image, 0, 0);
+    };
+
+    const drawClickableTokens = function (token) {
+        const clickable = state.getState().clickable;
+        if (clickable[token[2][0]] && clickable[token[2][0]][token[2][1]]) {
+            const image = token[1].image;
             drawClickArea([0, 0, image.width, image.height], {
-                tileId: tileId,
-                posId: posId,
-                tokenId: token.type,
-                variantId: token.value
-            }); 
+                tileId: token[2][0],
+                posId: token[2][2],
+                tokenId: token[1].type,
+                variantId: token[1].value
+            });            
         }
-    }
+    };    
 
-    const drawTokens = function (parent) {
-        let  overlays = state.getState().tokens[parent];
-        for (let key in overlays) {
-            let tokens = overlays[key];
-            for (let posid in tokens) {
-                const { image, id } = tokens[posid];
-                const {x, y, r} = tokens[posid].pos;
-                save();
-                translate(x, y);
-                rotate(r);
-                drawImage(parent, key, id, posid, image);
-                restore();
-            }
-        }
-    };
-
-    const drawClickAreas = function (parent) {
-        let clickareas = state.getState().clickareas[parent];
-        for (let key in clickareas) {
-            let area = clickareas[key];
-            drawClickArea(area.path, area.info);
+    const drawClickAreas = function () {
+        let clickareas = state.getState().clickareas;
+        let iterator = traverse(clickareas, 1);
+        for (let area of iterator) {
+            const { path, info } = area[1];
+            const tileId = area[2][0];
+            clickarea.setTransform(transformations[tileId]);
+            drawClickArea(path, info);
         }
     };
 
