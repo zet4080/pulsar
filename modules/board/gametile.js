@@ -96,7 +96,8 @@ define([
 
     const addClickArea = function (id, path, info) {
         id = String(id);
-        info = info || {
+        info = {
+            ...info,
             tileId: this.id
         };
         info.clickAreaId = id;

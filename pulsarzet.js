@@ -192,7 +192,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             connect.subscribe("setup/tokens", this, function (args) {
                 let tokens = args.tokens || args.args.tokens;
                 for (let i = 0; i < tokens.length; i++) {
-                    let overlay = tray('system', tokens[i].tileId).getOverlay(tokens[i].overlay);
+                    let overlay = tray(tokens[i].tileId).getOverlay(tokens[i].overlay);
                     if (!overlay.isPositionOccupied(tokens[i].position)) {
                         overlay.slotTokenInPosition(tokens[i].position, tray('token', this.players[tokens[i].player].color));
                     }

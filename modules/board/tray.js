@@ -23,10 +23,10 @@ define([
         let args = Array.from(arguments);
         if (typeof args[0] === 'object') {
             let component = args.shift();
-            let id = args.join("/");             
+            let id = args.join("_");             
             addComponent(id, component);
         } else {
-            return getComponent(args.join("/"));
+            return getComponent(args.join("_"));
         }
     }
     

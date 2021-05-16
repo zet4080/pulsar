@@ -104,7 +104,7 @@ class PulsarZet extends Table
 
         $systems = array();
         for ($value = 1; $value <= 17; $value++) {
-            $systems[] = array('type' => 'system-' . sprintf("%02d", $value), 'type_arg' => $value, 'nbr' => 1);
+            $systems[] = array('type' => 'system_' . $value, 'type_arg' => $value, 'nbr' => 1);
         }
         $this->systemcards->createCards($systems);
         $this->systemcards->shuffle('deck');
@@ -425,7 +425,7 @@ class PulsarZet extends Table
             DBUtil::insertRow('tokens', array (
                 'player' => self::getActivePlayerId(),
                 'componentType' => 'system',
-                'tileId' => $system['type_arg'],
+                'tileId' => $system['type'],
                 'overlay' => 'blue',
                 'position' => count($occupied)
             ));
@@ -445,7 +445,7 @@ class PulsarZet extends Table
             DBUtil::insertRow('tokens', array (
                 'player' => self::getActivePlayerId(),
                 'componentType' => 'system',
-                'tileId' => $system['type_arg'],
+                'tileId' => $system['type'],
                 'overlay' => 'stone',
                 'position' => count($occupied)
             ));
