@@ -181,12 +181,12 @@ define([
 
     const drawClickAreas = function () {
         let clickareas = state.getState().clickareas;
-        let iterator = traverse(clickareas, 1);
-        for (let area of iterator) {
-            const { path, info } = area[1];
-            const tileId = area[2][0];
-            clickarea.setTransform(transformations[tileId]);
-            drawClickArea(path, info);
+        for (let area in clickareas) {
+            for (let i = 0; i < clickareas[area].length; i++) {
+                const { path, info } = clickareas[area][i];
+                clickarea.setTransform(transformations[area]);
+                drawClickArea(path, info);
+            }
         }
     };
 

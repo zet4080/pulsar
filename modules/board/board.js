@@ -31,8 +31,8 @@ define([
         const { source, id, path, info } = payload;
         let newState = { ...state };
         newState.clickareas = { ...state.clickareas };
-        newState.clickareas[source] = newState.clickareas[source] ? { ...newState.clickareas[source] } : {};
-        newState.clickareas[source][id] = { path, info };
+        newState.clickareas[source] = newState.clickareas[source] ? [ ...newState.clickareas[source] ] : [];
+        newState.clickareas[source].push({ path, info });
         return newState;
     };   
     
