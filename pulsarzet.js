@@ -22,10 +22,11 @@ define([
     "bgagame/modules/board/pulsarboard",
     "bgagame/modules/board/canvas",
     "bgagame/modules/board/tray",
+    "bgagame/modules/board/board",
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, connect, lang, pulsarboard, canvas, tray) {
+function (declare, connect, lang, pulsarboard, canvas, tray, store) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
         
         constructor: function() {
@@ -52,10 +53,10 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
             this.setupNotifications();
             canvas.createTable('table');
             canvas.setScale(0.35);
+            store.subscribe(canvas.drawBoard);
             
             this.players = gamedatas.players;
-            pulsarboard(gamedatas.players).then(lang.hitch(this, function (board) {
-                this.board = board;
+            pulsarboard(gamedatas.players).then(lang.hitch(this, function () {
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
                 connect.publish("setup/marker", gamedatas.markerposition);
@@ -69,7 +70,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 connect.publish("setup/blackholedice", { dice: gamedatas.blackhole.dice });
                 connect.publish("setup/systems", { systems: gamedatas.systems });
                 connect.publish("setup/tokens", { tokens: gamedatas.tokens });   
-                canvas.drawBoard(this.board);
             }));
             console.log( "Ending game setup" );
         },
@@ -186,7 +186,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                     overlay.slotTokenInPosition("minus", tray('minusone'));
                     overlay.removeTokenFromPosition("plus");
                 }
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/tokens", this, function (args) {
@@ -197,7 +196,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                         overlay.slotTokenInPosition(tokens[i].position, tray('token', this.players[tokens[i].player].color));
                     }
                 }
-                canvas.drawBoard(this.board);
             });
             
             connect.subscribe("setup/systems", this, function (args) {
@@ -206,7 +204,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 for (let system in systems) {
                     overlay.slotGameTileInPosition(systems[system].node, tray('system', systems[system].system));
                 }
-                canvas.drawBoard(this.board);
             });
             
             connect.subscribe("setup/shippositions", this, function (args) {
@@ -216,7 +213,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 for (let i = 0; i < shippositions.length; i++) {
                     overlay.slotTokenInPosition( shippositions[i].position, tray('ship', this.players[shippositions[i].playerid].color));
                 }
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/diceboard", this, function (args) {
@@ -227,7 +223,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 for (var i = 0; i < dice.length; i++) {
                     overlay.slotTokenInPosition(dice[i].position, tray('smalldice', dice[i].value));
                 }
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/playerdice", this, function (args) {
@@ -240,7 +235,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                     let pos = overlay.isPositionOccupied("0") ? "1" : "0";
                     overlay.slotTokenInPosition(pos, tray('dice', dice[i]['value']));
                 }
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/blackholedice", this, function (args) {
@@ -249,8 +243,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 for (var i = 0; i < dice.length; i++) {
                     overlay.slotTokenInPosition(i, tray('dice', dice[i].value));
                 }
-                canvas.drawBoard(this.board);
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/marker", this, function (args) {
@@ -258,7 +250,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 let overlay = tray('diceboard').getOverlay('marker');
                 overlay.removeAllTokens();
                 overlay.slotTokenInPosition(markerposition, tray("marker"));
-                canvas.drawBoard(this.board);
             });            
             
             connect.subscribe("setup/playerorder", this, function (args) {
@@ -268,7 +259,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 for (let i = 0; i < order.length; i++) {
                     overlay.slotTokenInPosition(i + 1, tray('ship', players[order[i]].color));
                 }
-                canvas.drawBoard(this.board);
             });            
 
             connect.subscribe("setup/tracks", this, function (args) {
@@ -276,7 +266,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 let engineerTrack = args.etrack;
                 this.setColorstonesOnDiceboardTracks('initiativeTokens', initiativeTrack, args.players);
                 this.setColorstonesOnDiceboardTracks('engineerTokens', engineerTrack, args.players);
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/pulsars", this, function (args) {
@@ -286,22 +275,18 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 for (let i = 0; i < pulsars.length; i++) {
                     starcluster.slotTokenInPosition(pulsars[i].node, tray('ring', this.players[pulsars[i].playerid].color));
                 }
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("server/engineeringtrack/player_choose_track", this, function (args) {
                 this.setColorstonesOnDiceboardTracks('engineerTokens', args.track, args.players);
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("server/initiativetrack/player_choose_track", this, function (args) {
                 this.setColorstonesOnDiceboardTracks('initiativeTokens', args.track, args.players);
-                canvas.drawBoard(this.board);
             });       
             
             connect.subscribe("server/settechboardtoken", this, function(args) {
                 this.setTokenOnTechBoard(args.args.player_id, args.args.patent);
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("server/updatedie", this, function(args) {
@@ -316,7 +301,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 
                 let pos = playerboard.isPositionOccupied(0) ? 1 : 0;
                 playerboard.slotTokenInPosition(pos, tray('dice', args.variantId));
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/playerpoints", this, function (args) {
@@ -325,7 +309,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                 for (let id in playerpoints) {
                     overlay.slotTokenInPosition(playerpoints[id], tray('token', this.players[id].color));
                 };
-                canvas.drawBoard(this.board);
             });
 
             connect.subscribe("setup/playerboards", this, function (args) {
@@ -351,7 +334,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray) {
                     playerboards[i].gyrodynethree !== "0"
                         ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("3", tray("gyrodyne-inactive", "3")) 
                         : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("3"); 
-                    canvas.drawBoard(this.board);
                 }
             });
         },  
