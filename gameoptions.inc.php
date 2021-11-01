@@ -52,6 +52,34 @@ $game_options = array(
 
     */
 
+    100 => array(
+        'name' => totranslate('Game board'),
+        'values' => array(
+            1 => array(
+                'name' => totranslate('Normal')
+            ),
+            2 => array(
+                'name' => totranslate('Advanced'),
+                'tmdisplay' => totranslate('Advanced'),
+                'description' => totranslate('Has dead end locations, which leads to slighty different tactics. Recommended for expert players.')
+            )
+        )
+    ),
+
+    101 => array(
+        'name' => totranslate('Even start'),
+        'values' => array(
+            1 => array(
+                'name' => totranslate('Off')
+            ),
+            2 => array(
+                'name' => totranslate('On'),
+                'tmdisplay' => totranslate('On'),
+                'description' => totranslate('Only for the first round, dice are as follows: In a four player game, six dice are equal to 1, 2, 3, 4, 5, 6. In a two or three player game, four dice are equal to 2, 3, 4, 5. For both cases the remaining three are rolled.')
+            )
+        )
+    )
+
 );
 
 

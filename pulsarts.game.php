@@ -23,7 +23,7 @@ require_once 'modules/Track.php';
 require_once 'modules/JSON.php';
 require_once 'modules/DicePosition.php';
 
-class PulsarZet extends Table
+class PulsarTs extends Table
 {
 	function __construct( )
 	{
@@ -51,7 +51,7 @@ class PulsarZet extends Table
     protected function getGameName( )
     {
 		// Used for translations and stuff. Please do not modify.
-        return "pulsarzet";
+        return "pulsarts";
     }	
 
     /*

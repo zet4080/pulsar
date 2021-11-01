@@ -27,10 +27,10 @@ define([
     "ebg/counter"
 ],
 function (declare, connect, lang, pulsarboard, canvas, tray, store) {
-    return declare("bgagame.pulsarzet", ebg.core.gamegui, {
+    return declare("bgagame.pulsarts", ebg.core.gamegui, {
         
         constructor: function() {
-            console.log('pulsarzet constructor');
+            console.log('pulsarts constructor');
         },
         
         /*
@@ -48,7 +48,8 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store) {
         players: {},
         setup: function( gamedatas )
         {
-            console.log( "Starting game setup" );
+            console.log( "Starting game setup", gamedatas);
+            window.gameModule = this;
 
             this.setupNotifications();
             canvas.createTable('table');
@@ -207,6 +208,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store) {
             });
             
             connect.subscribe("setup/shippositions", this, function (args) {
+                console.log("Choosing ship position")
                 let shippositions = args.shippositions || args.args.shippositions;
                 let overlay = tray('starcluster').getOverlay('ships');
                 overlay.removeAllTokens();

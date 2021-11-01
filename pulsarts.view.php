@@ -26,10 +26,10 @@
   
   require_once( APP_BASE_PATH."view/common/game.view.php" );
   
-  class view_pulsarzet_pulsarzet extends game_view
+  class view_pulsarts_pulsarts extends game_view
   {
     function getGameName() {
-        return "pulsarzet";
+        return "pulsarts";
     } 
 
   	function build_page( $viewArgs )

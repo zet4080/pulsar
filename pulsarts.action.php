@@ -22,7 +22,7 @@
  */
   
   
-  class action_pulsarzet extends APP_GameAction
+  class action_pulsarts extends APP_GameAction
   { 
    	public function __default()
   	{
@@ -33,7 +33,7 @@
   	    }
   	    else
   	    {
-            $this->view = "pulsarzet_pulsarzet";
+            $this->view = "pulsarts_pulsarts";
             self::trace( "Complete reinitialization of board game" );
       }
   	} 
