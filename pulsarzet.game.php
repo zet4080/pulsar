@@ -329,12 +329,21 @@ class PulsarZet extends Table
         return $systems;
     }
 
+    function checkIfTimeMarkerAllowsAction ($id) {
+        $time = self::getGameStateValue('timeMarker');
+        if   (($time == 1 && $id > 3) 
+           or ($time == 2 && $id > 6) 
+           or ($id > $time * 2 + 2)) {
+            throw new BgaUserException(self::_("You can't choose a tech above the time marker!"));
+        } 
+    }
+
     function checkIfActionIsAvailable ($id) {
         $actions = DBUtil::get('actions', array (
             'action' => $id
         ));
         if (count($actions) == 2) {
-            throw new BgaUserException(self::_("Can't buy this tech!"));
+            throw new BgaUserException(self::_("Tech is sold 2 times already!"));
         }
         if (count($actions) == 1 && $actions[0]['locked'] != 0) {
             throw new BgaUserException(self::_("This tech is locked for this round!"));
@@ -798,12 +807,19 @@ class PulsarZet extends Table
         ));
     }
 
+    function sendTimeMarker() {
+        self::notifyAllPlayers("setup/timemarker", '', array(
+            'timemarker' => self::getGameStateValue('timeMarker')
+        ));
+    }
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
 
     function click_tech_in_state_player_choose_action_or_modifier($tileId, $tokenId, $posId, $variantId) {
         self::checkAction('patentTechnology');
+        self::checkIfTimeMarkerAllowsAction($variantId);
         self::checkIfActionIsAvailable($variantId);
         self::checkIfPlayerHasDieToBuyAction($variantId);
         self::patentTechnology($tileId, $variantId);
@@ -1012,6 +1028,10 @@ class PulsarZet extends Table
     function stStartProductionPhase() {
         self::updateTechnologyTree();
         self::sendTokens();
+
+        self::setGameStateValue("timeMarker", self::getGameStateValue("timeMarker") + 1);
+        self::sendTimeMarker();
+
         $this->gamestate->nextState("productionPhaseCompleted");
     }
 

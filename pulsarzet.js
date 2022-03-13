@@ -204,7 +204,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store, dispatch) {
                 let timemarker = args.timemarker || args.args.timemarker;
                 let overlay = this.board.getOverlay('timemarker');
                 overlay.removeAllTokens();
-                overlay.slotTokenInPosition(timemarker, tray('marker'));
+                overlay.slotTokenInPosition(timemarker, tray('timemarker'));
             });            
             
             connect.subscribe("setup/systems", this, function (args) {

@@ -445,7 +445,7 @@ define([
 
             board.addGameTile(tray('tech', 1), 1138, 420, rotation(1678, 1856, 90));
             board.addGameTile(tray('tech', 2), 1241, -50, rotation(1678, 1856, 90));
-            board.addGameTile(tray('tech', 3), 1275, -350, rotation(1678, 1856, 90));
+            board.addGameTile(tray('tech', 3), 1275, -520, rotation(1678, 1856, 90));
 
             board.createOverlay('timemarker').addInsertPositions([
                 [], [2667, 1234], [2845, 1248], [3038, 1339], [3211, 1354], [3380, 1364], [3544, 1376], [3703, 1387], [3865, 1397] 
