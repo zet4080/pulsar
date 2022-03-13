@@ -23,10 +23,11 @@ define([
     "bgagame/modules/board/canvas",
     "bgagame/modules/board/tray",
     "bgagame/modules/board/board",
+    "bgagame/modules/board/dispatch",    
     "ebg/core/gamegui",
     "ebg/counter"
 ],
-function (declare, connect, lang, pulsarboard, canvas, tray, store) {
+function (declare, connect, lang, pulsarboard, canvas, tray, store, dispatch) {
     return declare("bgagame.pulsarzet", ebg.core.gamegui, {
         
         constructor: function() {
@@ -123,12 +124,10 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store) {
             }
         },
 
-        setTokenOnTechBoard: function (player, patent) {
-            let techboard = tray('tech1');
-            let pos1 = patent + '-1';
-            let pos2 = patent + '-2';
-            let pos = techboard.isPositionOccupied('token', pos1) ? pos2 : pos1;
-            techboard.placeTokenAtPosition('token', pos, this.players[player].color);
+        removeTokensFromTechBoard: function () {
+            tray('tech_1').removeAllTokens();
+            tray('tech_2').removeAllTokens();
+            tray('tech_3').removeAllTokens();
         },
 
         ///////////////////////////////////////////////////
@@ -190,6 +189,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store) {
 
             connect.subscribe("setup/tokens", this, function (args) {
                 let tokens = args.tokens || args.args.tokens;
+                this.removeTokensFromTechBoard();
                 for (let i = 0; i < tokens.length; i++) {
                     let overlay = tray(tokens[i].tileId).getOverlay(tokens[i].overlay);
                     if (!overlay.isPositionOccupied(tokens[i].position)) {
@@ -284,10 +284,6 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store) {
             connect.subscribe("server/initiativetrack/player_choose_track", this, function (args) {
                 this.setColorstonesOnDiceboardTracks('initiativeTokens', args.track, args.players);
             });       
-            
-            connect.subscribe("server/settechboardtoken", this, function(args) {
-                this.setTokenOnTechBoard(args.args.player_id, args.args.patent);
-            });
 
             connect.subscribe("server/updatedie", this, function(args) {
                 connect.publish("setup/blackholedice", { dice: args.args.blackholedice });

@@ -88,7 +88,7 @@ define([
         return newState;
     };     
     
-    const removeAllTokens = function (state, payload) {
+    const removeAllTokensFromOverlay = function (state, payload) {
         const { tileId, overlay } = payload;
         let newState = { ...state };
         newState.tokens = { ...state.tokens };
@@ -97,6 +97,14 @@ define([
 
         return newState;
     }
+
+    const removeAllTokensFromTile = function (state, payload) {
+        const { tileId } = payload;
+        let newState = { ...state };
+        newState.tokens = { ...state.tokens };
+        newState.tokens[tileId] = {};
+        return newState;
+    }    
 
     const removeTokenFromPosition = function (state, payload) {
         const { tileId, overlay, position } = payload;
@@ -127,6 +135,8 @@ define([
                 return addClickArea(state, action.payload); 
             case "gametile/addoverlay":
                 return addOverlay(state, action.payload); 
+            case "gametile/removealltokens":
+                return removeAllTokensFromTile(state, action.payload);                 
             case "overlay/addinsertposition":
                 return addInsertPosition(state, action.payload); 
             case "overlay/slottokeninposition":
@@ -134,7 +144,7 @@ define([
             case "overlay/slotgametileinposition":
                 return slotGameTileInPosition(state, action.payload);                                              
             case "overlay/removealltokens":
-                return removeAllTokens(state, action.payload);   
+                return removeAllTokensFromOverlay(state, action.payload);   
             case "overlay/removetokenfromposition":
                 return removeTokenFromPosition(state, action.payload);
             case "overlay/maketokensclickable":

@@ -169,6 +169,12 @@ class PulsarZet extends Table
         die('ok');
     }
 
+    function print($text) {
+        echo "<pre>";
+        var_dump( $text );
+        echo "</pre>";
+    }
+
     function getAllPlayers () {
         $sql = "SELECT player_id id, player_no nr, player_score score, player_color color FROM player ";
         return self::getCollectionFromDb( $sql );        
@@ -344,9 +350,18 @@ class PulsarZet extends Table
     }
 
     function patentTechnology ($tileId, $tech) {
+        $pos = 0;
         $actions = DBUtil::get('actions', array (
             'action' => $tech
         ));        
+        if (count($actions) == 1) {
+            $tokens = DBUtil::get('tokens', array(
+                'componentType' => 'tech',
+                'tileId' => $tileId,
+                'overlay' => $tech            
+            ));
+            $pos = $tokens[0]['position'] == 0 ? 1 : 0;        
+        }
         DBUtil::insertRow('actions', array (
             'action' => $tech,
             'locked' => $this->actions[$tech]['lockable'] ? 1 :0,
@@ -358,11 +373,29 @@ class PulsarZet extends Table
             'componentType' => 'tech',
             'tileId' => $tileId,
             'overlay' => $tech,
-            'position' => count($actions),
+            'position' => $pos,
             'info' => $this->actions[$tech]['lockable'] ? 'locked' : '',
         ));
     }
     
+    function updateTechnologyTree() {
+        
+        foreach ($this->actions as $key => $action) {
+            $actions = DBUtil::get('actions', array (
+                'action' => $key
+            ));              
+
+            if (count($actions) == 1) {
+                DBUtil::updateRow('actions', $key, array('locked' => 0));                
+                $token = DBUtil::get('tokens', array(
+                    'componentType' => 'tech',
+                    'overlay' => $key,                    
+                ));
+                DBUtil::updateRow('tokens', $token[0]['id'], array('position' => 1));
+            }
+        }
+    }
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Claiming, Buying, Building
 ////////////        
@@ -975,6 +1008,8 @@ class PulsarZet extends Table
     }
 
     function stStartProductionPhase() {
+        self::updateTechnologyTree();
+        self::sendTokens();
         $this->gamestate->nextState("productionPhaseCompleted");
     }
 

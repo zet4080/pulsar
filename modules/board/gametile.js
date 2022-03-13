@@ -46,7 +46,7 @@ define([
         });        
     };    
 
-    const removeAllTokens = function () {
+    const removeAllTokensFromOverlay = function () {
         dispatch("overlay/removealltokens", {
             tileId: this.tileId,
             overlay: this.name
@@ -74,7 +74,7 @@ define([
         makeTokensClickable: makeTokensClickable,
         slotTokenInPosition: slotTokenInPosition,
         slotGameTileInPosition: slotGameTileInPosition,
-        removeAllTokens: removeAllTokens,
+        removeAllTokens: removeAllTokensFromOverlay,
         removeTokenFromPosition: removeTokenFromPosition,
         isPositionOccupied: isPositionOccupied
     };
@@ -139,12 +139,19 @@ define([
         return overlayfactory(this.id, name);
     };
 
+    const removeAllTokensFromTile = function () {
+      dispatch("gametile/removealltokens", {
+          tileId: this.id
+      });  
+    };
+
     const gametile = {
         addClickArea: addClickArea,
         addClickAreas: addClickAreas,
         addGameTile: addGameTile,
         createOverlay: createOverlay,
-        getOverlay: getOverlay
+        getOverlay: getOverlay,
+        removeAllTokens: removeAllTokensFromTile
     }; 
 
     const factory = function (image) {
