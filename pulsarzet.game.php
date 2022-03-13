@@ -16,7 +16,6 @@
   *
   */
 
-
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 require_once 'modules/DBUtil.php';
 require_once 'modules/Track.php'; 
@@ -36,12 +35,13 @@ class PulsarZet extends Table
         parent::__construct();
         
         self::initGameStateLabels(array( 
-            "markerPosition" => 10,
+            "diceBoardMarker" => 10,
             "choosenDie" => 20,
             "nrOfDice" => 30,
             "modifiertoken" => 40,
             "modifiervalue" => 50,
-            "dieTotal" => 60
+            "dieTotal" => 60,
+            "timeMarker" => 70
         ));        
 
         $this->systemcards = self::getNew( "module.common.deck" );
@@ -92,7 +92,8 @@ class PulsarZet extends Table
             ));            
         }
 
-        self::setGameStateInitialValue('markerPosition', 6);
+        self::setGameStateInitialValue('timeMarker', 1);
+        self::setGameStateInitialValue('diceBoardMarker', 6);
         self::setGameStateInitialValue('choosenDie', 0);
         self::setGameStateInitialValue('modifiertoken', 0);
         self::setGameStateInitialValue('modifiervalue', 0);
@@ -128,7 +129,7 @@ class PulsarZet extends Table
         $result['diceboard'] = self::getDiceboard();
         $result['playerdice'] = self::getPlayerDice();
         $result['blackhole'] = self::getBlackhole();
-        $result['markerposition'] = self::getGameStateValue('markerPosition');
+        $result['diceboardmarker'] = self::getGameStateValue('diceBoardMarker');
         $result['engineeringTrack'] = Track::getTrackForClient('engineeringTrack');        
         $result['initiativeTrack'] = Track::getTrackForClient('initiativeTrack');
         $result['playerpoints'] = JSON::read('playerpoints');
@@ -137,6 +138,7 @@ class PulsarZet extends Table
         $result['systems'] = self::getSystems();
         $result['tokens'] = self::getTokens();
         $result['playerboards'] = self::getPlayerboards();
+        $result['timemarker'] = self::getGameStateValue('timeMarker');
         return $result;
     }
 
@@ -686,11 +688,11 @@ class PulsarZet extends Table
         if ($lower < $higher) {
             $marker = ($middleDie * 2);
         }
-        self::setGameStateValue("markerPosition", $marker);
+        self::setGameStateValue("diceBoardMarker", $marker);
     }
 
     function calculateMarkerDistance() {
-        $markerPos = self::getGameStateValue('markerPosition');
+        $markerPos = self::getGameStateValue('diceBoardMarker');
         $choosenDie = self::getGameStateValue('choosenDie');
         $dieValue = 2 * $choosenDie - 1;
         $distance = $dieValue - $markerPos;
@@ -736,7 +738,7 @@ class PulsarZet extends Table
 
     function sendMarkerPosition() {
         self::notifyAllPlayers("setup/marker", '', array(
-            'markerposition' => self::getGameStateValue('markerPosition')
+            'diceboardmarker' => self::getGameStateValue('diceBoardMarker')
         ));
     }
 

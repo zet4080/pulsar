@@ -57,10 +57,11 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store, dispatch) {
             store.subscribe(canvas.drawBoard);
             
             this.players = gamedatas.players;
-            pulsarboard(gamedatas.players).then(lang.hitch(this, function () {
+            pulsarboard(gamedatas.players).then(lang.hitch(this, function (board) {
+                this.board = board;
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );
-                connect.publish("setup/marker", gamedatas.markerposition);
+                connect.publish("setup/marker", gamedatas.diceboardmarker);
                 connect.publish("setup/tracks", { etrack: gamedatas.engineeringTrack, itrack: gamedatas.initiativeTrack, players: gamedatas.players });                
                 connect.publish("setup/shippositions", { shippositions: gamedatas.shippositions });                  
                 connect.publish("setup/diceboard", { dice: gamedatas.diceboard });
@@ -71,6 +72,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store, dispatch) {
                 connect.publish("setup/blackholedice", { dice: gamedatas.blackhole.dice });
                 connect.publish("setup/systems", { systems: gamedatas.systems });
                 connect.publish("setup/tokens", { tokens: gamedatas.tokens });   
+                connect.publish("setup/timemarker", { timemarker: gamedatas.timemarker });  
             }));
             console.log( "Ending game setup" );
         },
@@ -197,6 +199,13 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store, dispatch) {
                     }
                 }
             });
+
+            connect.subscribe("setup/timemarker", this, function (args) {
+                let timemarker = args.timemarker || args.args.timemarker;
+                let overlay = this.board.getOverlay('timemarker');
+                overlay.removeAllTokens();
+                overlay.slotTokenInPosition(timemarker, tray('marker'));
+            });            
             
             connect.subscribe("setup/systems", this, function (args) {
                 let systems = args.systems || args.args.systems;
@@ -246,7 +255,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store, dispatch) {
             });
 
             connect.subscribe("setup/marker", this, function (args) {
-                let markerposition = (args.args && args.args.markerposition) || args;
+                let markerposition = (args.args && args.args.diceboardmarker) || args;
                 let overlay = tray('diceboard').getOverlay('marker');
                 overlay.removeAllTokens();
                 overlay.slotTokenInPosition(markerposition, tray("marker"));

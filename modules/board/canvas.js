@@ -95,6 +95,7 @@ define([
         clearTable();
         scale();        
         
+        transformations['000'] = table.getTransform();
         recurseGameElements('000');
         
         drawTiles();

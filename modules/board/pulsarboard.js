@@ -298,7 +298,7 @@ define([
             tray(token(list.number19), "number", 19);
             tray(token(list.number20), "number", 20);
 
-            tray(token(list.timemarker, "timemarker"));
+            tray(token(list.timemarker, "timemarker"), "timemarker");
 
             tray(token(list.bonusback), "bonus", "back");
             tray(token(list.bonuscubes), "bonus", "cubes");
