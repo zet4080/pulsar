@@ -86,7 +86,7 @@ define([
     };
 
     const createTable = function (element) {
-        table = createCanvas(element);
+        table = createCanvas(element, false);
         clickarea = createCanvas(element, true);
         table.canvas.addEventListener('click', publishClick);        
     };

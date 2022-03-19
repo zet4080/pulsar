@@ -313,9 +313,9 @@ define([
             tray(token(list.gyordyne1a), "gyrodyne", "active", "1");
             tray(token(list.gyordyne2a), "gyrodyne", "active", "2");
             tray(token(list.gyordyne3a), "gyrodyne", "active", "3");
-            tray(token(list.gyordyne1b), "gyrodyne", "inactive", "1");
-            tray(token(list.gyordyne2b), "gyrodyne", "inactive", "2");
-            tray(token(list.gyordyne3b), "gyrodyne", "inactive", "3");
+            tray(token(list.gyordyne1b, "gyrodyne", 1), "gyrodyne", "inactive", "1");
+            tray(token(list.gyordyne2b, "gyrodyne", 1), "gyrodyne", "inactive", "2");
+            tray(token(list.gyordyne3b, "gyrodyne", 1), "gyrodyne", "inactive", "3");
 
             tray(gametile(list.transmittera1a), "transmitter", "A1", "inactive");
             tray(gametile(list.transmittera1b), "transmitter", "A1", "active");
@@ -414,7 +414,11 @@ define([
             // ================================================================              
 
             tray(gametile(list.gyrodyneboard), 'gyrodyneboard');
-            board.addGameTile(tray('gyrodyneboard'), 1103, 300, rotation(1678, 1856, -26.5));            
+            board.addGameTile(tray('gyrodyneboard'), 1103, 300, rotation(1678, 1856, -26.5));    
+            
+            tray('gyrodyneboard').addClickArea('gyrodyne', [[40, 327], [26, 331, 147, 268, 348, 237], [382, 436], [258, 464, 251, 463, 115, 511]], { variantId: 1 });
+            tray('gyrodyneboard').addClickArea('gyrodyne', [[409, 229], [394, 229, 579, 203, 728, 232], [703, 431], [585, 416, 471, 426, 433, 430]], { variantId: 2 });
+            tray('gyrodyneboard').addClickArea('gyrodyne', [[792, 237], [778, 233, 951, 260, 1097, 329], [1020, 514], [968, 486, 812, 440, 760, 438]], { variantId: 3 });
 
             // ================================================================
             // Modifier Board

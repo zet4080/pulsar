@@ -907,7 +907,7 @@ class PulsarZet extends Table
         $this->gamestate->nextState("modifierBought");
     }
 
-    function click_gyrodyneboard_in_state_player_choose_action_or_modifier ($tileId, $clickAreaId, $posId, $variantId) {
+    function click_gyrodyne_in_state_player_choose_action_or_modifier ($tileId, $clickAreaId, $posId, $variantId) {
         self::checkAction('buyGyrodyne');
         self::checkIfPlayerHasDieToBuyGyrodyne($variantId);
         self::buyGyrodyne($variantId);

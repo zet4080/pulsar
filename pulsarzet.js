@@ -331,13 +331,13 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store, dispatch) {
                         ? playerboard.getOverlay("pulsarrings").slotTokenInPosition("0", tray("ring", this.players[player].color)) 
                         : playerboard.getOverlay("pulsarrings").removeTokenFromPosition("0"); 
                     playerboards[i].gyrodyneone !== "0"
-                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("1", tray("gyrodyne-inactive", "1")) 
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("1", tray("gyrodyne", "inactive", "1")) 
                         : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("1"); 
                     playerboards[i].gyrodynetwo !== "0"
-                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("2", tray("gyrodyne-inactive", "2")) 
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("2", tray("gyrodyne", "inactive", "2")) 
                         : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("2"); 
                     playerboards[i].gyrodynethree !== "0"
-                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("3", tray("gyrodyne-inactive", "3")) 
+                        ? playerboard.getOverlay("gyrodyne").slotTokenInPosition("3", tray("gyrodyne", "inactive", "3")) 
                         : playerboard.getOverlay("gyrodyne").removeTokenFromPosition("3"); 
                 }
             });
