@@ -57,7 +57,7 @@ function (declare, connect, lang, pulsarboard, canvas, tray, store, dispatch) {
             store.subscribe(canvas.drawBoard);
             
             this.players = gamedatas.players;
-            pulsarboard(gamedatas.players).then(lang.hitch(this, function (board) {
+            pulsarboard(gamedatas).then(lang.hitch(this, function (board) {
                 this.board = board;
                 connect.publish("setup/playerpoints", { playerpoints: gamedatas.playerpoints });
                 connect.publish("setup/playerorder", { playerorder: gamedatas.shiporder, players: gamedatas.players } );

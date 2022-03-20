@@ -43,7 +43,7 @@ define([
         starcluster.addInsertPosition(0, x, y);
     };
 
-    const createPulsarBoard = function (players) {
+    const createPulsarBoard = function (gamedata) {
         
         imageloader.addImage('alltokens', 'img/CompleteGraphics.webp', {
             "starcluster1": [0, 0, 2246, 2246],
@@ -443,9 +443,16 @@ define([
             // Tech Boards
             // ================================================================            
 
-            tray(gametile(list["tech-AI"]), 'tech', 1);
-            tray(gametile(list["tech-AII"]), 'tech', 2);
-            tray(gametile(list["tech-AIII"]), 'tech', 3);
+            let boardName = function (lvl) {
+                let letter = ['A','B','C','D'];
+                let nr = ['I', 'II', 'III'];
+                let name = 'tech-' + letter[gamedata.techboards[lvl]] + nr[lvl];
+                return name;
+            };
+
+            tray(gametile(list[boardName(0)]), 'tech', 1);
+            tray(gametile(list[boardName(1)]), 'tech', 2);
+            tray(gametile(list[boardName(2)]), 'tech', 3);
 
             board.addGameTile(tray('tech', 1), 1138, 420, rotation(1678, 1856, 90));
             board.addGameTile(tray('tech', 2), 1241, -50, rotation(1678, 1856, 90));
@@ -498,10 +505,10 @@ define([
             // ================================================================
             // Player Boards
             // ================================================================  
-            
+
             let plpos = [50, 1050, 2050, 3050];
             let i = 0;
-            for (let key in players) {
+            for (let key in gamedata.players) {
 
                 tray(gametile(list["HQ-A1"]), key);
     

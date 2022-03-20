@@ -98,17 +98,14 @@ class PulsarZet extends Table
         self::setGameStateInitialValue('modifiertoken', 0);
         self::setGameStateInitialValue('modifiervalue', 0);
         self::setGameStateInitialValue('dieTotal', 0);
+
         JSON::create('playerorderround');
         JSON::create('playerorderphase');
         JSON::create('playerpoints');
         JSON::create('flightpath');
 
-        $systems = array();
-        for ($value = 1; $value <= 17; $value++) {
-            $systems[] = array('type' => 'system_' . $value, 'type_arg' => $value, 'nbr' => 1);
-        }
-        $this->systemcards->createCards($systems);
-        $this->systemcards->shuffle('deck');
+        self::initializeSystemCardsDeck();
+        self::initializeTechBoards();
 
         /************ End of the game initialization *****/
     }
@@ -139,6 +136,7 @@ class PulsarZet extends Table
         $result['tokens'] = self::getTokens();
         $result['playerboards'] = self::getPlayerboards();
         $result['timemarker'] = self::getGameStateValue('timeMarker');
+        $result['techboards'] = JSON::read('techboards');
         return $result;
     }
 
@@ -159,6 +157,23 @@ class PulsarZet extends Table
         return 0;
     }
 
+//////////////////////////////////////////////////////////////////////////////
+//////////// Initialize Game
+////////////   
+
+    function initializeSystemCardsDeck() {
+        $systems = array();
+        for ($value = 1; $value <= 17; $value++) {
+            $systems[] = array('type' => 'system_' . $value, 'type_arg' => $value, 'nbr' => 1);
+        }
+        $this->systemcards->createCards($systems);
+        $this->systemcards->shuffle('deck');
+    }
+
+    function initializeTechBoards() {
+        JSON::create('techboards');        
+        JSON::write('techboards', array(bga_rand(0, 3), bga_rand(0, 3), bga_rand(0, 3)));
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Utility functions
