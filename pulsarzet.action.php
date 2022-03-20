@@ -39,7 +39,9 @@
   	} 
   	
     public function click() {
+      
       self::setAjaxMode();
+      
       $tileId = self::getArg("tileId", AT_alphanum, false);
       $tokenId = self::getArg("tokenId", AT_alphanum, false);
       $posId = self::getArg("posId", AT_alphanum, false);
@@ -47,26 +49,23 @@
       $clickAreaId = self::getArg("clickAreaId", AT_alphanum, false);
       $currentState = $this->game->gamestate->state();
       
-      if (isset($tokenId)) {
-        $methodName = "click_" . $tokenId . '_in_state_' . $currentState['name'];
-        $this->game->$methodName($tileId, $tokenId, $posId, $variantId);
-      } else if ($tileId == "starcluster") {
-        $methodName = "click_" . $tileId . '_in_state_' . $currentState['name'];
-        $this->game->$methodName($tileId, $clickAreaId);
-      } else {
-        $methodName = "click_" . $clickAreaId . '_in_state_' . $currentState['name'];
-        $this->game->$methodName($tileId, $clickAreaId, $posId, $variantId);
+      try {
+
+        if (isset($tokenId)) {
+          $methodName = "click_" . $tokenId . '_in_state_' . $currentState['name'];
+          $this->game->$methodName($tileId, $tokenId, $posId, $variantId);
+        } else if ($tileId == "starcluster") {
+          $methodName = "click_" . $tileId . '_in_state_' . $currentState['name'];
+          $this->game->$methodName($tileId, $clickAreaId);
+        } else {
+          $methodName = "click_" . $clickAreaId . '_in_state_' . $currentState['name'];
+          $this->game->$methodName($tileId, $clickAreaId, $posId, $variantId);
+        }
+
+      } catch (\Throwable $e) {
+        $this->game->actionNotAvailable();
       }
+
       self::ajaxResponse();
     }
-
-    function error($text) {
-      echo "<pre>";
-      var_dump( $text );
-      echo "</pre>";
-      die('ok');
-    }
-
   }
-  
-

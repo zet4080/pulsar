@@ -177,6 +177,10 @@ class PulsarZet extends Table
         echo "</pre>";
     }
 
+    function actionNotAvailable() {
+        throw new BgaUserException( self::_("You can't do this at the moment!") ); 
+    }
+
     function getAllPlayers () {
         $sql = "SELECT player_id id, player_no nr, player_score score, player_color color FROM player ";
         return self::getCollectionFromDb( $sql );        
@@ -191,7 +195,7 @@ class PulsarZet extends Table
 ////////////    
 
     function addGreenFlightBonusToPlayer() {
-
+        
     }
 
 //////////////////////////////////////////////////////////////////////////////
