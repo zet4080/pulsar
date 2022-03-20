@@ -104,18 +104,18 @@ define([
             "shipgreen": [5369, 2475, 80, 63],
             "shipyellow": [5369, 2538, 80, 63],
             "shipred": [5369, 2601, 80, 63],
-            "goaltile1a": [7000, 2101, 194, 611],
-            "goaltile1b": [7194, 2101, 194, 611],
-            "goaltile2a": [7388, 2101, 194, 611],
-            "goaltile2b": [7582, 2101, 194, 611],
-            "goaltile3a": [7776, 2101, 194, 611],
-            "goaltile3b": [7970, 2101, 194, 611],
-            "goaltile4a": [7000, 2712, 194, 611],
-            "goaltile4b": [7194, 2712, 194, 611],
-            "goaltile5a": [7388, 2712, 194, 611],
-            "goaltile5b": [7582, 2712, 194, 611],
-            "goaltile6a": [7776, 2712, 194, 611],
-            "goaltile6b": [7970, 2712, 194, 611],
+            "goaltile-0": [7000, 2101, 194, 611],
+            "goaltile-1": [7194, 2101, 194, 611],
+            "goaltile-2": [7388, 2101, 194, 611],
+            "goaltile-3": [7582, 2101, 194, 611],
+            "goaltile-4": [7776, 2101, 194, 611],
+            "goaltile-5": [7970, 2101, 194, 611],
+            "goaltile-6": [7000, 2712, 194, 611],
+            "goaltile-7": [7194, 2712, 194, 611],
+            "goaltile-8": [7388, 2712, 194, 611],
+            "goaltile-9": [7582, 2712, 194, 611],
+            "goaltile-10": [7776, 2712, 194, 611],
+            "goaltile-11": [7970, 2712, 194, 611],
             "100pointsyellow": [5054, 2412, 79, 138],
             "100pointsblue": [5133, 2412, 79, 138],
             "100pointsgreen": [5212, 2412, 79, 138],
@@ -429,15 +429,19 @@ define([
 
             // ================================================================
             // Goal Tiles
-            // ================================================================            
+            // ================================================================  
 
-            tray(gametile(list.goaltile2b), 'goaltile-1');
-            tray(gametile(list.goaltile6a), 'goaltile-2');
-            tray(gametile(list.goaltile1a), 'goaltile-3');
+            let goalTileName = function(lvl) {
+                let name = 'goaltile-' + gamedata.goaltiles[lvl];
+                return name;
+            };
+            tray(gametile(list[goalTileName(0)]), 'goaltile', 1);
+            tray(gametile(list[goalTileName(1)]), 'goaltile', 2);
+            tray(gametile(list[goalTileName(2)]), 'goaltile', 3);
             
-            board.addGameTile(tray('goaltile-1'), 1532, 122, rotation(1678, 1856, 32));
-            board.addGameTile(tray('goaltile-2'), 1532, 122, rotation(1678, 1856, 39));
-            board.addGameTile(tray('goaltile-3'), 1532, 122, rotation(1678, 1856, 46));
+            board.addGameTile(tray('goaltile', 1), 1532, 122, rotation(1678, 1856, 32));
+            board.addGameTile(tray('goaltile', 2), 1532, 122, rotation(1678, 1856, 39));
+            board.addGameTile(tray('goaltile', 3), 1532, 122, rotation(1678, 1856, 46));
 
             // ================================================================
             // Tech Boards

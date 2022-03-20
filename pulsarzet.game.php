@@ -21,6 +21,7 @@ require_once 'modules/DBUtil.php';
 require_once 'modules/Track.php'; 
 require_once 'modules/JSON.php';
 require_once 'modules/DicePosition.php';
+require_once 'modules/GoalTiles.php';
 
 class PulsarZet extends Table
 {
@@ -106,6 +107,7 @@ class PulsarZet extends Table
 
         self::initializeSystemCardsDeck();
         self::initializeTechBoards();
+        self::initializeGoalTiles();
 
         /************ End of the game initialization *****/
     }
@@ -137,6 +139,7 @@ class PulsarZet extends Table
         $result['playerboards'] = self::getPlayerboards();
         $result['timemarker'] = self::getGameStateValue('timeMarker');
         $result['techboards'] = JSON::read('techboards');
+        $result['goaltiles'] = JSON::read('goaltiles');
         return $result;
     }
 
@@ -174,6 +177,12 @@ class PulsarZet extends Table
         JSON::create('techboards');        
         JSON::write('techboards', array(bga_rand(0, 3), bga_rand(0, 3), bga_rand(0, 3)));
     }
+
+    function initializeGoalTiles() {
+        $goalTiles = new GoalTiles();
+        JSON::create('goaltiles');        
+        JSON::write('goaltiles', array($goalTiles->calculate(), $goalTiles->calculate(), $goalTiles->calculate()));
+    }    
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Utility functions
