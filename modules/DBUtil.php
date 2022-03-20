@@ -48,7 +48,7 @@ class DBUtil extends APP_GameClass {
         return $query;
     }    
 
-    public function queryFilter($table, $filter = null, $sort = null, $fieldmapping = null) {
+    public function queryFilter($table, $filter = null, $sort = null, $fieldlist = null) {
         
         // Check, if filter is a single value or an array.
         // If it is a single value, it is the uid of the row and we have to 
@@ -65,11 +65,11 @@ class DBUtil extends APP_GameClass {
             }
         }
 
-        if (!isset($fieldmapping)) {
-            $fieldmapping = '*';
+        if (!isset($fieldlist)) {
+            $fieldlist = '*';
         }
         
-        $query = sprintf('SELECT %s FROM %s', $fieldmapping, $table);
+        $query = sprintf('SELECT %s FROM %s', $fieldlist, $table);
         
         if (isset($pairs)) {
             $query .= ' WHERE '.self::query($pairs);
