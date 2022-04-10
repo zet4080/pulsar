@@ -46,7 +46,7 @@ class PulsarZet extends Table
         ));        
 
         $this->systemcards = self::getNew( "module.common.deck" );
-        $this->systemcards->init( "planetarysystems" );          
+        $this->systemcards->init( "planetarysystems" );  
 	}
 	
     protected function getGameName( )

@@ -49,8 +49,9 @@
       $clickAreaId = self::getArg("clickAreaId", AT_alphanum, false);
       $currentState = $this->game->gamestate->state();
       
+      /*
       try {
-
+      */
         if (isset($tokenId)) {
           $methodName = "click_" . $tokenId . '_in_state_' . $currentState['name'];
           $this->game->$methodName($tileId, $tokenId, $posId, $variantId);
@@ -61,11 +62,11 @@
           $methodName = "click_" . $clickAreaId . '_in_state_' . $currentState['name'];
           $this->game->$methodName($tileId, $clickAreaId, $posId, $variantId);
         }
-
+      /*
       } catch (\Throwable $e) {
         $this->game->actionNotAvailable();
       }
-
+      */
       self::ajaxResponse();
     }
   }
