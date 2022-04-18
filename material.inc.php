@@ -172,10 +172,3 @@ $this->techActionsDictionary = array(
     ) 
   )
 );
-
-$techs = JSON::read('techboards');
-$this->actions = array_merge(
-    $this->techActionsDictionary[0][$techs[0]],
-    $this->techActionsDictionary[1][$techs[1]],
-    $this->techActionsDictionary[2][$techs[2]]
-);
