@@ -123,14 +123,6 @@ class PulsarZet extends Table
     */
     protected function getAllDatas()
     {
-
-        $techs = JSON::read('techboards');
-        $this->actions = array_merge(
-            $this->techActionsDictionary[0][$techs[0]],
-            $this->techActionsDictionary[1][$techs[1]],
-            $this->techActionsDictionary[2][$techs[2]]
-        );
-
         $result = array();
         $result['shiporder'] = JSON::read('playerorderround');
         $result['diceboard'] = self::getDiceboard();
@@ -191,6 +183,15 @@ class PulsarZet extends Table
         JSON::create('goaltiles');        
         JSON::write('goaltiles', array($goalTiles->calculate(), $goalTiles->calculate(), $goalTiles->calculate()));
     }    
+
+    function getTechBoards() {
+        $techs = JSON::read('techboards');
+        return array_merge(
+            $this->techActionsDictionary[0][$techs[0]],
+            $this->techActionsDictionary[1][$techs[1]],
+            $this->techActionsDictionary[2][$techs[2]]
+        );
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Utility functions
@@ -390,13 +391,15 @@ class PulsarZet extends Table
     }
 
     function checkIfPlayerHasDieToBuyAction ($tech) {
+        $techboards = self::getTechBoards();
         $die = self::getGameStateValue('dieTotal');
-        if ($this->actions[$tech]['costs'] != $die) {
+        if ($techboards[$tech]['costs'] != $die) {
             throw new BgaUserException(self::_("You don't have the correct die to buy this!"));
         }
     }
 
     function patentTechnology ($tileId, $tech) {
+        $techboards = self::getTechBoards();
         $pos = 0;
         $actions = DBUtil::get('actions', array (
             'action' => $tech
@@ -411,8 +414,8 @@ class PulsarZet extends Table
         }
         DBUtil::insertRow('actions', array (
             'action' => $tech,
-            'locked' => $this->actions[$tech]['lockable'] ? 1 :0,
-            'phase' => $this->actions[$tech]['phase'],
+            'locked' => $techboards[$tech]['lockable'] ? 1 :0,
+            'phase' => $techboards[$tech]['phase'],
             'player' => self::getActivePlayerId()
         ));
         DBUtil::insertRow('tokens', array(
@@ -421,13 +424,13 @@ class PulsarZet extends Table
             'tileId' => $tileId,
             'overlay' => $tech,
             'position' => $pos,
-            'info' => $this->actions[$tech]['lockable'] ? 'locked' : '',
+            'info' => $techboards[$tech]['lockable'] ? 'locked' : '',
         ));
     }
     
     function updateTechnologyTree() {
-        
-        foreach ($this->actions as $key => $action) {
+        $techboards = self::getTechBoards();
+        foreach ($techboards as $key => $action) {
             $actions = DBUtil::get('actions', array (
                 'action' => $key
             ));              
