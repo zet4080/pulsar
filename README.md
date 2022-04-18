@@ -15,3 +15,9 @@ Retrieves an array of records of the given table.
 ``$dice = DBUtil::get('dice', array('position' => 'blackhole'));``
 
 Retrieves all dice that are located in the black hole.
+
+# Coding Conventions
+
+## check-methods
+
+Methods whose names begin with "check" (for example checkIfTimeMarkerAllowsAction) are checking a game state or rule. If the check fails, then a BgaException is thrown
